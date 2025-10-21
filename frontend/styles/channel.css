@@ -263,4 +263,85 @@
   background-color: #4752c4;
 }
 
+/* Buttons */
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #6b7280;
+  font-size: 1.25rem;
+  line-height: 1;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
 
+.icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-sidebar .icon-button {
+  color: #d1d5db;
+}
+
+.dashboard-sidebar .icon-button:hover {
+  background-color: #374151;
+  color: white;
+}
+
+.action-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  color: #374151;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.action-button:hover {
+  background-color: #f3f4f6;
+}
+
+.action-button.danger {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.action-button.danger:hover {
+  background-color: #fee2e2;
+}
+
+.button-primary {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.button-primary:hover {
+  background-color: #2563eb;
+}
+
+.button-secondary {
+  padding: 0.5rem 1rem;
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.button-secondary:hover {
+  background-color: #f3f4f6;
+}
