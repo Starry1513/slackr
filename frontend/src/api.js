@@ -224,5 +224,60 @@ export class ApiService {
     return this.request(`/message/${channelId}/${messageId}`, "DELETE", null, token);
   }
 
+  /**
+   * React to a message
+   * @param {number} channelId
+   * @param {number} messageId
+   * @param {string} react - Emoji reaction
+   * @param {string} token
+   * @returns {Promise}
+   */
+  reactToMessage(channelId, messageId, react, token) {
+    return this.request(`/message/${channelId}/${messageId}/react`, "POST", { react }, token);
+  }
 
+  /**
+   * Unreact to a message
+   * @param {number} channelId
+   * @param {number} messageId
+   * @param {string} react - Emoji reaction
+   * @param {string} token
+   * @returns {Promise}
+   */
+  unreactToMessage(channelId, messageId, react, token) {
+    return this.request(`/message/${channelId}/${messageId}/react`, "DELETE", { react }, token);
+  }
+
+  /**
+   * Pin a message
+   * @param {number} channelId
+   * @param {number} messageId
+   * @param {string} token
+   * @returns {Promise}
+   */
+  pinMessage(channelId, messageId, token) {
+    return this.request(`/message/${channelId}/${messageId}/pin`, "POST", null, token);
+  }
+
+  /**
+   * Unpin a message
+   * @param {number} channelId
+   * @param {number} messageId
+   * @param {string} token
+   * @returns {Promise}
+   */
+  unpinMessage(channelId, messageId, token) {
+    return this.request(`/message/${channelId}/${messageId}/unpin`, "POST", null, token);
+  }
+
+  /**
+   * Invite a user to a channel
+   * @param {number} channelId
+   * @param {number} userId
+   * @param {string} token
+   * @returns {Promise}
+   */
+  inviteToChannel(channelId, userId, token) {
+    return this.request(`/channel/${channelId}/invite`, "POST", { userId }, token);
+  }
 }
