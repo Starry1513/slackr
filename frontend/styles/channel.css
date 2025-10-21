@@ -1,0 +1,80 @@
+
+/* Dashboard Layout */
+.dashboard {
+  display: flex;
+  height: calc(100vh - 60px); /* Subtract header height */
+  overflow: hidden;
+}
+
+/* Sidebar */
+.dashboard-sidebar {
+  width: 280px;
+  background-color: #1f2937;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #374151;
+}
+
+.sidebar-header h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: white;
+}
+
+/* Channel List */
+.channel-list-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 1rem;
+}
+
+.channel-section {
+  margin-bottom: 1.5rem;
+}
+
+.channel-section h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #9ca3af;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.channel-container {
+  padding: 0.5rem 0.75rem;
+  margin: 0.25rem 0;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #d1d5db;
+  transition: background-color 0.2s;
+}
+
+.channel-container:hover {
+  background-color: #374151;
+  color: white;
+}
+
+.channel-container.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Main Content Area */
+.dashboard-main {
+  flex: 1;
+  background-color: #f9fafb;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
