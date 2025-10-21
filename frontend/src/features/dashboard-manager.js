@@ -163,6 +163,22 @@ export class Dashboard {
    * Handle logout
    */
   handleLogout() {
+    const token = this.auth.getToken();
 
+    this.api
+      .logout(token)
+      .then(() => {
+        // Clear auth data
+        this.auth.cleanAuthToken();
+
+        // Show login page
+        this.showLogin();
+      })
+      .catch((error) => {
+        // Even if logout fails, clear local auth and show login
+        this.auth.cleanAuthToken();
+        this.showLogin();
+        console.error("Logout error:", error);
+      });
   }
 }
