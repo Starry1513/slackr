@@ -1,35 +1,56 @@
+/*
+ * Slackr Channel Styles
+ *
+ * External CSS Library Used:
+ * - Tailwind CSS v3.x (loaded via CDN in index.html)
+ *   URL: https://cdn.tailwindcss.com
+ *   Author: Tailwind Labs
+ *   License: MIT
+ *
+ * Design inspired by Discord's layout for better UX
+ */
 
-/* Dashboard Layout */
+/* Dashboard Layout - Full Screen Discord-like Design */
 .dashboard {
   display: flex;
-  height: calc(100vh - 60px); /* Subtract header height */
+  position: fixed;
+  top: 60px; /* Account for header */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(100vh - 60px);
   overflow: hidden;
+  background-color: #36393f;
 }
 
-/* Sidebar */
+/* Sidebar - Discord Style */
 .dashboard-sidebar {
-  width: 280px;
-  background-color: #1f2937;
-  color: white;
+  width: 240px;
+  min-width: 240px;
+  background-color: #2f3136;
+  color: #dcddde;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  overflow-y: auto;
+  overflow: hidden;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #374151;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(6, 6, 7, 0.05), 0 2px 0 rgba(4, 4, 5, 0.05);
 }
 
 .sidebar-header h2 {
-  font-size: 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
   margin: 0;
-  color: white;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 /* Channel List */
@@ -52,80 +73,102 @@
 }
 
 .channel-container {
-  padding: 0.5rem 0.75rem;
-  margin: 0.25rem 0;
+  padding: 6px 8px;
+  margin: 1px 8px;
   border-radius: 4px;
   cursor: pointer;
-  color: #d1d5db;
-  transition: background-color 0.2s;
+  color: #96989d;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
 }
 
 .channel-container:hover {
-  background-color: #374151;
-  color: white;
+  background-color: #393c43;
+  color: #dcddde;
 }
 
 .channel-container.active {
-  background-color: #3b82f6;
-  color: white;
+  background-color: #404249;
+  color: #ffffff;
 }
 
-/* Main Content Area */
+/* Main Content Area - Full Screen */
 .dashboard-main {
   flex: 1;
-  background-color: #f9fafb;
-  overflow-y: auto;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  background-color: #36393f;
+  overflow: hidden;
+  min-width: 0; /* Allow flex shrinking */
 }
 
 /* Welcome Screen */
 .welcome-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 2rem;
 }
 
 .welcome-screen h2 {
   font-size: 2rem;
-  color: #1f2937;
+  color: #ffffff;
   margin-bottom: 1rem;
+  font-weight: 700;
 }
 
 .welcome-screen p {
-  color: #6b7280;
-  font-size: 1.125rem;
+  color: #b9bbbe;
+  font-size: 1rem;
 }
 
-/* Channel View */
+/* Channel View - Full Screen Layout */
 .channel-view {
-  max-width: 1000px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 }
 
-/* Channel Details */
-.channel-details {
-  background: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
+/* Channel Header - Discord Style */
 .channel-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: start;
-  margin-bottom: 1rem;
+  height: 48px;
+  padding: 0 1rem;
+  background-color: #36393f;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(6, 6, 7, 0.05), 0 2px 0 rgba(4, 4, 5, 0.05);
+  flex-shrink: 0;
 }
 
 .channel-header h2 {
-  font-size: 1.5rem;
-  color: #1f2937;
-  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.channel-header h2::before {
+  content: "#";
+  margin-right: 0.5rem;
+  color: #72767d;
+  font-weight: 400;
 }
 
 .channel-header p {
-  color: #6b7280;
+  color: #b9bbbe;
   margin: 0;
+  font-size: 0.875rem;
 }
 
 .channel-actions {
@@ -143,13 +186,4 @@
 .channel-meta span {
   display: flex;
   align-items: center;
-}
-
-/* Channel Messages */
-.channel-messages {
-  background: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  min-height: 400px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
