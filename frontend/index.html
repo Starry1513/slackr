@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge" />
+    <title>Slackr</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="screen"
+      href="styles/auth.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="screen"
+      href="styles/channel.css" />
+  </head>
+
+  <body>
+    <header class="banner">
+      <h1>Slackr</h1>
+    </header>
+    <main role="main">
+      <!-- Error Popup -->
+      <div
+        id="error-body"
+        class="error-popup-overlay"
+        style="display: none">
+        <div class="error-popup-content">
+          <h3>Error</h3>
+          <p id="error-message">Error message will appear here</p>
+          <button id="error-close">Close</button>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <div
+        id="login-container"
+        class="auth-container">
+        <h2>Login to Slackr</h2>
+        <form
+          id="login-form"
+          class="auth-form">
+          <label for="login-email">Email:</label>
+          <input
+            type="text"
+            id="login-email"
+            placeholder="Enter your email"
+            required />
+
+          <label for="login-password">Password:</label>
+          <input
+            type="password"
+            id="login-password"
+            placeholder="Enter your password"
+            required />
+
+          <button
+            type="submit"
+            id="login-submit"
+            >Login</button
+          >
+        </form>
+
+        <button
+          type="button"
+          id="register-link"
+          class="link-button">
+          Don't have an account yet? Register here
+        </button>
+      </div>
+
