@@ -94,4 +94,57 @@ export class BaseManager {
       element.classList.toggle(className);
     }
   }
+
+  /**
+   * Get token from auth
+   * @returns {string|null} Auth token
+   */
+  getToken() {
+    return this.auth.getToken();
+  }
+
+  /**
+   * Get user ID from auth
+   * @returns {string|null} User ID
+   */
+  getUserId() {
+    return this.auth.getUserId();
+  }
+
+  /**
+   * Show error message
+   * @param {string} message - Error message
+   */
+  showError(message) {
+    this.pageController.showError(message);
+  }
+
+  /**
+   * Create element with attributes
+   * @param {string} tag - HTML tag
+   * @param {Object} attributes - Attributes object
+   * @param {string} textContent - Text content
+   * @returns {HTMLElement}
+   */
+  createElement(tag, attributes = {}, textContent = null) {
+    const element = document.createElement(tag);
+
+    // Set attributes
+    Object.keys(attributes).forEach((key) => {
+      if (key === "className") {
+        element.className = attributes[key];
+      } else if (key === "style" && typeof attributes[key] === "object") {
+        Object.assign(element.style, attributes[key]);
+      } else {
+        element.setAttribute(key, attributes[key]);
+      }
+    });
+
+    // Set text content
+    if (textContent) {
+      element.textContent = textContent;
+    }
+
+    return element;
+  }
 }
