@@ -345,3 +345,54 @@
 .button-secondary:hover {
   background-color: #f3f4f6;
 }
+
+/* Channel Details Sidebar */
+.channel-details {
+  width: 320px;
+  background-color: white;
+  border-left: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.details-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.details-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  color: #1f2937;
+}
+
+.details-content {
+  margin-bottom: 1.5rem;
+}
+
+.detail-item {
+  margin-bottom: 1rem;
+}
+
+.detail-item label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.detail-item p {
+  margin: 0;
+  color: #1f2937;
+  font-size: 0.875rem;
+}
+
+.details-actions {
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+
