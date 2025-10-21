@@ -366,5 +366,93 @@ export class ChannelManager {
     this.dom.editChannelContainer.style.display = "none";
   }
 
+  /**
+   * Handle edit channel form submission
+   */
+  handleEditChannel() {
+    const name = this.dom.editChannelName.value.trim();
+    const description = this.dom.editChannelDescription.value.trim();
 
+    if (!name) {
+      this.pageController.showError("Channel name is required");
+      return;
+    }
+
+    const token = this.auth.getToken();
+
+    this.api
+      .updateChannel(this.currentChannelId, name, description || "", token)
+      .then(() => {
+        this.hideEditChannelModal();
+        // Reload channel data
+        return this.selectChannel(this.currentChannelId);
+      })
+      .then(() => {
+        // Reload channel list to update sidebar
+        return this.loadChannels();
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to update channel");
+      });
+  }
+
+  /**
+   * Handle join channel
+   */
+  handleJoinChannel() {
+    if (!this.currentChannelId) {
+      return;
+    }
+
+    const token = this.auth.getToken();
+
+    this.api
+      .joinChannel(this.currentChannelId, token)
+      .then(() => {
+        // Reload channel data to update UI
+        return this.selectChannel(this.currentChannelId);
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to join channel");
+      });
+  }
+
+  /**
+   * Handle leave channel
+   */
+  handleLeaveChannel() {
+    if (!this.currentChannelId) {
+      return;
+    }
+
+    const token = this.auth.getToken();
+
+    this.api
+      .leaveChannel(this.currentChannelId, token)
+      .then(() => {
+        // Show welcome screen
+        this.showWelcomeScreen();
+        // Reload channel list
+        return this.loadChannels();
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to leave channel");
+      });
+  }
+
+  /**
+   * Get current channel ID
+   * @returns {number|null} Current channel ID
+   */
+  getCurrentChannelId() {
+    return this.currentChannelId;
+  }
+
+  /**
+   * Get current channel data
+   * @returns {Object|null} Current channel data
+   */
+  getCurrentChannelData() {
+    return this.currentChannelData;
+  }
 }
