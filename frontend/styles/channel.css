@@ -656,4 +656,99 @@
   background-color: #36393f;
 }
 
+.message-pinned-badge {
+  display: inline-block;
+  margin-left: 3.5rem;
+  margin-top: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  background-color: #5865f2;
+  color: white;
+  border-radius: 3px;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
 
+/* Message Reactions */
+.message-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-left: 3.5rem;
+  margin-top: 0.5rem;
+}
+
+.reaction-btn {
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(79, 84, 92, 0.16);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #b9bbbe;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.1s;
+}
+
+.reaction-btn:hover {
+  background-color: rgba(79, 84, 92, 0.24);
+  border-color: rgba(79, 84, 92, 0.24);
+}
+
+.reaction-btn.reacted {
+  background-color: rgba(88, 101, 242, 0.15);
+  border-color: #5865f2;
+  color: #dee0fc;
+}
+
+.add-reaction-btn {
+  padding: 0.25rem 0.5rem;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #72767d;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.1s;
+}
+
+.add-reaction-btn:hover {
+  background-color: rgba(79, 84, 92, 0.16);
+}
+
+/* Empty Messages */
+.empty-messages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #72767d;
+  font-size: 0.875rem;
+}
+
+/* Profile Image Preview */
+.image-preview {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.image-preview img {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+/* Additional Modal Input Types */
+.modal-content form input[type="email"],
+.modal-content form input[type="password"],
+.modal-content form input[type="number"],
+.modal-content form input[type="file"] {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-family: inherit;
+}
+
+.modal-content form input[type="file"] {
+  padding: 0.375rem 0.5rem;
+}
