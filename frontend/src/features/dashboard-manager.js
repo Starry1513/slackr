@@ -103,7 +103,27 @@ export class Dashboard {
    * Handle login form submission
    */
   handleLogin() {
+    const email = this.dom.loginEmail.value.trim();
+    const password = this.dom.loginPassword.value;
 
+    if (!email || !password) {
+      this.pageController.showError("Please fill in all fields");
+      return;
+    }
+
+    // Call API to login
+    this.api
+      .login(email, password)
+      .then((response) => {
+        // Save token and userId
+        this.auth.saveAuthToken(response.token, response.userId);
+
+        // Show dashboard
+        this.showDashboard();
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Login failed");
+      });
   }
 
   /**
