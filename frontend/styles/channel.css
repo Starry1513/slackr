@@ -263,30 +263,42 @@
   background-color: #4752c4;
 }
 
-/* Buttons */
+/* Buttons - Discord Style */
 .icon-button {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.5rem;
-  color: #6b7280;
+  padding: 0.375rem;
+  color: #b9bbbe;
   font-size: 1.25rem;
   line-height: 1;
   border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: all 0.17s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .icon-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(79, 84, 92, 0.16);
+  color: #dcddde;
 }
 
 .dashboard-sidebar .icon-button {
-  color: #d1d5db;
+  color: #b9bbbe;
 }
 
 .dashboard-sidebar .icon-button:hover {
-  background-color: #374151;
-  color: white;
+  background-color: rgba(79, 84, 92, 0.24);
+  color: #ffffff;
+}
+
+.channel-header .icon-button {
+  color: #b9bbbe;
+}
+
+.channel-header .icon-button:hover {
+  color: #dcddde;
 }
 
 .action-button {
