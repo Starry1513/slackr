@@ -290,30 +290,38 @@
 }
 
 .action-button {
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  background-color: white;
-  color: #374151;
+  padding: 0.625rem 1rem;
+  border: none;
+  background-color: #4752c4;
+  color: #ffffff;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s;
+  font-weight: 600;
+  transition: background-color 0.17s ease;
   width: 100%;
   margin-bottom: 0.5rem;
 }
 
 .action-button:hover {
-  background-color: #f3f4f6;
+  background-color: #5865f2;
 }
 
 .action-button.danger {
-  color: #dc2626;
-  border-color: #dc2626;
+  background-color: #ed4245;
 }
 
 .action-button.danger:hover {
-  background-color: #fee2e2;
+  background-color: #c03537;
+}
+
+.action-button.secondary {
+  background-color: #4e5058;
+  color: #ffffff;
+}
+
+.action-button.secondary:hover {
+  background-color: #6d6f78;
 }
 
 .button-primary {
