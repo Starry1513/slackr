@@ -82,3 +82,55 @@ export class App {
       this.handleLogin();
     });
 
+    this.dom.registerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      this.handleRegister();
+    });
+
+    this.dom.registerLink.addEventListener("click", () => {
+      this.showRegister();
+    });
+
+    this.dom.loginLink.addEventListener("click", () => {
+      this.showLogin();
+    });
+
+    this.dom.logoutButton.addEventListener("click", () => {
+      this.handleLogout();
+    });
+
+    this.dom.errorClose.addEventListener("click", () => {
+      this.pageController.hideError();
+    });
+  };
+
+  /**
+   * Show login page
+   */
+  showLogin() {
+    this.pageController.showLogin();
+    this.dom.loginEmail.value = "";
+    this.dom.loginPassword.value = "";
+  }
+
+  /**
+   * Show register page
+   */
+  showRegister() {
+    this.pageController.showRegister();
+    this.dom.registerEmail.value = "";
+
+    this.dom.registerName.value = "";
+    this.dom.registerPassword.value = "";
+    this.dom.registerPasswordConfirm.value = "";
+  }
+
+  /**
+   * Show dashboard page
+   */
+  showDashboard() {
+    this.pageController.showDashboard();
+  }
+
+
+}
