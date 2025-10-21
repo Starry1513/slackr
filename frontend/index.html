@@ -137,10 +137,7 @@
         <aside class="dashboard-sidebar">
           <div class="sidebar-header">
             <h2>Slackr</h2>
-            <div class="sidebar-header-actions">
-              <button id="profile-button" class="icon-button" title="Edit Profile">👤</button>
-              <button id="logout-button">Logout</button>
-            </div>
+            <button id="logout-button">Logout</button>
           </div>
 
           <div class="channels-section">
@@ -380,6 +377,58 @@
       </div>
     </main>
 
+    <!-- Message Template -->
+    <template id="message-template">
+      <div class="message" data-message-id="">
+        <div class="message-header">
+          <div class="message-sender-info">
+            <div class="message-sender-image-container"></div>
+            <span class="message-sender-name"></span>
+            <span class="message-timestamp"></span>
+          </div>
+          <div class="message-actions" style="display: none;">
+            <button class="message-action-btn edit-message-btn">Edit</button>
+            <button class="message-action-btn delete-message-btn">Delete</button>
+          </div>
+        </div>
+        <div class="message-content">
+          <p class="message-text" style="display: none;"></p>
+          <img class="message-image" style="display: none;" alt="Message image" />
+        </div>
+        <div class="message-reactions" style="display: none;"></div>
+        <span class="message-pinned-badge" style="display: none;">📌 Pinned</span>
+      </div>
+    </template>
+
+    <!-- Reaction Button Template -->
+    <template id="reaction-btn-template">
+      <button class="reaction-btn"></button>
+    </template>
+
+    <!-- Add Reaction Button Template -->
+    <template id="add-reaction-btn-template">
+      <button class="add-reaction-btn">➕</button>
+    </template>
+
+    <!-- Empty Messages Template -->
+    <template id="empty-messages-template">
+      <div class="empty-messages">No messages yet. Be the first to say something!</div>
+    </template>
+
+    <!-- Sender Image Template -->
+    <template id="sender-image-template">
+      <img class="message-sender-image" alt="User" />
+    </template>
+
+    <!-- Sender Image Placeholder Template -->
+    <template id="sender-placeholder-template">
+      <div class="message-sender-image placeholder"></div>
+    </template>
+
+    <!-- Edited Span Template -->
+    <template id="edited-span-template">
+      <span class="message-edited"> (edited)</span>
+    </template>
 
     <script
       type="module"
