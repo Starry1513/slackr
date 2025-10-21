@@ -104,5 +104,84 @@ export class ChannelManager {
       this.hideEditChannelModal();
     });
 
-    
+    // Channel details toggle
+    this.dom.channelDetailsToggle.addEventListener("click", () => {
+      this.toggleChannelDetails();
+    });
+
+    // Join/Leave channel buttons
+    this.dom.joinChannelButton.addEventListener("click", () => {
+      this.handleJoinChannel();
+    });
+
+    this.dom.leaveChannelButton.addEventListener("click", () => {
+      this.handleLeaveChannel();
+    });
+  }
+
+  /**
+   * Load and display all channels
+   */
+  loadChannels() {
+    const token = this.auth.getToken();
+
+    return this.api
+      .getChannels(token)
+      .then((response) => {
+        this.renderChannelList(response.channels);
+        return response.channels;
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to load channels");
+        throw error;
+      });
+  }
+
+  /**
+   * Render channel list in sidebar
+   * @param {Array} channels - Array of channel objects
+   */
+  renderChannelList(channels) {
+    // Clear existing list
+    this.dom.channelList.innerHTML = "";
+
+    if (!channels || channels.length === 0) {
+      const emptyMessage = document.createElement("p");
+      emptyMessage.textContent = "No channels available";
+      emptyMessage.style.padding = "1rem";
+      emptyMessage.style.color = "var(--text-muted)";
+      emptyMessage.style.fontSize = "0.875rem";
+      this.dom.channelList.appendChild(emptyMessage);
+      return;
+    }
+
+    // Sort channels: public first, then private
+    const sortedChannels = channels.sort((a, b) => {
+      if (a.private === b.private) {
+        return a.name.localeCompare(b.name);
+      }
+      return a.private ? 1 : -1;
+    });
+
+    // Render each channel
+    sortedChannels.forEach((channel) => {
+      const channelElement = document.createElement("div");
+      channelElement.className = "channel-container";
+      if (channel.private) {
+        channelElement.classList.add("private");
+      }
+      if (this.currentChannelId === channel.id) {
+        channelElement.classList.add("active");
+      }
+
+      channelElement.textContent = channel.name;
+      channelElement.addEventListener("click", () => {
+        this.selectChannel(channel.id);
+      });
+
+      this.dom.channelList.appendChild(channelElement);
+    });
+  }
+
+ 
 }
