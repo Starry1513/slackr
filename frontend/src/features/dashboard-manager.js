@@ -1,9 +1,9 @@
-export class Dashboard {
+import { BaseManager } from "./base-manager.js";
+
+export class Dashboard extends BaseManager {
   constructor(api, auth, pageController, channelManager) {
+    super(api, auth, pageController);
     // Cache commonly used DOM elements in a single object for easier access
-    this.api = api;
-    this.auth = auth;
-    this.pageController = pageController;
     this.channelManager = channelManager;
 
     this.dom = {
