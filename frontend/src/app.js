@@ -1,0 +1,84 @@
+import { ApiService } from "./api.js";
+import { AuthManager } from "./auth.js";
+import { PageController } from "./page-controller.js";
+
+export class App {
+  constructor() {
+    this.api = new ApiService();
+    this.auth = new AuthManager();
+    this.pageController = new PageController();
+
+    // Current channel state
+    this.currentChannelId = null;
+    this.currentChannelData = null;
+
+    // Cache commonly used DOM elements in a single object for easier access
+    this.dom = {
+      loginForm: document.getElementById("login-form"),
+      loginEmail: document.getElementById("login-email"),
+      loginPassword: document.getElementById("login-password"),
+
+      registerForm: document.getElementById("register-form"),
+      registerEmail: document.getElementById("register-email"),
+      registerName: document.getElementById("register-name"),
+      registerPassword: document.getElementById("register-password"),
+      registerPasswordConfirm: document.getElementById(
+        "register-password-confirm"
+      ),
+
+      registerLink: document.getElementById("register-link"),
+      loginLink: document.getElementById("login-link"),
+      logoutButton: document.getElementById("logout-button"),
+      errorClose: document.getElementById("error-close"),
+
+      // Channel elements
+      channelList: document.getElementById("channel-list"),
+      createChannelButton: document.getElementById("create-channel-button"),
+      createChannelContainer: document.getElementById("create-channel-container"),
+      createChannelForm: document.getElementById("create-channel-form"),
+      createChannelName: document.getElementById("create-channel-name"),
+      createChannelDescription: document.getElementById("create-channel-description"),
+      createChannelIsPrivate: document.getElementById("create-channel-is-private"),
+      closeCreateChannel: document.getElementById("close-create-channel"),
+      cancelCreateChannel: document.getElementById("cancel-create-channel"),
+
+      editChannelContainer: document.getElementById("edit-channel-container"),
+      editChannelForm: document.getElementById("edit-channel-form"),
+      editChannelName: document.getElementById("edit-channel-name"),
+      editChannelDescription: document.getElementById("edit-channel-description"),
+      closeEditChannel: document.getElementById("close-edit-channel"),
+      cancelEditChannel: document.getElementById("cancel-edit-channel"),
+      editChannelButton: document.getElementById("edit-channel-button"),
+
+      welcomeScreen: document.getElementById("welcome-screen"),
+      channelView: document.getElementById("channel-view"),
+      channelNameDisplay: document.getElementById("channel-name-display"),
+      channelDescriptionDisplay: document.getElementById("channel-description-display"),
+      channelTypeDisplay: document.getElementById("channel-type-display"),
+      channelCreatedDisplay: document.getElementById("channel-created-display"),
+      channelCreatorDisplay: document.getElementById("channel-creator-display"),
+
+      joinChannelButton: document.getElementById("join-channel-button"),
+      leaveChannelButton: document.getElementById("leave-channel-button"),
+    };
+  }
+
+  init() {
+    console.log("Start page");
+
+    // Check if user is already logged in
+    if (this.auth.checkLogin()) {
+      this.showDashboard();
+    } else {
+      this.showLogin();
+    }
+    // Set up all event listeners
+    this.setupAllEventListeners();
+  }
+
+  setupAllEventListeners = () => {
+    this.dom.loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      this.handleLogin();
+    });
+
