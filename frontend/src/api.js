@@ -78,3 +78,76 @@ export class ApiService {
     return this.request("/auth/logout", "POST", null, token);
   }
 
+  /**
+   * Get all channels
+   * @param {string} token
+   * @returns {Promise<{channels: Array}>}
+   */
+  getChannels(token) {
+    return this.request("/channel", "GET", null, token);
+  }
+
+  /**
+   * Create a new channel
+   * @param {string} name
+   * @param {string} description
+   * @param {boolean} isPrivate
+   * @param {string} token
+   * @returns {Promise<{channelId: number}>}
+   */
+  createChannel(name, description, isPrivate, token) {
+    return this.request("/channel", "POST", { name, description, private: isPrivate }, token);
+  }
+
+  /**
+   * Get channel details
+   * @param {number} channelId
+   * @param {string} token
+   * @returns {Promise<Channel>}
+   */
+  getChannelDetails(channelId, token) {
+    return this.request(`/channel/${channelId}`, "GET", null, token);
+  }
+
+  /**
+   * Update channel details
+   * @param {number} channelId
+   * @param {string} name
+   * @param {string} description
+   * @param {string} token
+   * @returns {Promise}
+   */
+  updateChannel(channelId, name, description, token) {
+    return this.request(`/channel/${channelId}`, "PUT", { name, description }, token);
+  }
+
+  /**
+   * Join a channel
+   * @param {number} channelId
+   * @param {string} token
+   * @returns {Promise}
+   */
+  joinChannel(channelId, token) {
+    return this.request(`/channel/${channelId}/join`, "POST", null, token);
+  }
+
+  /**
+   * Leave a channel
+   * @param {number} channelId
+   * @param {string} token
+   * @returns {Promise}
+   */
+  leaveChannel(channelId, token) {
+    return this.request(`/channel/${channelId}/leave`, "POST", null, token);
+  }
+
+  /**
+   * Get user details
+   * @param {number} userId
+   * @param {string} token
+   * @returns {Promise<User>}
+   */
+  getUserDetails(userId, token) {
+    return this.request(`/user/${userId}`, "GET", null, token);
+  }
+}
