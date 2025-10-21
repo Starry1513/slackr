@@ -183,5 +183,89 @@ export class ChannelManager {
     });
   }
 
- 
+  /**
+   * Select and display a channel
+   * @param {number} channelId - Channel ID to select
+   */
+  selectChannel(channelId) {
+    const token = this.auth.getToken();
+
+    this.api
+      .getChannelDetails(channelId, token)
+      .then((channelData) => {
+        this.currentChannelId = channelId;
+        this.currentChannelData = channelData;
+
+        // Update UI
+        this.showChannelView();
+        this.renderChannelHeader(channelData);
+        this.renderChannelDetails(channelData);
+        this.updateChannelActions(channelData);
+
+        // Update active state in channel list
+        document.querySelectorAll(".channel-container").forEach((el) => {
+          el.classList.remove("active");
+        });
+        document.querySelectorAll(".channel-container").forEach((el) => {
+          if (el.textContent === channelData.name || el.textContent === "🔒 " + channelData.name) {
+            el.classList.add("active");
+          }
+        });
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to load channel");
+      });
+  }
+
+  /**
+   * Show channel view (hide welcome screen)
+   */
+  showChannelView() {
+    this.dom.welcomeScreen.style.display = "none";
+    this.dom.channelView.style.display = "flex";
+  }
+
+  /**
+   * Show welcome screen (hide channel view)
+   */
+  showWelcomeScreen() {
+    this.dom.welcomeScreen.style.display = "flex";
+    this.dom.channelView.style.display = "none";
+    this.currentChannelId = null;
+    this.currentChannelData = null;
+  }
+
+  /**
+   * Render channel header
+   * @param {Object} channelData - Channel data
+   */
+  renderChannelHeader(channelData) {
+    this.dom.channelName.textContent = channelData.name;
+  }
+
+  /**
+   * Render channel details panel
+   * @param {Object} channelData - Channel data
+   */
+  renderChannelDetails(channelData) {
+    this.dom.channelDetailName.textContent = channelData.name;
+    this.dom.channelDetailDescription.textContent = channelData.description || "No description";
+    this.dom.channelDetailType.textContent = channelData.private ? "Private" : "Public";
+
+    // Format creation date
+    const createdDate = new Date(channelData.createdAt);
+    this.dom.channelDetailCreated.textContent = createdDate.toLocaleDateString();
+
+    // Get creator name (need to fetch user data)
+    const token = this.auth.getToken();
+    this.api
+      .getUserDetails(channelData.creator, token)
+      .then((userData) => {
+        this.dom.channelDetailCreator.textContent = userData.name;
+      })
+      .catch(() => {
+        this.dom.channelDetailCreator.textContent = "Unknown";
+      });
+  }
+
 }
