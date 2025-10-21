@@ -132,5 +132,86 @@ export class App {
     this.pageController.showDashboard();
   }
 
+  /**
+   * Handle login form submission
+   */
+  handleLogin() {
+    const email = this.dom.loginEmail.value.trim();
+    const password = this.dom.loginPassword.value;
 
+    if (!email || !password) {
+      this.pageController.showError("Please fill in all fields");
+      return;
+    }
+
+    // Call API to login
+    this.api
+      .login(email, password)
+      .then((response) => {
+        // Save token and userId
+        this.auth.saveAuthToken(response.token, response.userId);
+
+        // Show dashboard
+        this.showDashboard();
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Login failed");
+      });
+  }
+
+  /**
+   * Handle register form submission
+   */
+  handleRegister() {
+    const email = this.dom.registerEmail.value.trim();
+    const name = this.dom.registerName.value.trim();
+    const password = this.dom.registerPassword.value;
+    const confirmPassword = this.dom.registerPasswordConfirm.value;
+    if (!email || !name || !password || !confirmPassword) {
+      this.pageController.showError("Please fill in all fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      this.pageController.showError("Passwords do not match");
+      return;
+    }
+
+    // Call API to register
+    this.api
+      .register(email, password, name)
+      .then((response) => {
+        // Save token and userId
+        this.auth.saveAuthToken(response.token, response.userId);
+
+        // Show dashboard
+        this.showDashboard();
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Registration failed");
+      });
+  }
+
+  /**
+   * Handle logout
+   */
+  handleLogout() {
+    const token = this.auth.getToken();
+
+    this.api
+      .logout(token)
+      .then(() => {
+        // Clear auth data
+        this.auth.cleanAuthToken();
+
+        // Show login page
+        this.showLogin();
+      })
+      .catch((error) => {
+        // Even if logout fails, clear local auth and show login
+        this.auth.cleanAuthToken();
+        this.showLogin();
+        console.error("Logout error:", error);
+      });
+  }
 }
