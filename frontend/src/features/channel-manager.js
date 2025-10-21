@@ -315,5 +315,56 @@ export class ChannelManager {
     this.dom.createChannelContainer.style.display = "none";
   }
 
- 
+  /**
+   * Handle create channel form submission
+   */
+  handleCreateChannel() {
+    const name = this.dom.createChannelName.value.trim();
+    const description = this.dom.createChannelDescription.value.trim();
+    const isPrivate = this.dom.createChannelIsPrivate.checked;
+
+    if (!name) {
+      this.pageController.showError("Channel name is required");
+      return;
+    }
+
+    const token = this.auth.getToken();
+
+    this.api
+      .createChannel(name, description || "", isPrivate, token)
+      .then(() => {
+        this.hideCreateChannelModal();
+        // Reload channel list
+        return this.loadChannels();
+      })
+      .then(() => {
+        // Optionally select the newly created channel
+        // Note: API doesn't return the new channel ID, so we can't auto-select
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to create channel");
+      });
+  }
+
+  /**
+   * Show edit channel modal
+   */
+  showEditChannelModal() {
+    if (!this.currentChannelData) {
+      return;
+    }
+
+    this.dom.editChannelName.value = this.currentChannelData.name;
+    this.dom.editChannelDescription.value = this.currentChannelData.description || "";
+    this.dom.editChannelContainer.style.display = "flex";
+  }
+
+  /**
+   * Hide edit channel modal
+   */
+  hideEditChannelModal() {
+    this.dom.editChannelContainer.style.display = "none";
+  }
+
+
 }
