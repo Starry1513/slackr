@@ -150,4 +150,79 @@ export class ApiService {
   getUserDetails(userId, token) {
     return this.request(`/user/${userId}`, "GET", null, token);
   }
+
+  /**
+   * Update user profile
+   * @param {string} email
+   * @param {string} name
+   * @param {string} bio
+   * @param {string} image (base64)
+   * @param {string} password (optional)
+   * @param {string} token
+   * @returns {Promise}
+   */
+  updateUserProfile(email, name, bio, image, password, token) {
+    const body = { email, name, bio, image };
+    if (password) {
+      body.password = password;
+    }
+    return this.request("/user", "PUT", body, token);
+  }
+
+  /**
+   * Get messages from a channel
+   * @param {number} channelId
+   * @param {number} start - Start index for pagination
+   * @param {string} token
+   * @returns {Promise<{messages: Array}>}
+   */
+  getMessages(channelId, start, token) {
+    return this.request(`/message/${channelId}?start=${start}`, "GET", null, token);
+  }
+
+  /**
+   * Send a message to a channel
+   * @param {number} channelId
+   * @param {string} message
+   * @param {string} image (base64, optional)
+   * @param {string} token
+   * @returns {Promise<{messageId: number}>}
+   */
+  sendMessage(channelId, message, image, token) {
+    const body = { message };
+    if (image) {
+      body.image = image;
+    }
+    return this.request(`/message/${channelId}`, "POST", body, token);
+  }
+
+  /**
+   * Edit a message
+   * @param {number} channelId
+   * @param {number} messageId
+   * @param {string} message
+   * @param {string} image (base64, optional)
+   * @param {string} token
+   * @returns {Promise}
+   */
+  editMessage(channelId, messageId, message, image, token) {
+    const body = { message };
+    if (image) {
+      body.image = image;
+    }
+    return this.request(`/message/${channelId}/${messageId}`, "PUT", body, token);
+  }
+
+  /**
+   * Delete a message
+   * @param {number} channelId
+   * @param {number} messageId
+   * @param {string} token
+   * @returns {Promise}
+   */
+  deleteMessage(channelId, messageId, token) {
+    return this.request(`/message/${channelId}/${messageId}`, "DELETE", null, token);
+  }
+
+
 }
