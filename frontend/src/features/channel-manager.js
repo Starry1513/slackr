@@ -1,12 +1,14 @@
+import { BaseManager } from "./base-manager.js";
+
 /**
  * ChannelManager - Manages all channel-related functionality
  * Responsible for: channel list, create/edit/delete channels, channel details
  */
-export class ChannelManager {
-  constructor(api, auth, pageController) {
-    this.api = api;
-    this.auth = auth;
-    this.pageController = pageController;
+export class ChannelManager extends BaseManager {
+  constructor(api, auth, pageController, messageManager, userManager) {
+    super(api, auth, pageController);
+    this.messageManager = messageManager;
+    this.userManager = userManager;
 
     // Current channel state
     this.currentChannelId = null;
@@ -196,11 +198,21 @@ export class ChannelManager {
         this.currentChannelId = channelId;
         this.currentChannelData = channelData;
 
+        // Set channel ID for user manager
+        if (this.userManager) {
+          this.userManager.setCurrentChannelId(channelId);
+        }
+
         // Update UI
         this.showChannelView();
         this.renderChannelHeader(channelData);
         this.renderChannelDetails(channelData);
         this.updateChannelActions(channelData);
+
+        // Load messages for this channel
+        if (this.messageManager) {
+          this.messageManager.loadMessages(channelId);
+        }
 
         // Update active state in channel list
         document.querySelectorAll(".channel-container").forEach((el) => {
