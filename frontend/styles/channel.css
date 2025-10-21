@@ -78,3 +78,78 @@
   padding: 2rem;
 }
 
+/* Welcome Screen */
+.welcome-screen {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.welcome-screen h2 {
+  font-size: 2rem;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.welcome-screen p {
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+/* Channel View */
+.channel-view {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Channel Details */
+.channel-details {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.channel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.channel-header h2 {
+  font-size: 1.5rem;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.channel-header p {
+  color: #6b7280;
+  margin: 0;
+}
+
+.channel-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.channel-meta {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.channel-meta span {
+  display: flex;
+  align-items: center;
+}
+
+/* Channel Messages */
+.channel-messages {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  min-height: 400px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
