@@ -15,6 +15,11 @@
       type="text/css"
       media="screen"
       href="styles/auth.css" />
+      <link
+      rel="stylesheet"
+      type="text/css"
+      media="screen"
+      href="styles/channel.css" />
   </head>
 
   <body>
@@ -128,11 +133,23 @@
         id="dashboard-container"
         class="dashboard"
         style="display: none">
-        <h2>Welcome to Slackr</h2>
-        <button id="logout-button">Logout</button>
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+          <div class="sidebar-header">
+            <h2>Slackr</h2>
+            <button id="logout-button">Logout</button>
+          </div>
 
+          <div class="channels-section">
+            <div class="channels-header">
+              <h3>Channels</h3>
+              <button id="create-channel-button" class="icon-button">+</button>
+            </div>
+            <div id="channel-list"></div>
+          </div>
+        </aside>
 
-        <div id="channel-list"></div>
+  
       </div>
     </main>
 
