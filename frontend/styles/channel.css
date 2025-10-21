@@ -1,5 +1,6 @@
 /*
  * Slackr Channel Styles
+ * Last Updated: 2025-10-21 - Three column layout with scrollable messages
  *
  * External CSS Library Used:
  * - Tailwind CSS v3.x (loaded via CDN in index.html)
@@ -13,6 +14,7 @@
 /* Dashboard Layout - Full Screen Discord-like Design */
 .dashboard {
   display: flex;
+  flex-direction: row; /* Explicitly set horizontal layout */
   position: fixed;
   top: 60px; /* Account for header */
   left: 0;
@@ -97,12 +99,13 @@
 
 /* Main Content Area - Full Screen */
 .dashboard-main {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   background-color: #36393f;
   overflow: hidden;
   min-width: 0; /* Allow flex shrinking */
+  height: 100%; /* Ensure full height */
 }
 
 /* Welcome Screen */
@@ -128,12 +131,15 @@
   font-size: 1rem;
 }
 
-/* Channel View - Full Screen Layout */
+/* Channel View - Full Screen Layout with proper scrolling */
 .channel-view {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   height: 100%;
   width: 100%;
+  overflow: hidden;
+  min-height: 0; /* Critical for nested flex scrolling */
 }
 
 /* Channel Header - Discord Style */
@@ -190,11 +196,13 @@
 
 /* Channel Messages - Scrollable Area */
 .channel-messages {
-  flex: 1;
-  overflow-y: auto;
+  flex: 1 1 auto;
+  overflow-y: scroll; /* Force scrollbar to always show */
   overflow-x: hidden;
   padding: 1rem;
   background-color: #36393f;
+  min-height: 0; /* Important for flex scrolling */
+  height: 100%; /* Ensure it takes available height */
 }
 
 /* Custom Scrollbar for Messages */
@@ -220,6 +228,7 @@
   padding: 1rem;
   background-color: #36393f;
   flex-shrink: 0;
+  flex-grow: 0;
 }
 
 .message-input-container form {
