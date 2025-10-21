@@ -268,4 +268,52 @@ export class ChannelManager {
       });
   }
 
+  /**
+   * Update channel action buttons based on membership
+   * @param {Object} channelData - Channel data
+   */
+  updateChannelActions(channelData) {
+    const currentUserId = parseInt(this.auth.getUserId());
+    const isMember = channelData.members.includes(currentUserId);
+
+    // Show/hide join/leave buttons
+    if (isMember) {
+      this.dom.joinChannelButton.style.display = "none";
+      this.dom.leaveChannelButton.style.display = "block";
+      this.dom.inviteUserButton.style.display = "block";
+      this.dom.editChannelButton.style.display = "block";
+    } else {
+      this.dom.joinChannelButton.style.display = "block";
+      this.dom.leaveChannelButton.style.display = "none";
+      this.dom.inviteUserButton.style.display = "none";
+      this.dom.editChannelButton.style.display = "none";
+    }
+  }
+
+  /**
+   * Toggle channel details panel visibility
+   */
+  toggleChannelDetails() {
+    const isVisible = this.dom.channelDetailsContainer.style.display !== "none";
+    this.dom.channelDetailsContainer.style.display = isVisible ? "none" : "block";
+  }
+
+  /**
+   * Show create channel modal
+   */
+  showCreateChannelModal() {
+    this.dom.createChannelContainer.style.display = "flex";
+    this.dom.createChannelName.value = "";
+    this.dom.createChannelDescription.value = "";
+    this.dom.createChannelIsPrivate.checked = false;
+  }
+
+  /**
+   * Hide create channel modal
+   */
+  hideCreateChannelModal() {
+    this.dom.createChannelContainer.style.display = "none";
+  }
+
+ 
 }
