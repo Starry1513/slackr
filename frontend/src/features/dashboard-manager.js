@@ -130,7 +130,33 @@ export class Dashboard {
    * Handle register form submission
    */
   handleRegister() {
+    const email = this.dom.registerEmail.value.trim();
+    const name = this.dom.registerName.value.trim();
+    const password = this.dom.registerPassword.value;
+    const confirmPassword = this.dom.registerPasswordConfirm.value;
+    if (!email || !name || !password || !confirmPassword) {
+      this.pageController.showError("Please fill in all fields");
+      return;
+    }
 
+    if (password !== confirmPassword) {
+      this.pageController.showError("Passwords do not match");
+      return;
+    }
+
+    // Call API to register
+    this.api
+      .register(email, password, name)
+      .then((response) => {
+        // Save token and userId
+        this.auth.saveAuthToken(response.token, response.userId);
+
+        // Show dashboard
+        this.showDashboard();
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Registration failed");
+      });
   }
 
   /**
