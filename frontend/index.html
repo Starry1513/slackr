@@ -149,7 +149,85 @@
           </div>
         </aside>
 
-  
+        <!-- Main Content -->
+        <main class="dashboard-main">
+          <!-- Welcome Screen -->
+          <div id="welcome-screen" class="welcome-screen">
+            <h2>Welcome to Slackr!</h2>
+            <p>Select a channel from the sidebar to get started.</p>
+          </div>
+
+          <!-- Channel View -->
+          <div id="channel-view" class="channel-view" style="display: none;">
+            <!-- Channel Header -->
+            <div class="channel-header">
+              <h2 id="channel-name">Channel Name</h2>
+              <button id="channel-details-toggle" class="icon-button">ℹ️</button>
+            </div>
+
+            <!-- Channel Messages -->
+            <div class="channel-messages" id="channel-messages">
+              <!-- Messages will be rendered here -->
+            </div>
+
+            <!-- Message Input -->
+            <div class="message-input-container">
+              <form id="message-form">
+                <input
+                  type="text"
+                  id="message-input"
+                  placeholder="Type a message..."
+                  autocomplete="off"
+                />
+                <button type="submit" id="send-message-button">Send</button>
+              </form>
+            </div>
+          </div>
+        </main>
+
+        <!-- Channel Details Sidebar -->
+        <aside id="channel-details-container" class="channel-details" style="display: none;">
+          <div class="details-header">
+            <h3>Channel Details</h3>
+          </div>
+
+          <div class="details-content">
+            <div class="detail-item">
+              <label>Name:</label>
+              <p id="channel-detail-name"></p>
+            </div>
+
+            <div class="detail-item">
+              <label>Description:</label>
+              <p id="channel-detail-description"></p>
+            </div>
+
+            <div class="detail-item">
+              <label>Type:</label>
+              <p id="channel-detail-type"></p>
+            </div>
+
+            <div class="detail-item">
+              <label>Created:</label>
+              <p id="channel-detail-created"></p>
+            </div>
+
+            <div class="detail-item">
+              <label>Creator:</label>
+              <p id="channel-detail-creator"></p>
+            </div>
+          </div>
+
+          <div class="details-actions">
+            <button id="edit-channel-button" class="action-button">Edit Channel</button>
+            <button id="join-channel-button" class="action-button">Join Channel</button>
+            <button id="leave-channel-button" class="action-button danger">Leave Channel</button>
+            <button id="invite-user-button" class="action-button">Invite User</button>
+          </div>
+        </aside>
+      </div>
+
+    
       </div>
     </main>
 
