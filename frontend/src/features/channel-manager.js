@@ -68,5 +68,41 @@ export class ChannelManager {
    * Set up all channel-related event listeners
    */
   setupEventListeners() {
-  }
+    // Create channel modal
+    this.dom.createChannelButton.addEventListener("click", () => {
+      this.showCreateChannelModal();
+    });
+
+    this.dom.createChannelForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      this.handleCreateChannel();
+    });
+
+    this.dom.createChannelClose.addEventListener("click", () => {
+      this.hideCreateChannelModal();
+    });
+
+    this.dom.createChannelCancel.addEventListener("click", () => {
+      this.hideCreateChannelModal();
+    });
+
+    // Edit channel modal
+    this.dom.editChannelButton.addEventListener("click", () => {
+      this.showEditChannelModal();
+    });
+
+    this.dom.editChannelForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      this.handleEditChannel();
+    });
+
+    this.dom.editChannelClose.addEventListener("click", () => {
+      this.hideEditChannelModal();
+    });
+
+    this.dom.editChannelCancel.addEventListener("click", () => {
+      this.hideEditChannelModal();
+    });
+
+    
 }
