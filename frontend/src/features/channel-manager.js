@@ -221,9 +221,6 @@ export class ChannelManager extends BaseManager {
         this.renderChannelDetails(channelData);
         this.updateChannelActions(channelData);
 
-        // Show channel details sidebar
-        this.dom.channelDetailsContainer.style.display = "flex";
-
         // Load messages for this channel
         if (this.messageManager) {
           this.messageManager.loadMessages(channelId);
@@ -258,7 +255,7 @@ export class ChannelManager extends BaseManager {
   showWelcomeScreen() {
     this.dom.welcomeScreen.style.display = "flex";
     this.dom.channelView.style.display = "none";
-    this.dom.channelDetailsContainer.style.display = "none";
+    this.hideChannelDetails();
     this.currentChannelId = null;
     this.currentChannelData = null;
   }
