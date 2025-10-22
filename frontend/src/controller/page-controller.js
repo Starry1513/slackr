@@ -30,7 +30,7 @@ export class PageController {
 
   showDashboard() {
     this.hideAll();
-    this.pages.dashboard.style.display = 'block';
+    this.pages.dashboard.style.display = 'flex';
   }
 
   /**
