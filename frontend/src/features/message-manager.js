@@ -379,7 +379,21 @@ export class MessageManager extends BaseManager {
    * @param {Object} message - Message to delete
    */
   handleDeleteMessage(message) {
+    if (!confirm("Are you sure you want to delete this message?")) {
+      return;
+    }
 
+    const token = this.auth.getToken();
+
+    this.api
+      .deleteMessage(this.currentChannelId, message.id, token)
+      .then(() => {
+        // Reload messages
+        return this.loadMessages(this.currentChannelId);
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to delete message");
+      });
   }
 
   /**
@@ -388,7 +402,26 @@ export class MessageManager extends BaseManager {
    * @param {string} emoji - Emoji reaction
    */
   toggleReaction(message, emoji) {
+    const token = this.auth.getToken();
+    const currentUserId = parseInt(this.auth.getUserId());
 
+    // Check if user already reacted with this emoji
+    const hasReacted = message.reacts.some(
+      (react) => react.user === currentUserId && react.react === emoji
+    );
+
+    const apiCall = hasReacted
+      ? this.api.unreactToMessage(this.currentChannelId, message.id, emoji, token)
+      : this.api.reactToMessage(this.currentChannelId, message.id, emoji, token);
+
+    apiCall
+      .then(() => {
+        // Reload messages
+        return this.loadMessages(this.currentChannelId);
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to update reaction");
+      });
   }
 
   /**
@@ -396,7 +429,7 @@ export class MessageManager extends BaseManager {
    * @param {Object} message - Message
    */
   showReactionPicker(message) {
-
+    
   }
   /**
    * Clear messages
