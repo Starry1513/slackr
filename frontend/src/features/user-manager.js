@@ -115,7 +115,25 @@ export class UserManager {
     }
   }
 
+  /**
+   * Handle image preview
+   * @param {File} file - Image file
+   */
+  handleImagePreview(file) {
+    if (!file) return;
 
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.clearElement(this.dom.profileImagePreview);
+      const img = document.createElement("img");
+      img.src = e.target.result;
+      img.alt = "Preview";
+      img.style.maxWidth = "200px";
+      img.style.maxHeight = "200px";
+      this.dom.profileImagePreview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  }
 
 
   /**
