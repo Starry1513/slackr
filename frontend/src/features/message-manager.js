@@ -19,7 +19,7 @@ export class MessageManager extends BaseManager {
 
     // Common emojis for quick reactions
     this.commonEmojis = ["👍", "❤️", "😄", "😮", "😢", "😡", "🎉", "🔥", "👏", "✅", "❌", "👀"];
-
+    
     // Cache DOM elements
     this.dom = {
       messagesContainer: document.getElementById("channel-messages"),
@@ -54,7 +54,22 @@ export class MessageManager extends BaseManager {
    * Set up event listeners
    */
   setupEventListeners() {
+    // Send message form
+    if (this.dom.messageForm) {
+      this.dom.messageForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleSendMessage();
+      });
+    }
 
+    // Scroll to load more messages
+    if (this.dom.messagesContainer) {
+      this.dom.messagesContainer.addEventListener("scroll", () => {
+        if (this.dom.messagesContainer.scrollTop === 0 && !this.isLoadingMore) {
+          this.loadMoreMessages();
+        }
+      });
+    }
   }
 
   /**
@@ -62,14 +77,30 @@ export class MessageManager extends BaseManager {
    * @param {number} channelId - Channel ID
    */
   loadMessages(channelId) {
+    this.currentChannelId = channelId;
+    this.messageStart = 0;
+    this.messages = [];
 
+    const token = this.auth.getToken();
+
+    return this.api
+      .getMessages(channelId, this.messageStart, token)
+      .then((response) => {
+        this.messages = response.messages || [];
+        this.renderMessages();
+        this.scrollToBottom();
+        return this.messages;
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to load messages");
+        throw error;
+      });
   }
 
   /**
    * Load more messages (pagination)
    */
   loadMoreMessages() {
-
   }
 
   /**
@@ -78,6 +109,4 @@ export class MessageManager extends BaseManager {
   renderMessages() {
 
   }
-
-
 }
