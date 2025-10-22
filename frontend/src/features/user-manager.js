@@ -1,0 +1,87 @@
+/**
+ * UserManager - Manages user-related functionality
+ * Responsible for: user profiles, inviting users to channels
+ */
+export class UserManager {
+  constructor(api, auth, pageController) {
+    this.api = api;
+    this.auth = auth;
+    this.pageController = pageController;
+
+    // User cache
+    this.userCache = new Map();
+
+    // Current channel ID (will be set by channel manager)
+    this.currentChannelId = null;
+
+    // Cache DOM elements
+    this.dom = {
+      // Profile modal
+      profileButton: document.getElementById("profile-button"),
+      profileContainer: document.getElementById("profile-container"),
+      profileClose: document.getElementById("profile-close"),
+      profileCancel: document.getElementById("profile-cancel"),
+      profileForm: document.getElementById("profile-form"),
+      profileEmail: document.getElementById("profile-email"),
+      profileName: document.getElementById("profile-name"),
+      profileBio: document.getElementById("profile-bio"),
+      profilePassword: document.getElementById("profile-password"),
+      profileImage: document.getElementById("profile-image"),
+      profileImagePreview: document.getElementById("profile-image-preview"),
+
+    };
+  }
+
+  /**
+   * Initialize user manager
+   */
+  init() {
+    this.setupEventListeners();
+  }
+
+  /**
+   * Set up event listeners
+   */
+  setupEventListeners() {
+    // Profile modal
+    if (this.dom.profileButton) {
+      this.dom.profileButton.addEventListener("click", () => {
+        this.showProfileModal();
+      });
+    }
+
+    if (this.dom.profileClose) {
+      this.dom.profileClose.addEventListener("click", () => {
+        this.hideProfileModal();
+      });
+    }
+
+  }
+
+  /**
+   * Show profile modal
+   */
+  showProfileModal() {
+
+  }
+
+  /**
+   * Hide profile modal
+   */
+  hideProfileModal() {
+
+  }
+
+  /**
+   * Handle image preview
+   * @param {File} file - Image file
+   */
+  handleImagePreview(file) {
+
+  }
+
+
+
+
+
+}
