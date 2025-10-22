@@ -341,7 +341,23 @@ export class UserManager {
    * @returns {Promise<Object>}
    */
   getUserDetails(userId) {
+    // Check cache first
+    if (this.userCache.has(userId)) {
+      return Promise.resolve(this.userCache.get(userId));
+    }
 
+    const token = this.auth.getToken();
+
+    return this.api
+      .getUserDetails(userId, token)
+      .then((userData) => {
+        this.userCache.set(userId, userData);
+        return userData;
+      })
+      .catch((error) => {
+        console.error("Failed to get user details:", error);
+        return { id: userId, name: "Unknown User" };
+      });
   }
 
   /**
