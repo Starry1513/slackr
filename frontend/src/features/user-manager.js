@@ -296,7 +296,35 @@ export class UserManager {
    * Handle invite user
    */
   handleInviteUser() {
+    if (!this.currentChannelId) {
+      this.pageController.showError("Please select a channel first");
+      return;
+    }
 
+    // Get all checked checkboxes
+    const checkboxes = this.dom.inviteUserList.querySelectorAll('.invite-member-checkbox:checked');
+    const userIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+    if (userIds.length === 0) {
+      this.pageController.showError("Please select at least one user to invite");
+      return;
+    }
+
+    const token = this.auth.getToken();
+
+    // Invite all selected users
+    const invitePromises = userIds.map(userId =>
+      this.api.inviteToChannel(this.currentChannelId, userId, token)
+    );
+
+    Promise.all(invitePromises)
+      .then(() => {
+        this.hideInviteUserModal();
+        alert(`Successfully invited ${userIds.length} user(s)!`);
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to invite users");
+      });
   }
 
   /**
