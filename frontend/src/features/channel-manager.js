@@ -157,7 +157,7 @@ export class ChannelManager extends BaseManager {
    */
   renderChannelList(channels) {
     // Clear existing list
-    this.dom.channelList.innerHTML = "";
+    this.clearElement(this.dom.channelList);
 
     if (!channels || channels.length === 0) {
       const emptyMessage = document.createElement("p");

@@ -624,6 +624,44 @@
   border-top: 1px solid #e5e7eb;
 }
 
+/* Invite User List */
+.invite-user-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 0.5rem;
+  background-color: #f9fafb;
+}
+
+.invite-user-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  transition: background-color 0.15s;
+  cursor: pointer;
+}
+
+.invite-user-item:hover {
+  background-color: #f3f4f6;
+}
+
+.invite-member-checkbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.invite-member-name {
+  font-size: 0.875rem;
+  color: #1f2937;
+  cursor: pointer;
+  flex: 1;
+}
+
 /* Channels Section */
 .channels-section {
   flex: 1;
