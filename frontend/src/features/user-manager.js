@@ -67,6 +67,90 @@ export class UserManager {
       });
     }
 
+    if (this.dom.profileCancel) {
+      this.dom.profileCancel.addEventListener("click", () => {
+        this.hideProfileModal();
+      });
+    }
+
+    if (this.dom.profileForm) {
+      this.dom.profileForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleUpdateProfile();
+      });
+    }
+
+    if (this.dom.profileImage) {
+      this.dom.profileImage.addEventListener("change", (e) => {
+        this.handleImagePreview(e.target.files[0]);
+      });
+    }
+
+    // Close modal on outside click
+    if (this.dom.profileContainer) {
+      this.dom.profileContainer.addEventListener("click", (e) => {
+        if (e.target === this.dom.profileContainer) {
+          this.hideProfileModal();
+        }
+      });
+    }
+
+    // Invite user modal
+    if (this.dom.inviteUserButton) {
+      this.dom.inviteUserButton.addEventListener("click", () => {
+        this.showInviteUserModal();
+      });
+    }
+
+    if (this.dom.inviteUserClose) {
+      this.dom.inviteUserClose.addEventListener("click", () => {
+        this.hideInviteUserModal();
+      });
+    }
+
+    if (this.dom.inviteUserCancel) {
+      this.dom.inviteUserCancel.addEventListener("click", () => {
+        this.hideInviteUserModal();
+      });
+    }
+
+    if (this.dom.inviteUserForm) {
+      this.dom.inviteUserForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleInviteUser();
+      });
+    }
+
+    // Close modal on outside click
+    if (this.dom.inviteUserContainer) {
+      this.dom.inviteUserContainer.addEventListener("click", (e) => {
+        if (e.target === this.dom.inviteUserContainer) {
+          this.hideInviteUserModal();
+        }
+      });
+    }
+
+    // View user profile modal
+    if (this.dom.viewUserProfileClose) {
+      this.dom.viewUserProfileClose.addEventListener("click", () => {
+        this.hideViewUserProfileModal();
+      });
+    }
+
+    if (this.dom.viewUserProfileOk) {
+      this.dom.viewUserProfileOk.addEventListener("click", () => {
+        this.hideViewUserProfileModal();
+      });
+    }
+
+    // Close modal on outside click
+    if (this.dom.viewUserProfileContainer) {
+      this.dom.viewUserProfileContainer.addEventListener("click", (e) => {
+        if (e.target === this.dom.viewUserProfileContainer) {
+          this.hideViewUserProfileModal();
+        }
+      });
+    }
   }
 
   /**
