@@ -356,7 +356,22 @@ export class MessageManager extends BaseManager {
    * @param {Object} message - Message to edit
    */
   handleEditMessage(message) {
+    const newText = prompt("Edit message:", message.message);
+    if (newText === null || newText.trim() === "") {
+      return;
+    }
 
+    const token = this.auth.getToken();
+
+    this.api
+      .editMessage(this.currentChannelId, message.id, newText, null, token)
+      .then(() => {
+        // Reload messages
+        return this.loadMessages(this.currentChannelId);
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to edit message");
+      });
   }
 
   /**
