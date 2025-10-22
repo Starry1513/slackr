@@ -2,18 +2,20 @@ export class AuthManager {
   constructor() {
     this.TOKEN_KEY = "slackr_token";
     this.USER_ID_KEY = "slackr_user_id";
-    this.name="Unkowned name";
+    this.USER_NAME_KEY = "slackr_user_name";
   }
 
   saveAuthToken(token, userId) {
     localStorage.setItem(this.TOKEN_KEY, token);
     localStorage.setItem(this.USER_ID_KEY, userId.toString());
   }
+
   saveName(name) {
-    localStorage.setItem(this.name, name);
+    localStorage.setItem(this.USER_NAME_KEY, name);
   }
+
   getName() {
-    return localStorage.getItem(this.name);
+    return localStorage.getItem(this.USER_NAME_KEY);
   }
 
   getToken() {
