@@ -39,7 +39,14 @@ export class UserManager {
       viewUserProfileImage: document.getElementById("view-user-profile-image"),
       viewUserProfilePlaceholder: document.getElementById("view-user-profile-placeholder"),
 
-
+      // Invite user modal
+      inviteUserButton: document.getElementById("invite-user-button"),
+      inviteUserContainer: document.getElementById("channel-invite-container"),
+      inviteUserClose: document.getElementById("invite-user-close"),
+      inviteUserCancel: document.getElementById("invite-user-cancel"),
+      inviteUserForm: document.getElementById("invite-user-form"),
+      inviteUserList: document.getElementById("invite-user-list"),
+      inviteSubmitButton: document.getElementById("invite-submit-button"),
     };
   }
 
