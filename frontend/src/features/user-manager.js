@@ -190,7 +190,56 @@ export class UserManager {
    * Show invite user modal
    */
   showInviteUserModal() {
+    if (!this.dom.inviteUserContainer || !this.currentChannelId) {
+      return;
+    }
 
+    const token = this.auth.getToken();
+
+    // Get all users and current channel details in parallel
+    Promise.all([
+      this.api.getAllUsers(token),
+      this.api.getChannelDetails(this.currentChannelId, token)
+    ])
+      .then(([allUsersResponse, channelData]) => {
+        const allUsers = allUsersResponse.users || [];
+        const channelMembers = new Set(channelData.members);
+
+        // Filter out users who are already in the channel
+        const availableUsers = allUsers.filter(user =>
+          user && user.id && !channelMembers.has(user.id)
+        );
+
+        // Get detailed user info (including name) for each user
+        const userDetailPromises = availableUsers.map((user) => {
+          return this.getUserDetails(user.id).then((details) => {
+            return {
+              id: user.id,
+              email: user.email,
+              name: details.name || user.email
+            };
+          });
+        });
+
+        return Promise.all(userDetailPromises);
+      })
+      .then((usersWithDetails) => {
+        // Sort alphabetically by name
+        usersWithDetails.sort((a, b) => {
+          const nameA = a.name || '';
+          const nameB = b.name || '';
+          return nameA.localeCompare(nameB);
+        });
+
+        // Render user list
+        this.renderInviteUserList(usersWithDetails);
+
+        // Show modal
+        this.dom.inviteUserContainer.style.display = "flex";
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to load users");
+      });
   }
 
   /**
