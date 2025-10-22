@@ -375,15 +375,45 @@
   background-color: #f3f4f6;
 }
 
-/* Channel Details Sidebar - Discord Style */
+/* Channel Details Sidebar - Overlay Style (Slides from right) */
 .channel-details {
-  width: 320px;
-  min-width: 320px;
+  position: fixed;
+  top: 60px; /* Account for header */
+  right: 0;
+  bottom: 0;
+  width: 360px;
   background-color: #2f3136;
   border-left: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.channel-details.show {
+  transform: translateX(0);
+}
+
+/* Overlay backdrop for channel details */
+.channel-details-backdrop {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.channel-details-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .details-header {
