@@ -914,4 +914,72 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 }
 
+.emoji-picker-header h4 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
 
+.emoji-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+  padding: 1rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.emoji-btn {
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emoji-btn:hover {
+  background-color: rgba(79, 84, 92, 0.3);
+  transform: scale(1.2);
+}
+
+.emoji-btn:active {
+  transform: scale(1.1);
+}
+
+/* Improved Message Action Buttons */
+.message-action-btn {
+  padding: 0.375rem 0.625rem;
+  background-color: #2f3136;
+  color: #b9bbbe;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.message-action-btn:hover {
+  background-color: #36393f;
+  color: #ffffff;
+}
+
+.message-action-btn:active {
+  transform: scale(0.95);
+}
+
+.message-action-btn.delete-message-btn:hover {
+  background-color: #ed4245;
+  color: #ffffff;
+}
