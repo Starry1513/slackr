@@ -247,7 +247,40 @@ export class UserManager {
    * @param {Array} users - Array of available users
    */
   renderInviteUserList(users) {
+    if (!this.dom.inviteUserList) return;
 
+    // Clear existing list
+    this.clearElement(this.dom.inviteUserList);
+
+    if (users.length === 0) {
+      const emptyMsg = document.createElement("p");
+      emptyMsg.textContent = "All users are already in this channel";
+      emptyMsg.style.textAlign = "center";
+      emptyMsg.style.padding = "2rem";
+      emptyMsg.style.color = "#6b7280";
+      this.dom.inviteUserList.appendChild(emptyMsg);
+      return;
+    }
+
+    users.forEach(user => {
+      const userItem = document.createElement("div");
+      userItem.className = "invite-user-item";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "invite-member-checkbox";
+      checkbox.value = user.id;
+      checkbox.id = `invite-user-${user.id}`;
+
+      const label = document.createElement("label");
+      label.htmlFor = `invite-user-${user.id}`;
+      label.className = "invite-member-name";
+      label.textContent = user.name;
+
+      userItem.appendChild(checkbox);
+      userItem.appendChild(label);
+      this.dom.inviteUserList.appendChild(userItem);
+    });
   }
 
   /**
