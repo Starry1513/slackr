@@ -324,7 +324,31 @@ export class MessageManager extends BaseManager {
    * Handle send message
    */
   handleSendMessage() {
+    const messageText = this.dom.messageInput.value.trim();
 
+    if (!messageText) {
+      return;
+    }
+
+    if (!this.currentChannelId) {
+      this.pageController.showError("Please select a channel first");
+      return;
+    }
+
+    const token = this.auth.getToken();
+
+    this.api
+      .sendMessage(this.currentChannelId, messageText, null, token)
+      .then(() => {
+        // Clear input
+        this.dom.messageInput.value = "";
+
+        // Reload messages
+        return this.loadMessages(this.currentChannelId);
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to send message");
+      });
   }
 
   /**
