@@ -256,7 +256,69 @@ export class MessageManager extends BaseManager {
     const currentUserId = parseInt(this.getUserId());
     const userReactions = new Set();
 
+    message.reacts.forEach((react) => {
+      const emoji = react.react;
+      if (!reactionCounts[emoji]) {
+        reactionCounts[emoji] = 0;
+      }
+      reactionCounts[emoji]++;
+      if (react.user === currentUserId) {
+        userReactions.add(emoji);
+      }
+    });
 
+    // Create reaction buttons from template
+    Object.entries(reactionCounts).forEach(([emoji, count]) => {
+      const reactionFragment = this.templates.reactionBtn.content.cloneNode(true);
+      const reactionBtn = reactionFragment.querySelector(".reaction-btn");
+
+      if (userReactions.has(emoji)) {
+        this.addClass(reactionBtn, "reacted");
+      }
+      reactionBtn.textContent = `${emoji} ${count}`;
+      reactionBtn.onclick = () => this.toggleReaction(message, emoji);
+
+      reactionsDiv.appendChild(reactionFragment);
+    });
+
+    // Add reaction button from template
+    const addReactionFragment = this.templates.addReactionBtn.content.cloneNode(true);
+    const addReactionBtn = addReactionFragment.querySelector(".add-reaction-btn");
+    addReactionBtn.onclick = () => this.showReactionPicker(message);
+
+    reactionsDiv.appendChild(addReactionFragment);
+  }
+
+  /**
+   * Format timestamp
+   * @param {string} timestamp - ISO timestamp
+   * @returns {string}
+   */
+  formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now - date;
+
+    // Less than a minute
+    if (diff < 60000) {
+      return "Just now";
+    }
+
+    // Less than an hour
+    if (diff < 3600000) {
+      const minutes = Math.floor(diff / 60000);
+      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    }
+
+    // Less than a day
+    if (diff < 86400000) {
+      const hours = Math.floor(diff / 3600000);
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    }
+
+    // More than a day
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
 
   /**
    * Handle send message
