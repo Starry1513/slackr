@@ -101,6 +101,33 @@ export class MessageManager extends BaseManager {
    * Load more messages (pagination)
    */
   loadMoreMessages() {
+    if (!this.currentChannelId || this.isLoadingMore) {
+      return;
+    }
+
+    this.isLoadingMore = true;
+    this.messageStart += 25; // Assuming 25 messages per page
+
+    const token = this.auth.getToken();
+    const scrollHeight = this.dom.messagesContainer.scrollHeight;
+
+    this.api
+      .getMessages(this.currentChannelId, this.messageStart, token)
+      .then((response) => {
+        const newMessages = response.messages || [];
+        if (newMessages.length > 0) {
+          this.messages = [...newMessages, ...this.messages];
+          this.renderMessages();
+          // Maintain scroll position
+          this.dom.messagesContainer.scrollTop =
+            this.dom.messagesContainer.scrollHeight - scrollHeight;
+        }
+        this.isLoadingMore = false;
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to load more messages");
+        this.isLoadingMore = false;
+      });
   }
 
   /**
