@@ -319,11 +319,31 @@ export class ChannelManager extends BaseManager {
   }
 
   /**
+   * Show channel details panel
+   */
+  showChannelDetails() {
+    this.dom.channelDetailsContainer.classList.add("show");
+    this.dom.channelDetailsBackdrop.classList.add("show");
+  }
+
+  /**
+   * Hide channel details panel
+   */
+  hideChannelDetails() {
+    this.dom.channelDetailsContainer.classList.remove("show");
+    this.dom.channelDetailsBackdrop.classList.remove("show");
+  }
+
+  /**
    * Toggle channel details panel visibility
    */
   toggleChannelDetails() {
-    const isVisible = this.dom.channelDetailsContainer.style.display !== "none";
-    this.dom.channelDetailsContainer.style.display = isVisible ? "none" : "flex";
+    const isVisible = this.dom.channelDetailsContainer.classList.contains("show");
+    if (isVisible) {
+      this.hideChannelDetails();
+    } else {
+      this.showChannelDetails();
+    }
   }
 
   /**
