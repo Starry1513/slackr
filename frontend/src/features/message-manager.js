@@ -469,7 +469,50 @@ export class MessageManager extends BaseManager {
    * @param {Object} message - Message
    */
   showReactionPicker(message) {
+    // Open emoji picker modal and remember the message
+    this.currentEmojiMessage = message;
+    if (this.dom.emojiPickerModal) {
+      this.dom.emojiPickerModal.style.display = "block";
+    }
+    // ensure grid is populated
+    this.renderEmojiGrid();
+  }
 
+  /**
+   * Render the emoji picker grid from commonEmojis
+   */
+  renderEmojiGrid() {
+    if (!this.dom.emojiPickerGrid) return;
+    // Clear existing
+    this.clearElement(this.dom.emojiPickerGrid);
+
+    this.commonEmojis.forEach((emoji) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "emoji-btn";
+      btn.dataset.emoji = emoji;
+      btn.textContent = emoji;
+      this.dom.emojiPickerGrid.appendChild(btn);
+    });
+  }
+
+  /**
+   * Hide emoji picker
+   */
+  hideEmojiPicker() {
+    this.currentEmojiMessage = null;
+    if (this.dom.emojiPickerModal) {
+      this.dom.emojiPickerModal.style.display = "none";
+    }
+  }
+
+  /**
+   * Scroll to bottom of messages
+   */
+  scrollToBottom() {
+    if (this.dom.messagesContainer) {
+      this.dom.messagesContainer.scrollTop = this.dom.messagesContainer.scrollHeight;
+    }
   }
   /**
    * Clear messages
