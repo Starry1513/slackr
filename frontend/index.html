@@ -391,8 +391,9 @@
             <span class="message-timestamp"></span>
           </div>
           <div class="message-actions" style="display: none;">
-            <button class="message-action-btn edit-message-btn">Edit</button>
-            <button class="message-action-btn delete-message-btn">Delete</button>
+            <button class="message-action-btn pin-message-btn">📌 Pin</button>
+            <button class="message-action-btn edit-message-btn">✏️ Edit</button>
+            <button class="message-action-btn delete-message-btn">🗑️ Delete</button>
           </div>
         </div>
         <div class="message-content">
@@ -433,6 +434,19 @@
     <template id="edited-span-template">
       <span class="message-edited"> (edited)</span>
     </template>
+
+    <!-- Emoji Picker Modal -->
+    <div id="emoji-picker-modal" class="emoji-picker-modal" style="display: none;">
+      <div class="emoji-picker-content">
+        <div class="emoji-picker-header">
+          <h4>Choose a reaction</h4>
+          <button id="emoji-picker-close" class="close-button">×</button>
+        </div>
+        <div class="emoji-picker-grid" id="emoji-picker-grid">
+          <!-- Emojis will be populated here -->
+        </div>
+      </div>
+    </div>
 
     <script
       type="module"
