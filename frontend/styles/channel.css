@@ -14,9 +14,10 @@
 /* Dashboard Layout - Full Screen Discord-like Design */
 .dashboard {
   display: flex;
-  flex-direction: row; /* Explicitly set horizontal layout */
+  flex-direction: row;
   position: fixed;
-  top: 60px; /* Account for header */
+  width: 100vw;
+  top: 60px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -33,7 +34,9 @@
   color: #dcddde;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -200,7 +203,7 @@
   top: 48px; /* Below channel header */
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 100px;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 1rem;
@@ -983,3 +986,20 @@
   background-color: #ed4245;
   color: #ffffff;
 }
+
+/* Header Buttons Container */
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* User Profile Styles */
+.user-profile-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+

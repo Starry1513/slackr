@@ -233,7 +233,7 @@ export class ApiService {
    * @returns {Promise}
    */
   reactToMessage(channelId, messageId, react, token) {
-    return this.request(`/message/${channelId}/${messageId}/react`, "POST", { react }, token);
+    return this.request(`/message/react/${channelId}/${messageId}`, "POST", { react }, token);
   }
 
   /**
@@ -245,7 +245,7 @@ export class ApiService {
    * @returns {Promise}
    */
   unreactToMessage(channelId, messageId, react, token) {
-    return this.request(`/message/${channelId}/${messageId}/react`, "DELETE", { react }, token);
+    return this.request(`/message/unreact/${channelId}/${messageId}`, "POST", { react }, token);
   }
 
   /**
@@ -256,7 +256,7 @@ export class ApiService {
    * @returns {Promise}
    */
   pinMessage(channelId, messageId, token) {
-    return this.request(`/message/${channelId}/${messageId}/pin`, "POST", null, token);
+    return this.request(`/message/pin/${channelId}/${messageId}`, "POST", null, token);
   }
 
   /**
@@ -267,7 +267,7 @@ export class ApiService {
    * @returns {Promise}
    */
   unpinMessage(channelId, messageId, token) {
-    return this.request(`/message/${channelId}/${messageId}/unpin`, "POST", null, token);
+    return this.request(`/message/unpin/${channelId}/${messageId}`, "POST", null, token);
   }
 
   /**
