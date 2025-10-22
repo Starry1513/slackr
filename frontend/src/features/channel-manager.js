@@ -44,6 +44,8 @@ export class ChannelManager extends BaseManager {
       channelName: document.getElementById("channel-name"),
       channelDetailsToggle: document.getElementById("channel-details-toggle"),
       channelDetailsContainer: document.getElementById("channel-details-container"),
+      channelDetailsBackdrop: document.getElementById("channel-details-backdrop"),
+      channelDetailsClose: document.getElementById("channel-details-close"),
 
       // Channel details
       channelDetailName: document.getElementById("channel-detail-name"),
@@ -109,6 +111,16 @@ export class ChannelManager extends BaseManager {
     // Channel details toggle
     this.dom.channelDetailsToggle.addEventListener("click", () => {
       this.toggleChannelDetails();
+    });
+
+    // Channel details close button
+    this.dom.channelDetailsClose.addEventListener("click", () => {
+      this.hideChannelDetails();
+    });
+
+    // Channel details backdrop click (close when clicking outside)
+    this.dom.channelDetailsBackdrop.addEventListener("click", () => {
+      this.hideChannelDetails();
     });
 
     // Join/Leave channel buttons
@@ -209,6 +221,9 @@ export class ChannelManager extends BaseManager {
         this.renderChannelDetails(channelData);
         this.updateChannelActions(channelData);
 
+        // Show channel details sidebar
+        this.dom.channelDetailsContainer.style.display = "flex";
+
         // Load messages for this channel
         if (this.messageManager) {
           this.messageManager.loadMessages(channelId);
@@ -243,6 +258,7 @@ export class ChannelManager extends BaseManager {
   showWelcomeScreen() {
     this.dom.welcomeScreen.style.display = "flex";
     this.dom.channelView.style.display = "none";
+    this.dom.channelDetailsContainer.style.display = "none";
     this.currentChannelId = null;
     this.currentChannelData = null;
   }
@@ -307,7 +323,7 @@ export class ChannelManager extends BaseManager {
    */
   toggleChannelDetails() {
     const isVisible = this.dom.channelDetailsContainer.style.display !== "none";
-    this.dom.channelDetailsContainer.style.display = isVisible ? "none" : "block";
+    this.dom.channelDetailsContainer.style.display = isVisible ? "none" : "flex";
   }
 
   /**
