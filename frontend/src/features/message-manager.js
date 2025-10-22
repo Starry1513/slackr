@@ -158,6 +158,98 @@ export class MessageManager extends BaseManager {
    * @param {Object} message - Message data
    * @returns {HTMLElement}
    */
-  
+  createMessageElement(message) {
+    // Clone template
+    const messageFragment = this.templates.message.content.cloneNode(true);
+    const messageDiv = messageFragment.querySelector(".message");
+
+    // Set message ID
+    messageDiv.dataset.messageId = message.id;
+
+    // Check if current user is the sender
+    const currentUserId = parseInt(this.getUserId());
+    const isOwnMessage = message.sender === currentUserId;
+    if (isOwnMessage) {
+      this.addClass(messageDiv, "own-message");
+    }
+
+    // Get elements
+    const imageContainer = messageDiv.querySelector(".message-sender-image-container");
+    const senderName = messageDiv.querySelector(".message-sender-name");
+    const timestamp = messageDiv.querySelector(".message-timestamp");
+    const actionsDiv = messageDiv.querySelector(".message-actions");
+    const textElem = messageDiv.querySelector(".message-text");
+    const imageElem = messageDiv.querySelector(".message-image");
+    const reactionsDiv = messageDiv.querySelector(".message-reactions");
+    const pinnedBadge = messageDiv.querySelector(".message-pinned-badge");
+
+
+  }
+
+  /**
+   * Populate reactions in a reactions container
+   * @param {HTMLElement} reactionsDiv - Reactions container
+   * @param {Object} message - Message data
+   */
+  populateReactions(reactionsDiv, message) {
+    // Clear existing reactions
+    this.clearElement(reactionsDiv);
+
+    // Group reactions by emoji
+    const reactionCounts = {};
+    const currentUserId = parseInt(this.getUserId());
+    const userReactions = new Set();
+
+   
+
+  /**
+   * Handle send message
+   */
+  handleSendMessage() {
+    
+  }
+
+  /**
+   * Handle edit message
+   * @param {Object} message - Message to edit
+   */
+  handleEditMessage(message) {
+
+  }
+
+  /**
+   * Handle delete message
+   * @param {Object} message - Message to delete
+   */
+  handleDeleteMessage(message) {
+
+  }
+
+  /**
+   * Toggle reaction
+   * @param {Object} message - Message
+   * @param {string} emoji - Emoji reaction
+   */
+  toggleReaction(message, emoji) {
+
+  }
+
+  /**
+   * Show reaction picker (simple prompt for now)
+   * @param {Object} message - Message
+   */
+  showReactionPicker(message) {
+
+  }
+  /**
+   * Clear messages
+   */
+  clearMessages() {
+    this.currentChannelId = null;
+    this.messages = [];
+    this.messageStart = 0;
+    if (this.dom.messagesContainer) {
+      this.clearElement(this.dom.messagesContainer);
+    }
   }
 }
