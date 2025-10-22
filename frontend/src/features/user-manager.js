@@ -372,7 +372,40 @@ export class UserManager {
    * @param {number} userId - User ID to view
    */
   showViewUserProfileModal(userId) {
+    if (!this.dom.viewUserProfileContainer) return;
 
+    const token = this.auth.getToken();
+
+    this.api
+      .getUserDetails(userId, token)
+      .then((userData) => {
+        // Fill user info
+        if (this.dom.viewUserProfileName) {
+          this.dom.viewUserProfileName.textContent = userData.name || "Unknown User";
+        }
+        if (this.dom.viewUserProfileEmail) {
+          this.dom.viewUserProfileEmail.textContent = userData.email || "N/A";
+        }
+        if (this.dom.viewUserProfileBio) {
+          this.dom.viewUserProfileBio.textContent = userData.bio || "No bio available";
+        }
+
+        // Show profile image or placeholder
+        if (userData.image) {
+          this.dom.viewUserProfileImage.src = userData.image;
+          this.dom.viewUserProfileImage.style.display = "block";
+          this.dom.viewUserProfilePlaceholder.style.display = "none";
+        } else {
+          this.dom.viewUserProfileImage.style.display = "none";
+          this.dom.viewUserProfilePlaceholder.style.display = "flex";
+          this.dom.viewUserProfilePlaceholder.textContent = (userData.name || "U")[0].toUpperCase();
+        }
+
+        this.dom.viewUserProfileContainer.style.display = "flex";
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to load user profile");
+      });
   }
 
 
