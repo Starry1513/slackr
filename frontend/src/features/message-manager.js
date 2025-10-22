@@ -14,6 +14,12 @@ export class MessageManager extends BaseManager {
     this.isLoadingMore = false;
     this.messages = [];
 
+    // Current message for emoji picker
+    this.currentEmojiMessage = null;
+
+    // Common emojis for quick reactions
+    this.commonEmojis = ["👍", "❤️", "😄", "😮", "😢", "😡", "🎉", "🔥", "👏", "✅", "❌", "👀"];
+
     // Cache DOM elements
     this.dom = {
       messagesContainer: document.getElementById("channel-messages"),
