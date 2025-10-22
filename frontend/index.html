@@ -165,7 +165,10 @@
             <!-- Channel Header -->
             <div class="channel-header">
               <h2 id="channel-name">Channel Name</h2>
-              <button id="channel-details-toggle" class="icon-button">ℹ️</button>
+              <div class="channel-header-buttons">
+                <button id="view-pinned-messages-button" class="icon-button" title="View Pinned Messages">📌</button>
+                <button id="channel-details-toggle" class="icon-button" title="Channel Details">ℹ️</button>
+              </div>
             </div>
 
             <!-- Channel Messages -->
@@ -417,6 +420,20 @@
 
           <div class="modal-actions">
             <button type="button" id="view-user-profile-ok" class="button-primary">OK</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pinned Messages Modal -->
+      <div id="pinned-messages-container" class="modal-overlay" style="display: none;">
+        <div class="modal-content pinned-messages-modal">
+          <div class="modal-header">
+            <h3>📌 Pinned Messages</h3>
+            <button id="pinned-messages-close" class="close-button">×</button>
+          </div>
+
+          <div class="pinned-messages-content" id="pinned-messages-content">
+            <!-- Pinned messages will be rendered here -->
           </div>
         </div>
       </div>
