@@ -142,6 +142,15 @@ export class ApiService {
   }
 
   /**
+   * Get all users
+   * @param {string} token
+   * @returns {Promise<{users: Array}>}
+   */
+  getAllUsers(token) {
+    return this.request("/user", "GET", null, token);
+  }
+
+  /**
    * Get user details
    * @param {number} userId
    * @param {string} token
