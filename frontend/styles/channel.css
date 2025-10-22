@@ -1072,3 +1072,66 @@
   border-radius: 8px;
   border: 2px solid #e5e7eb;
 }
+
+/* Channel Header Buttons */
+.channel-header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Pinned Messages Modal */
+.pinned-messages-modal {
+  max-width: 700px;
+  max-height: 80vh;
+}
+
+.pinned-messages-content {
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  background-color: #f9fafb;
+}
+
+.pinned-messages-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pinned-messages-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.pinned-messages-content::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
+
+.pinned-messages-content::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+.pinned-messages-loading,
+.pinned-messages-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #6b7280;
+}
+
+.pinned-messages-loading {
+  font-style: italic;
+}
+
+.pinned-messages-empty p {
+  margin: 0;
+  font-size: 1rem;
+  color: #374151;
+}
+
+/* Messages inside pinned modal */
+.pinned-messages-content .message {
+  margin-bottom: 1rem;
+  background-color: white;
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
