@@ -408,6 +408,23 @@ export class UserManager {
       });
   }
 
+  /**
+   * Hide view user profile modal
+   */
+  hideViewUserProfileModal() {
+    if (this.dom.viewUserProfileContainer) {
+      this.dom.viewUserProfileContainer.style.display = "none";
+    }
+  }
 
-
+  /**
+   * Clear element (remove all children)
+   * @param {HTMLElement} element
+   */
+  clearElement(element) {
+    if (!element) return;
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+    }
+  }
 }
