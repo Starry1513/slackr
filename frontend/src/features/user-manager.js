@@ -153,7 +153,37 @@ export class UserManager {
    * Handle update profile
    */
   handleUpdateProfile() {
+    const email = this.dom.profileEmail.value.trim();
+    const name = this.dom.profileName.value.trim();
+    const bio = this.dom.profileBio.value.trim();
+    const password = this.dom.profilePassword.value;
 
+    if (!email || !name) {
+      this.pageController.showError("Email and name are required");
+      return;
+    }
+
+    const token = this.auth.getToken();
+
+    // Convert image to base64 if selected
+    let imagePromise;
+    if (this.dom.profileImage.files && this.dom.profileImage.files[0]) {
+      imagePromise = this.fileToBase64(this.dom.profileImage.files[0]);
+    } else {
+      imagePromise = Promise.resolve(null);
+    }
+
+    imagePromise
+      .then((imageBase64) => {
+        return this.api.updateUserProfile(email, name, bio, imageBase64, password, token);
+      })
+      .then(() => {
+        this.hideProfileModal();
+        alert("Profile updated successfully!");
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to update profile");
+      });
   }
 
   /**
