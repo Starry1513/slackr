@@ -73,7 +73,37 @@ export class UserManager {
    * Show profile modal
    */
   showProfileModal() {
+    if (!this.dom.profileContainer) return;
 
+    // Load current user data
+    const userId = parseInt(this.auth.getUserId());
+    const token = this.auth.getToken();
+
+    this.api
+      .getUserDetails(userId, token)
+      .then((userData) => {
+        // Fill form with current data
+        if (this.dom.profileEmail) this.dom.profileEmail.value = userData.email || "";
+        if (this.dom.profileName) this.dom.profileName.value = userData.name || "";
+        if (this.dom.profileBio) this.dom.profileBio.value = userData.bio || "";
+        if (this.dom.profilePassword) this.dom.profilePassword.value = "";
+
+        // Show current profile image
+        this.clearElement(this.dom.profileImagePreview);
+        if (userData.image) {
+          const img = document.createElement("img");
+          img.src = userData.image;
+          img.alt = "Current profile image";
+          img.style.maxWidth = "200px";
+          img.style.maxHeight = "200px";
+          this.dom.profileImagePreview.appendChild(img);
+        }
+
+        this.dom.profileContainer.style.display = "flex";
+      })
+      .catch((error) => {
+        this.pageController.showError(error.message || "Failed to load profile");
+      });
   }
 
   /**
