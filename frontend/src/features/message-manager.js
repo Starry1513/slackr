@@ -472,7 +472,7 @@ export class MessageManager extends BaseManager {
     // Open emoji picker modal and remember the message
     this.currentEmojiMessage = message;
     if (this.dom.emojiPickerModal) {
-      this.dom.emojiPickerModal.style.display = "block";
+      this.dom.emojiPickerModal.style.display = "flex";
     }
     // ensure grid is populated
     this.renderEmojiGrid();

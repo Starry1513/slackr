@@ -29,6 +29,17 @@ export class UserManager {
       profileImage: document.getElementById("profile-image"),
       profileImagePreview: document.getElementById("profile-image-preview"),
 
+      // View user profile modal
+      viewUserProfileContainer: document.getElementById("view-user-profile-container"),
+      viewUserProfileClose: document.getElementById("view-user-profile-close"),
+      viewUserProfileOk: document.getElementById("view-user-profile-ok"),
+      viewUserProfileName: document.getElementById("view-user-profile-name"),
+      viewUserProfileEmail: document.getElementById("view-user-profile-email"),
+      viewUserProfileBio: document.getElementById("view-user-profile-bio"),
+      viewUserProfileImage: document.getElementById("view-user-profile-image"),
+      viewUserProfilePlaceholder: document.getElementById("view-user-profile-placeholder"),
+
+
     };
   }
 
@@ -69,18 +80,22 @@ export class UserManager {
    * Hide profile modal
    */
   hideProfileModal() {
-
+    if (this.dom.profileContainer) {
+      this.dom.profileContainer.style.display = "none";
+    }
   }
+
+
+
 
   /**
-   * Handle image preview
-   * @param {File} file - Image file
+   * Handle update profile
    */
-  handleImagePreview(file) {
+  handleUpdateProfile() {
+
+
 
   }
-
-
 
 
 
