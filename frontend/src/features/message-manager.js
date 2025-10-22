@@ -183,7 +183,63 @@ export class MessageManager extends BaseManager {
     const reactionsDiv = messageDiv.querySelector(".message-reactions");
     const pinnedBadge = messageDiv.querySelector(".message-pinned-badge");
 
+    // Sender image
+    if (message.senderImage) {
+      const imgFragment = this.templates.senderImage.content.cloneNode(true);
+      const img = imgFragment.querySelector(".message-sender-image");
+      img.src = message.senderImage;
+      img.alt = message.senderName || "User";
+      imageContainer.appendChild(imgFragment);
+    } else {
+      const placeholderFragment = this.templates.senderPlaceholder.content.cloneNode(true);
+      const placeholder = placeholderFragment.querySelector(".message-sender-image");
+      placeholder.textContent = (message.senderName || "U")[0].toUpperCase();
+      imageContainer.appendChild(placeholderFragment);
+    }
 
+    // Sender name and timestamp
+    senderName.textContent = message.senderName || "Unknown User";
+    timestamp.textContent = this.formatTimestamp(message.sentAt);
+
+    // Message actions (edit, delete)
+    if (isOwnMessage) {
+      this.showElement(actionsDiv, "flex");
+      const editBtn = actionsDiv.querySelector(".edit-message-btn");
+      const deleteBtn = actionsDiv.querySelector(".delete-message-btn");
+
+      editBtn.onclick = () => this.handleEditMessage(message);
+      deleteBtn.onclick = () => this.handleDeleteMessage(message);
+    }
+
+    // Message text
+    if (message.message) {
+      this.showElement(textElem, "block");
+      textElem.textContent = message.message;
+
+      if (message.edited) {
+        const editedFragment = this.templates.editedSpan.content.cloneNode(true);
+        textElem.appendChild(editedFragment);
+      }
+    }
+
+    // Message image
+    if (message.image) {
+      this.showElement(imageElem, "block");
+      imageElem.src = message.image;
+    }
+
+    // Reactions
+    if (message.reacts && message.reacts.length > 0) {
+      this.showElement(reactionsDiv, "flex");
+      this.populateReactions(reactionsDiv, message);
+    }
+
+    // Pinned indicator
+    if (message.pinned) {
+      this.showElement(pinnedBadge, "inline-block");
+    }
+
+    return messageFragment;
   }
 
   /**
@@ -200,13 +256,13 @@ export class MessageManager extends BaseManager {
     const currentUserId = parseInt(this.getUserId());
     const userReactions = new Set();
 
-   
+
 
   /**
    * Handle send message
    */
   handleSendMessage() {
-    
+
   }
 
   /**
