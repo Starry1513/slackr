@@ -134,6 +134,30 @@ export class MessageManager extends BaseManager {
    * Render all messages
    */
   renderMessages() {
+    if (!this.dom.messagesContainer) {
+      return;
+    }
 
+    // Clear messages container
+    this.clearElement(this.dom.messagesContainer);
+
+    if (this.messages.length === 0) {
+      const emptyMessage = this.templates.emptyMessages.content.cloneNode(true);
+      this.dom.messagesContainer.appendChild(emptyMessage);
+      return;
+    }
+
+    this.messages.forEach((message) => {
+      const messageElement = this.createMessageElement(message);
+      this.dom.messagesContainer.appendChild(messageElement);
+    });
+  }
+
+  /**
+   * Create a message element
+   * @param {Object} message - Message data
+   * @returns {HTMLElement}
+   */
+  
   }
 }
