@@ -383,6 +383,43 @@
         </div>
       </div>
 
+      <!-- View User Profile Modal -->
+      <div id="view-user-profile-container" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>User Profile</h3>
+            <button id="view-user-profile-close" class="close-button">×</button>
+          </div>
+
+          <div class="user-profile-content">
+            <div class="user-profile-image-container">
+              <img id="view-user-profile-image" alt="User profile" style="display: none;" />
+              <div id="view-user-profile-placeholder" class="profile-image-placeholder" style="display: none;"></div>
+            </div>
+
+            <div class="user-profile-info">
+              <div class="profile-info-item">
+                <label>Name:</label>
+                <p id="view-user-profile-name"></p>
+              </div>
+
+              <div class="profile-info-item">
+                <label>Email:</label>
+                <p id="view-user-profile-email"></p>
+              </div>
+
+              <div class="profile-info-item">
+                <label>Bio:</label>
+                <p id="view-user-profile-bio"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" id="view-user-profile-ok" class="button-primary">OK</button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- Message Template -->
