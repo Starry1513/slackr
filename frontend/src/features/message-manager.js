@@ -70,6 +70,28 @@ export class MessageManager extends BaseManager {
         }
       });
     }
+    // Emoji picker close
+    if (this.dom.emojiPickerClose) {
+      this.dom.emojiPickerClose.addEventListener("click", () => this.hideEmojiPicker());
+    }
+
+    // Emoji grid click (delegation)
+    if (this.dom.emojiPickerGrid) {
+      this.dom.emojiPickerGrid.addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-emoji]");
+        if (!btn) return;
+        const emoji = btn.dataset.emoji;
+        if (!emoji) return;
+        if (this.currentEmojiMessage) {
+          this.toggleReaction(this.currentEmojiMessage, emoji);
+        }
+        this.hideEmojiPicker();
+      });
+
+      // populate grid once
+      this.renderEmojiGrid();
+    }
+    
   }
 
   /**
@@ -151,6 +173,8 @@ export class MessageManager extends BaseManager {
       const messageElement = this.createMessageElement(message);
       this.dom.messagesContainer.appendChild(messageElement);
     });
+
+    
   }
 
   /**
@@ -228,11 +252,9 @@ export class MessageManager extends BaseManager {
       imageElem.src = message.image;
     }
 
-    // Reactions
-    if (message.reacts && message.reacts.length > 0) {
-      this.showElement(reactionsDiv, "flex");
-      this.populateReactions(reactionsDiv, message);
-    }
+    // Reactions - always show to allow adding reactions and display default emojis
+    this.showElement(reactionsDiv, "flex");
+    this.populateReactions(reactionsDiv, message);
 
     // Pinned indicator
     if (message.pinned) {
@@ -256,18 +278,20 @@ export class MessageManager extends BaseManager {
     const currentUserId = parseInt(this.getUserId());
     const userReactions = new Set();
 
-    message.reacts.forEach((react) => {
-      const emoji = react.react;
-      if (!reactionCounts[emoji]) {
-        reactionCounts[emoji] = 0;
-      }
-      reactionCounts[emoji]++;
-      if (react.user === currentUserId) {
-        userReactions.add(emoji);
-      }
-    });
+    if (message.reacts && message.reacts.length > 0) {
+      message.reacts.forEach((react) => {
+        const emoji = react.react;
+        if (!reactionCounts[emoji]) {
+          reactionCounts[emoji] = 0;
+        }
+        reactionCounts[emoji]++;
+        if (react.user === currentUserId) {
+          userReactions.add(emoji);
+        }
+      });
+    }
 
-    // Create reaction buttons from template
+    // Create reaction buttons for existing reactions (with counts)
     Object.entries(reactionCounts).forEach(([emoji, count]) => {
       const reactionFragment = this.templates.reactionBtn.content.cloneNode(true);
       const reactionBtn = reactionFragment.querySelector(".reaction-btn");
@@ -281,7 +305,23 @@ export class MessageManager extends BaseManager {
       reactionsDiv.appendChild(reactionFragment);
     });
 
-    // Add reaction button from template
+    // Add default emoji buttons (first 3 common emojis that haven't been used)
+    const defaultEmojiCount = 3;
+    let addedDefaults = 0;
+    for (const emoji of this.commonEmojis) {
+      if (addedDefaults >= defaultEmojiCount) break;
+      if (reactionCounts[emoji]) continue; // Skip if already has reactions
+
+      const reactionFragment = this.templates.reactionBtn.content.cloneNode(true);
+      const reactionBtn = reactionFragment.querySelector(".reaction-btn");
+      reactionBtn.textContent = emoji;
+      reactionBtn.onclick = () => this.toggleReaction(message, emoji);
+
+      reactionsDiv.appendChild(reactionFragment);
+      addedDefaults++;
+    }
+
+    // Add reaction button from template (at the end)
     const addReactionFragment = this.templates.addReactionBtn.content.cloneNode(true);
     const addReactionBtn = addReactionFragment.querySelector(".add-reaction-btn");
     addReactionBtn.onclick = () => this.showReactionPicker(message);
@@ -429,7 +469,7 @@ export class MessageManager extends BaseManager {
    * @param {Object} message - Message
    */
   showReactionPicker(message) {
-    
+
   }
   /**
    * Clear messages
