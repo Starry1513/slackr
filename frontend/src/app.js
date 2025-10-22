@@ -1,6 +1,6 @@
 import { ApiService } from "./api.js";
 import { AuthManager } from "./auth/auth.js";
-import { PageController } from "./page-controller.js";
+import { PageController } from "./controller/page-controller.js";
 import { ChannelManager } from "./features/channel-manager.js";
 import { Dashboard } from "./features/dashboard-manager.js";
 import { MessageManager } from "./features/message-manager.js";
@@ -24,6 +24,7 @@ export class App {
     this.message.init();
     this.user.init();
     this.dashboard.init();
+    console.log(this.auth.getUserId());
   }
 
 }
