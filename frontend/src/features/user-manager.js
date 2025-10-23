@@ -1,3 +1,5 @@
+import { ImageManager } from "./image-manager.js";
+
 /**
  * UserManager - Manages user-related functionality
  * Responsible for: user profiles, inviting users to channels
@@ -7,6 +9,9 @@ export class UserManager {
     this.api = api;
     this.auth = auth;
     this.ErrorController = ErrorController;
+
+    // Image manager for user images
+    this.imageManager = new ImageManager();
 
     // User cache
     this.userCache = new Map();
@@ -481,16 +486,13 @@ export class UserManager {
           this.dom.viewUserProfileBio.textContent = userData.bio || "No bio available";
         }
 
-        // Show profile image or placeholder
-        if (userData.image) {
-          this.dom.viewUserProfileImage.src = userData.image;
-          this.dom.viewUserProfileImage.style.display = "block";
-          this.dom.viewUserProfilePlaceholder.style.display = "none";
-        } else {
-          this.dom.viewUserProfileImage.style.display = "none";
-          this.dom.viewUserProfilePlaceholder.style.display = "flex";
-          this.dom.viewUserProfilePlaceholder.textContent = (userData.name || "U")[0].toUpperCase();
-        }
+        // Show profile image - use ImageManager for unified handling
+        // ImageManager will use default image if userData.image is null
+        this.imageManager.setUserImage(
+          this.dom.viewUserProfileImage,
+          userData.image,
+          userData.name || "User"
+        );
 
         this.dom.viewUserProfileContainer.style.display = "flex";
       })

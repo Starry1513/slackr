@@ -1,4 +1,5 @@
 import { BaseManager } from "./base-manager.js";
+import { ImageManager } from "./image-manager.js";
 
 /**
  * MessageManager - Manages all message-related functionality
@@ -7,6 +8,9 @@ import { BaseManager } from "./base-manager.js";
 export class MessageManager extends BaseManager {
   constructor(api, auth, ErrorController) {
     super(api, auth, ErrorController);
+
+    // Image manager for user images
+    this.imageManager = new ImageManager();
 
     // Message state
     this.currentChannelId = null;
@@ -110,6 +114,7 @@ export class MessageManager extends BaseManager {
       .then((response) => {
         this.messages = response.messages || [];
         this.renderMessages();
+        // display the new message to the bottom
         this.scrollToBottom();
         return this.messages;
       })
@@ -123,6 +128,7 @@ export class MessageManager extends BaseManager {
    * Load more messages (pagination)
    */
   loadMoreMessages() {
+    // If there’s no channel selected → can’t load messages.
     if (!this.currentChannelId || this.isLoadingMore) {
       return;
     }
@@ -134,11 +140,12 @@ export class MessageManager extends BaseManager {
     const scrollHeight = this.dom.messagesContainer.scrollHeight;
 
     this.api
+      // Returns up to the next 25 messages from the start index
       .getMessages(this.currentChannelId, this.messageStart, token)
       .then((response) => {
-        const newMessages = response.messages || [];
-        if (newMessages.length > 0) {
-          this.messages = [...newMessages, ...this.messages];
+        const nextMessages = response.messages || [];
+        if (nextMessages.length > 0) {
+          this.messages = [...nextMessages, ...this.messages];
           this.renderMessages();
           // Maintain scroll position
           this.dom.messagesContainer.scrollTop =
@@ -207,22 +214,16 @@ export class MessageManager extends BaseManager {
     const reactionsDiv = messageDiv.querySelector(".message-reactions");
     const pinnedBadge = messageDiv.querySelector(".message-pinned-badge");
 
-    // Sender image
-    if (message.senderImage) {
-      const imgFragment = this.templates.senderImage.content.cloneNode(true);
-      const img = imgFragment.querySelector(".message-sender-image");
-      img.src = message.senderImage;
-      img.alt = message.senderName || "User";
-      imageContainer.appendChild(imgFragment);
-    } else {
-      const placeholderFragment = this.templates.senderPlaceholder.content.cloneNode(true);
-      const placeholder = placeholderFragment.querySelector(".message-sender-image");
-      placeholder.textContent = (message.senderName || "U")[0].toUpperCase();
-      imageContainer.appendChild(placeholderFragment);
-    }
+    // Sender image - use ImageManager for unified handling
+    this.imageManager.renderUserImageFromTemplate(
+      imageContainer,
+      this.templates.senderImage,
+      message.senderImage,
+      message.senderName || "User"
+    );
 
     // Sender name and timestamp
-    senderName.textContent = message.senderName || "Unknown User";
+    senderName.textContent = this.name || "Unknown User";
     timestamp.textContent = this.formatTimestamp(message.sentAt);
 
     // Message actions (edit, delete)
