@@ -1,4 +1,4 @@
-import { ImageManager } from "./image-manager.js";
+import { helperManager } from "./helper-manager.js";
 
 /**
  * UserManager - Manages user-related functionality
@@ -10,11 +10,6 @@ export class UserManager {
     this.auth = auth;
     this.ErrorController = ErrorController;
 
-    // Image manager for user images
-    this.imageManager = new ImageManager();
-
-    // User cache
-    this.userCache = new Map();
 
     // Current channel ID (will be set by channel manager)
     this.currentChannelId = null;
@@ -432,38 +427,6 @@ export class UserManager {
   }
 
   /**
-   * Get user details (with caching)
-   * @param {number} userId - User ID
-   * @returns {Promise<Object>}
-   */
-  getUserDetails(userId) {
-    // Check cache first
-    if (this.userCache.has(userId)) {
-      return Promise.resolve(this.userCache.get(userId));
-    }
-
-    const token = this.auth.getToken();
-
-    return this.api
-      .getUserDetails(userId, token)
-      .then((userData) => {
-        this.userCache.set(userId, userData);
-        return userData;
-      })
-      .catch((error) => {
-        console.error("Failed to get user details:", error);
-        return { id: userId, name: "Unknown User" };
-      });
-  }
-
-  /**
-   * Clear user cache
-   */
-  clearCache() {
-    this.userCache.clear();
-  }
-
-  /**
    * Show user profile modal
    * @param {number} userId - User ID to view
    */
@@ -486,9 +449,9 @@ export class UserManager {
           this.dom.viewUserProfileBio.textContent = userData.bio || "No bio available";
         }
 
-        // Show profile image - use ImageManager for unified handling
-        // ImageManager will use default image if userData.image is null
-        this.imageManager.setUserImage(
+        // Show profile image - use helperManager for unified handling
+        // helperManager will use default image if userData.image is null
+        this.helperManager.setUserImage(
           this.dom.viewUserProfileImage,
           userData.image,
           userData.name || "User"
