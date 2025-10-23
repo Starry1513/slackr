@@ -13,7 +13,7 @@ export class MessageManager extends BaseManager {
     this.helperManager = new helperManager();
 
     // Message state
-    this.currentChannelId = null;
+    this.curChannelId = null;
     this.messageStart = 0;
     this.isLoadingMore = false;
     this.messages = [];
@@ -103,7 +103,7 @@ export class MessageManager extends BaseManager {
    * @param {number} channelId - Channel ID
    */
   loadMessages(channelId) {
-    this.currentChannelId = channelId;
+    this.curChannelId = channelId;
     this.messageStart = 0;
     this.messages = [];
 
@@ -116,8 +116,8 @@ export class MessageManager extends BaseManager {
         // Fetch user details for all senders
         return this.enrichMessagesWithUserData(this.messages);
       })
-      .then((enrichedMessages) => {
-        this.messages = enrichedMessages;
+      .then((fullMessages) => {
+        this.messages = fullMessages;
         this.renderMessages();
         // display the new message to the bottom
         this.scrollToBottom();
@@ -175,7 +175,7 @@ export class MessageManager extends BaseManager {
    */
   loadMoreMessages() {
     // If there’s no channel selected → can’t load messages.
-    if (!this.currentChannelId || this.isLoadingMore) {
+    if (!this.curChannelId || this.isLoadingMore) {
       return;
     }
 
@@ -183,11 +183,11 @@ export class MessageManager extends BaseManager {
     this.messageStart += 25; // Assuming 25 messages per page
 
     const token = this.auth.getToken();
-    const scrollHeight = this.dom.messagesContainer.scrollHeight;
+    const scrollH = this.dom.messagesContainer.scrollH;
 
     this.api
       // Returns up to the next 25 messages from the start index
-      .getMessages(this.currentChannelId, this.messageStart, token)
+      .getMessages(this.curChannelId, this.messageStart, token)
       .then((response) => {
         const nextMessages = response.messages || [];
         if (nextMessages.length > 0) {
@@ -196,13 +196,13 @@ export class MessageManager extends BaseManager {
         }
         return [];
       })
-      .then((enrichedMessages) => {
-        if (enrichedMessages.length > 0) {
-          this.messages = [...enrichedMessages, ...this.messages];
+      .then((fullMessages) => {
+        if (fullMessages.length > 0) {
+          this.messages = [...fullMessages, ...this.messages];
           this.renderMessages();
           // Maintain scroll position
           this.dom.messagesContainer.scrollTop =
-            this.dom.messagesContainer.scrollHeight - scrollHeight;
+            this.dom.messagesContainer.scrollH - scrollH;
         }
         this.isLoadingMore = false;
       })
@@ -233,8 +233,6 @@ export class MessageManager extends BaseManager {
       const messageElement = this.createMessageElement(message);
       this.dom.messagesContainer.appendChild(messageElement);
     });
-
-    
   }
 
   /**
@@ -424,7 +422,7 @@ export class MessageManager extends BaseManager {
       return;
     }
 
-    if (!this.currentChannelId) {
+    if (!this.curChannelId) {
       this.showError("Please select a channel first");
       return;
     }
@@ -432,13 +430,13 @@ export class MessageManager extends BaseManager {
     const token = this.auth.getToken();
 
     this.api
-      .sendMessage(this.currentChannelId, messageText, null, token)
+      .sendMessage(this.curChannelId, messageText, null, token)
       .then(() => {
         // Clear input
         this.dom.messageInput.value = "";
 
         // Reload messages
-        return this.loadMessages(this.currentChannelId);
+        return this.loadMessages(this.curChannelId);
       })
       .catch((error) => {
         this.showError(error.message || "Failed to send message");
@@ -458,10 +456,10 @@ export class MessageManager extends BaseManager {
     const token = this.auth.getToken();
 
     this.api
-      .editMessage(this.currentChannelId, message.id, newText, null, token)
+      .editMessage(this.curChannelId, message.id, newText, null, token)
       .then(() => {
         // Reload messages
-        return this.loadMessages(this.currentChannelId);
+        return this.loadMessages(this.curChannelId);
       })
       .catch((error) => {
         this.showError(error.message || "Failed to edit message");
@@ -480,10 +478,10 @@ export class MessageManager extends BaseManager {
     const token = this.auth.getToken();
 
     this.api
-      .deleteMessage(this.currentChannelId, message.id, token)
+      .deleteMessage(this.curChannelId, message.id, token)
       .then(() => {
         // Reload messages
-        return this.loadMessages(this.currentChannelId);
+        return this.loadMessages(this.curChannelId);
       })
       .catch((error) => {
         this.showError(error.message || "Failed to delete message");
@@ -505,13 +503,13 @@ export class MessageManager extends BaseManager {
     );
 
     const apiCall = hasReacted
-      ? this.api.unreactToMessage(this.currentChannelId, message.id, emoji, token)
-      : this.api.reactToMessage(this.currentChannelId, message.id, emoji, token);
+      ? this.api.unreactToMessage(this.curChannelId, message.id, emoji, token)
+      : this.api.reactToMessage(this.curChannelId, message.id, emoji, token);
 
     apiCall
       .then(() => {
         // Reload messages
-        return this.loadMessages(this.currentChannelId);
+        return this.loadMessages(this.curChannelId);
       })
       .catch((error) => {
         this.showError(error.message || "Failed to update reaction");
@@ -565,14 +563,14 @@ export class MessageManager extends BaseManager {
    */
   scrollToBottom() {
     if (this.dom.messagesContainer) {
-      this.dom.messagesContainer.scrollTop = this.dom.messagesContainer.scrollHeight;
+      this.dom.messagesContainer.scrollTop = this.dom.messagesContainer.scrollH;
     }
   }
   /**
    * Clear messages
    */
   clearMessages() {
-    this.currentChannelId = null;
+    this.curChannelId = null;
     this.messages = [];
     this.messageStart = 0;
     if (this.dom.messagesContainer) {
