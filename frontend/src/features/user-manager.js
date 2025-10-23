@@ -1,15 +1,16 @@
 import { helperManager } from "./helper-manager.js";
+import { BaseManager } from "./base-manager.js";
 
 /**
  * UserManager - Manages user-related functionality
  * Responsible for: user profiles, inviting users to channels
  */
-export class UserManager {
+export class UserManager extends BaseManager {
   constructor(api, auth, ErrorController) {
-    this.api = api;
-    this.auth = auth;
-    this.ErrorController = ErrorController;
+    super(api, auth, ErrorController);
 
+    // Helper manager for user images
+    this.helperManager = new helperManager();
 
     // Current channel ID (will be set by channel manager)
     this.currentChannelId = null;

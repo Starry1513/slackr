@@ -3,10 +3,11 @@
  * Provides common functionality shared across managers
  */
 export class BaseManager {
-  constructor(api, auth, pageController) {
+  constructor(api, auth, pageController, ErrorController) {
     this.api = api;
     this.auth = auth;
     this.pageController = pageController;
+    this.ErrorController = ErrorController;
 
     this.userCache = new Map();
   }
@@ -118,7 +119,7 @@ export class BaseManager {
    * @param {string} message - Error message
    */
   showError(message) {
-    this.pageController.showError(message);
+    this.ErrorController.showError(message);
   }
 
   /**
