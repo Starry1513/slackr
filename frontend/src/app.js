@@ -13,8 +13,8 @@ export class App {
     this.pageController = new PageController();
 
     // Initialize managers
-    this.message = new MessageManager(this.api, this.auth, this.pageController);
     this.user = new UserManager(this.api, this.auth, this.pageController);
+    this.message = new MessageManager(this.api, this.auth, this.pageController, this.user);
     this.channel = new ChannelManager(this.api, this.auth, this.pageController, this.message, this.user);
     this.dashboard = new Dashboard(this.api, this.auth, this.pageController, this.channel);
   }
