@@ -7,6 +7,8 @@ export class BaseManager {
     this.api = api;
     this.auth = auth;
     this.pageController = pageController;
+
+    this.userCache = new Map();
   }
 
   /**
@@ -146,5 +148,39 @@ export class BaseManager {
     }
 
     return element;
+  }
+
+  /**
+   * Get user details by user ID (with caching)
+   * @param {number} userId - User ID (optional, defaults to current user)
+   * @returns {Promise<Object>} User data
+   */
+  getUserDetails(userId = null) {
+    // Default to current user if no userId provided
+    const targetUserId = userId !== null ? userId : parseInt(this.getUserId());
+
+    // Check cache first
+    if (this.userCache.has(targetUserId)) {
+      return Promise.resolve(this.userCache.get(targetUserId));
+    }
+
+    const token = this.auth.getToken();
+
+    return this.api
+      .getUserDetails(targetUserId, token)
+      .then((userData) => {
+        this.userCache.set(targetUserId, userData);
+        return userData;
+      })
+      .catch((error) => {
+        console.error("Failed to get user details:", error);
+        return { id: targetUserId, name: "Unknown User", image: null };
+      });
+  }
+  /**
+   * Clear user cache
+   */
+  clearCache() {
+    this.userCache.clear();
   }
 }
