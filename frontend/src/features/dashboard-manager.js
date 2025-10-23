@@ -150,7 +150,6 @@ export class Dashboard extends BaseManager {
       .then((response) => {
         // Save token and userId
         this.auth.saveAuthToken(response.token, response.userId);
-        this.auth.saveName(name);
         // Show dashboard
         this.showDashboard();
       })
