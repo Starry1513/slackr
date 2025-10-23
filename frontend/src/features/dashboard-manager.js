@@ -1,8 +1,8 @@
 import { BaseManager } from "./base-manager.js";
 
 export class Dashboard extends BaseManager {
-  constructor(api, auth, pageController, channelManager) {
-    super(api, auth, pageController);
+  constructor(api, auth, pageController, ErrorController, channelManager) {
+    super(api, auth, pageController, ErrorController);
     // Cache commonly used DOM elements in a single object for easier access
     this.channelManager = channelManager;
 
@@ -65,7 +65,7 @@ export class Dashboard extends BaseManager {
     });
 
     this.dom.errorClose.addEventListener("click", () => {
-      this.pageController.hideError();
+      this.ErrorController.hideError();
     });
   };
 
@@ -107,7 +107,7 @@ export class Dashboard extends BaseManager {
     const password = this.dom.loginPassword.value;
 
     if (!email || !password) {
-      this.pageController.showError("Please fill in all fields");
+      this.ErrorController.showError("Please fill in all fields");
       return;
     }
 
@@ -122,7 +122,7 @@ export class Dashboard extends BaseManager {
         this.showDashboard();
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Login failed");
+        this.ErrorController.showError(error.message || "Login failed");
       });
   }
 
@@ -135,12 +135,12 @@ export class Dashboard extends BaseManager {
     const password = this.dom.registerPassword.value;
     const confirmPassword = this.dom.registerPasswordConfirm.value;
     if (!email || !name || !password || !confirmPassword) {
-      this.pageController.showError("Please fill in all fields");
+      this.ErrorController.showError("Please fill in all fields");
       return;
     }
 
     if (password !== confirmPassword) {
-      this.pageController.showError("Passwords do not match");
+      this.ErrorController.showError("Passwords do not match");
       return;
     }
 
@@ -155,7 +155,7 @@ export class Dashboard extends BaseManager {
         this.showDashboard();
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Registration failed");
+        this.ErrorController.showError(error.message || "Registration failed");
       });
   }
 

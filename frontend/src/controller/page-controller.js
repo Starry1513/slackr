@@ -33,20 +33,4 @@ export class PageController {
     this.pages.dashboard.style.display = 'flex';
   }
 
-  /**
-   * Show error popup (doesn't hide other pages)
-   * @param {string} message - Error message to display
-   */
-  showError(message) {
-    const errorMessage = document.getElementById('error-message');
-    errorMessage.textContent = message;
-    this.pages.error.style.display = 'flex';
-  }
-
-  /**
-   * Hide error popup
-   */
-  hideError() {
-    this.pages.error.style.display = 'none';
-  }
 }

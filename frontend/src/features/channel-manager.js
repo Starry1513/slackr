@@ -5,8 +5,8 @@ import { BaseManager } from "./base-manager.js";
  * Responsible for: channel list, create/edit/delete channels, channel details
  */
 export class ChannelManager extends BaseManager {
-  constructor(api, auth, pageController, messageManager, userManager) {
-    super(api, auth, pageController);
+  constructor(api, auth, ErrorController, messageManager, userManager) {
+    super(api, auth, ErrorController);
     this.messageManager = messageManager;
     this.userManager = userManager;
 
@@ -146,7 +146,7 @@ export class ChannelManager extends BaseManager {
         return response.channels;
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to load channels");
+        this.ErrorController.showError(error.message || "Failed to load channels");
         throw error;
       });
   }
@@ -237,7 +237,7 @@ export class ChannelManager extends BaseManager {
         });
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to load channel");
+        this.ErrorController.showError(error.message || "Failed to load channel");
       });
   }
 
@@ -369,7 +369,7 @@ export class ChannelManager extends BaseManager {
     const isPrivate = this.dom.createChannelIsPrivate.checked;
 
     if (!name) {
-      this.pageController.showError("Channel name is required");
+      this.ErrorController.showError("Channel name is required");
       return;
     }
 
@@ -387,7 +387,7 @@ export class ChannelManager extends BaseManager {
         // Note: API doesn't return the new channel ID, so we can't auto-select
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to create channel");
+        this.ErrorController.showError(error.message || "Failed to create channel");
       });
   }
 
@@ -419,7 +419,7 @@ export class ChannelManager extends BaseManager {
     const description = this.dom.editChannelDescription.value.trim();
 
     if (!name) {
-      this.pageController.showError("Channel name is required");
+      this.ErrorController.showError("Channel name is required");
       return;
     }
 
@@ -437,7 +437,7 @@ export class ChannelManager extends BaseManager {
         return this.loadChannels();
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to update channel");
+        this.ErrorController.showError(error.message || "Failed to update channel");
       });
   }
 
@@ -458,7 +458,7 @@ export class ChannelManager extends BaseManager {
         return this.selectChannel(this.currentChannelId);
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to join channel");
+        this.ErrorController.showError(error.message || "Failed to join channel");
       });
   }
 
@@ -481,7 +481,7 @@ export class ChannelManager extends BaseManager {
         return this.loadChannels();
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to leave channel");
+        this.ErrorController.showError(error.message || "Failed to leave channel");
       });
   }
 

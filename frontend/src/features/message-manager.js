@@ -5,8 +5,8 @@ import { BaseManager } from "./base-manager.js";
  * Responsible for: displaying messages, sending messages, editing/deleting messages, reactions, pinning
  */
 export class MessageManager extends BaseManager {
-  constructor(api, auth, pageController) {
-    super(api, auth, pageController);
+  constructor(api, auth, ErrorController) {
+    super(api, auth, ErrorController);
 
     // Message state
     this.currentChannelId = null;
@@ -114,7 +114,7 @@ export class MessageManager extends BaseManager {
         return this.messages;
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to load messages");
+        this.ErrorController.showError(error.message || "Failed to load messages");
         throw error;
       });
   }
@@ -147,7 +147,7 @@ export class MessageManager extends BaseManager {
         this.isLoadingMore = false;
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to load more messages");
+        this.ErrorController.showError(error.message || "Failed to load more messages");
         this.isLoadingMore = false;
       });
   }
@@ -371,7 +371,7 @@ export class MessageManager extends BaseManager {
     }
 
     if (!this.currentChannelId) {
-      this.pageController.showError("Please select a channel first");
+      this.ErrorController.showError("Please select a channel first");
       return;
     }
 
@@ -387,7 +387,7 @@ export class MessageManager extends BaseManager {
         return this.loadMessages(this.currentChannelId);
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to send message");
+        this.ErrorController.showError(error.message || "Failed to send message");
       });
   }
 
@@ -410,7 +410,7 @@ export class MessageManager extends BaseManager {
         return this.loadMessages(this.currentChannelId);
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to edit message");
+        this.ErrorController.showError(error.message || "Failed to edit message");
       });
   }
 
@@ -432,7 +432,7 @@ export class MessageManager extends BaseManager {
         return this.loadMessages(this.currentChannelId);
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to delete message");
+        this.ErrorController.showError(error.message || "Failed to delete message");
       });
   }
 
@@ -460,7 +460,7 @@ export class MessageManager extends BaseManager {
         return this.loadMessages(this.currentChannelId);
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to update reaction");
+        this.ErrorController.showError(error.message || "Failed to update reaction");
       });
   }
 

@@ -3,10 +3,10 @@
  * Responsible for: user profiles, inviting users to channels
  */
 export class UserManager {
-  constructor(api, auth, pageController) {
+  constructor(api, auth, ErrorController) {
     this.api = api;
     this.auth = auth;
-    this.pageController = pageController;
+    this.ErrorController = ErrorController;
 
     // User cache
     this.userCache = new Map();
@@ -193,7 +193,7 @@ export class UserManager {
         this.dom.profileContainer.style.display = "flex";
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to load profile");
+        this.ErrorController.showError(error.message || "Failed to load profile");
       });
   }
 
@@ -250,7 +250,7 @@ export class UserManager {
     const password = this.dom.profilePassword.value;
 
     if (!email || !name) {
-      this.pageController.showError("Email and name are required");
+      this.ErrorController.showError("Email and name are required");
       return;
     }
 
@@ -273,7 +273,7 @@ export class UserManager {
         alert("Profile updated successfully!");
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to update profile");
+        this.ErrorController.showError(error.message || "Failed to update profile");
       });
   }
 
@@ -329,7 +329,7 @@ export class UserManager {
         this.dom.inviteUserContainer.style.display = "flex";
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to load users");
+        this.ErrorController.showError(error.message || "Failed to load users");
       });
   }
 
@@ -388,7 +388,7 @@ export class UserManager {
    */
   handleInviteUser() {
     if (!this.currentChannelId) {
-      this.pageController.showError("Please select a channel first");
+      this.ErrorController.showError("Please select a channel first");
       return;
     }
 
@@ -397,7 +397,7 @@ export class UserManager {
     const userIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
 
     if (userIds.length === 0) {
-      this.pageController.showError("Please select at least one user to invite");
+      this.ErrorController.showError("Please select at least one user to invite");
       return;
     }
 
@@ -414,7 +414,7 @@ export class UserManager {
         alert(`Successfully invited ${userIds.length} user(s)!`);
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to invite users");
+        this.ErrorController.showError(error.message || "Failed to invite users");
       });
   }
 
@@ -495,7 +495,7 @@ export class UserManager {
         this.dom.viewUserProfileContainer.style.display = "flex";
       })
       .catch((error) => {
-        this.pageController.showError(error.message || "Failed to load user profile");
+        this.ErrorController.showError(error.message || "Failed to load user profile");
       });
   }
 
