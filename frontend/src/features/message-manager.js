@@ -114,7 +114,7 @@ export class MessageManager extends BaseManager {
         return this.messages;
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to load messages");
+        this.showError(error.message || "Failed to load messages");
         throw error;
       });
   }
@@ -147,7 +147,7 @@ export class MessageManager extends BaseManager {
         this.isLoadingMore = false;
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to load more messages");
+        this.showError(error.message || "Failed to load more messages");
         this.isLoadingMore = false;
       });
   }
@@ -371,7 +371,7 @@ export class MessageManager extends BaseManager {
     }
 
     if (!this.currentChannelId) {
-      this.ErrorController.showError("Please select a channel first");
+      this.showError("Please select a channel first");
       return;
     }
 
@@ -387,7 +387,7 @@ export class MessageManager extends BaseManager {
         return this.loadMessages(this.currentChannelId);
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to send message");
+        this.showError(error.message || "Failed to send message");
       });
   }
 
@@ -410,7 +410,7 @@ export class MessageManager extends BaseManager {
         return this.loadMessages(this.currentChannelId);
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to edit message");
+        this.showError(error.message || "Failed to edit message");
       });
   }
 
@@ -432,7 +432,7 @@ export class MessageManager extends BaseManager {
         return this.loadMessages(this.currentChannelId);
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to delete message");
+        this.showError(error.message || "Failed to delete message");
       });
   }
 
@@ -460,7 +460,7 @@ export class MessageManager extends BaseManager {
         return this.loadMessages(this.currentChannelId);
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to update reaction");
+        this.showError(error.message || "Failed to update reaction");
       });
   }
 

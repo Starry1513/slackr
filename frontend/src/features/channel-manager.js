@@ -146,7 +146,7 @@ export class ChannelManager extends BaseManager {
         return response.channels;
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to load channels");
+        this.showError(error.message || "Failed to load channels");
         throw error;
       });
   }
@@ -237,7 +237,7 @@ export class ChannelManager extends BaseManager {
         });
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to load channel");
+        this.showError(error.message || "Failed to load channel");
       });
   }
 
@@ -369,7 +369,7 @@ export class ChannelManager extends BaseManager {
     const isPrivate = this.dom.createChannelIsPrivate.checked;
 
     if (!name) {
-      this.ErrorController.showError("Channel name is required");
+      this.showError("Channel name is required");
       return;
     }
 
@@ -387,7 +387,7 @@ export class ChannelManager extends BaseManager {
         // Note: API doesn't return the new channel ID, so we can't auto-select
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to create channel");
+        this.showError(error.message || "Failed to create channel");
       });
   }
 
@@ -419,7 +419,7 @@ export class ChannelManager extends BaseManager {
     const description = this.dom.editChannelDescription.value.trim();
 
     if (!name) {
-      this.ErrorController.showError("Channel name is required");
+      this.showError("Channel name is required");
       return;
     }
 
@@ -437,7 +437,7 @@ export class ChannelManager extends BaseManager {
         return this.loadChannels();
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to update channel");
+        this.showError(error.message || "Failed to update channel");
       });
   }
 
@@ -458,7 +458,7 @@ export class ChannelManager extends BaseManager {
         return this.selectChannel(this.currentChannelId);
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to join channel");
+        this.showError(error.message || "Failed to join channel");
       });
   }
 
@@ -481,7 +481,7 @@ export class ChannelManager extends BaseManager {
         return this.loadChannels();
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Failed to leave channel");
+        this.showError(error.message || "Failed to leave channel");
       });
   }
 

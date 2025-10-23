@@ -107,7 +107,7 @@ export class Dashboard extends BaseManager {
     const password = this.dom.loginPassword.value;
 
     if (!email || !password) {
-      this.ErrorController.showError("Please fill in all fields");
+      this.showError("Please fill in all fields");
       return;
     }
 
@@ -122,7 +122,7 @@ export class Dashboard extends BaseManager {
         this.showDashboard();
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Login failed");
+        this.showError(error.message || "Login failed");
       });
   }
 
@@ -135,12 +135,12 @@ export class Dashboard extends BaseManager {
     const password = this.dom.registerPassword.value;
     const confirmPassword = this.dom.registerPasswordConfirm.value;
     if (!email || !name || !password || !confirmPassword) {
-      this.ErrorController.showError("Please fill in all fields");
+      this.showError("Please fill in all fields");
       return;
     }
 
     if (password !== confirmPassword) {
-      this.ErrorController.showError("Passwords do not match");
+      this.showError("Passwords do not match");
       return;
     }
 
@@ -155,7 +155,7 @@ export class Dashboard extends BaseManager {
         this.showDashboard();
       })
       .catch((error) => {
-        this.ErrorController.showError(error.message || "Registration failed");
+        this.showError(error.message || "Registration failed");
       });
   }
 
