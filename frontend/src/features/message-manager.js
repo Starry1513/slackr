@@ -1,5 +1,5 @@
 import { BaseManager } from "./base-manager.js";
-import { ImageManager } from "./image-manager.js";
+import { helperManager } from "./helper-manager.js";
 
 /**
  * MessageManager - Manages all message-related functionality
@@ -10,7 +10,7 @@ export class MessageManager extends BaseManager {
     super(api, auth, ErrorController);
 
     // Image manager for user images
-    this.imageManager = new ImageManager();
+    this.helperManager = new helperManager();
 
     // Message state
     this.currentChannelId = null;
@@ -113,6 +113,11 @@ export class MessageManager extends BaseManager {
       .getMessages(channelId, this.messageStart, token)
       .then((response) => {
         this.messages = response.messages || [];
+        // Fetch user details for all senders
+        return this.enrichMessagesWithUserData(this.messages);
+      })
+      .then((enrichedMessages) => {
+        this.messages = enrichedMessages;
         this.renderMessages();
         // display the new message to the bottom
         this.scrollToBottom();
@@ -121,6 +126,47 @@ export class MessageManager extends BaseManager {
       .catch((error) => {
         this.showError(error.message || "Failed to load messages");
         throw error;
+      });
+  }
+
+  /**
+   * Enrich messages with user data (name and image)
+   * @param {Array} messages - Array of message objects
+   * @returns {Promise<Array>} - Messages with senderName and senderImage
+   */
+  enrichMessagesWithUserData(messages) {
+    // Handle empty messages array
+    if (!messages || messages.length === 0) {
+      return Promise.resolve([]);
+    }
+
+    // Get unique sender IDs
+    const senderIds = [...new Set(messages.map(msg => msg.sender))];
+
+    // Fetch user details for all senders in parallel using BaseManager's getUserDetails
+    const userDetailsPromises = senderIds.map(senderId =>
+      this.getUserDetails(senderId)
+    );
+
+    return Promise.all(userDetailsPromises)
+      .then((users) => {
+        // Create a map of senderId -> userData
+        // Use senderIds array index to match with users array
+        const userMap = new Map();
+        senderIds.forEach((senderId, index) => {
+          userMap.set(senderId, users[index]);
+        });
+
+        // Enrich each message with sender data
+        return messages.map(msg => {
+          const userDetail = userMap.get(msg.sender);
+          // console.log("Message sender", msg.sender, ":", userDetail);
+          return {
+            ...msg,
+            senderName: userDetail ? userDetail.name : "Unknown User",
+            senderImage: userDetail ? userDetail.image : null
+          };
+        });
       });
   }
 
@@ -145,7 +191,14 @@ export class MessageManager extends BaseManager {
       .then((response) => {
         const nextMessages = response.messages || [];
         if (nextMessages.length > 0) {
-          this.messages = [...nextMessages, ...this.messages];
+          // Enrich new messages with user data
+          return this.enrichMessagesWithUserData(nextMessages);
+        }
+        return [];
+      })
+      .then((enrichedMessages) => {
+        if (enrichedMessages.length > 0) {
+          this.messages = [...enrichedMessages, ...this.messages];
           this.renderMessages();
           // Maintain scroll position
           this.dom.messagesContainer.scrollTop =
@@ -214,8 +267,8 @@ export class MessageManager extends BaseManager {
     const reactionsDiv = messageDiv.querySelector(".message-reactions");
     const pinnedBadge = messageDiv.querySelector(".message-pinned-badge");
 
-    // Sender image - use ImageManager for unified handling
-    this.imageManager.renderUserImageFromTemplate(
+    // Sender image - use helperManager for unified handling
+    this.helperManager.renderUserImageFromTemplate(
       imageContainer,
       this.templates.senderImage,
       message.senderImage,
@@ -223,7 +276,7 @@ export class MessageManager extends BaseManager {
     );
 
     // Sender name and timestamp
-    senderName.textContent = this.name || "Unknown User";
+    senderName.textContent = message.senderName || "Unknown User";
     timestamp.textContent = this.formatTimestamp(message.sentAt);
 
     // Message actions (edit, delete)
