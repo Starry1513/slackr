@@ -86,7 +86,36 @@ export class ImageManager extends BaseManager {
    * @returns {Promise} - Resolves when image is uploaded successfully
    */
   handleImageUpload(event) {
+    const file = event.target.files[0];
 
+    if (!file) {
+      return Promise.reject(new Error("No file selected"));
+    }
+
+    if (!this.currentChannelId) {
+      this.showError("Please select a channel first");
+      event.target.value = "";
+      return Promise.reject(new Error("No channel selected"));
+    }
+
+    const token = this.auth.getToken();
+
+    // Convert file to data URL
+    return fileToDataUrl(file)
+      .then((dataUrl) => {
+        // Send image message (no text, just image)
+        return this.api.sendMessage(this.currentChannelId, "", dataUrl, token);
+      })
+      .then(() => {
+        // Clear file input
+        event.target.value = "";
+        return Promise.resolve();
+      })
+      .catch((error) => {
+        this.showError(error.message || "Failed to send image");
+        event.target.value = "";
+        return Promise.reject(error);
+      });
   }
 
   /**
