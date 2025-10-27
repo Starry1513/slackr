@@ -77,6 +77,13 @@ export class MessageManager extends BaseManager {
       });
     }
 
+    // Image upload input
+    if (this.dom.messageImageInput) {
+      this.dom.messageImageInput.addEventListener("change", (e) => {
+        this.handleImageUpload(e);
+      });
+    }
+
     // Scroll to load more messages
     if (this.dom.messagesContainer) {
       this.dom.messagesContainer.addEventListener("scroll", () => {
@@ -85,6 +92,7 @@ export class MessageManager extends BaseManager {
         }
       });
     }
+
     // Emoji picker close
     if (this.dom.emojiPickerClose) {
       this.dom.emojiPickerClose.addEventListener("click", () => this.hideEmojiPicker());
@@ -106,7 +114,29 @@ export class MessageManager extends BaseManager {
       // populate grid once
       this.renderEmojiGrid();
     }
-    
+
+    // Image viewer event listeners
+    if (this.dom.imageViewerClose) {
+      this.dom.imageViewerClose.addEventListener("click", () => this.closeImageViewer());
+    }
+
+    if (this.dom.imageViewerPrev) {
+      this.dom.imageViewerPrev.addEventListener("click", () => this.showPreviousImage());
+    }
+
+    if (this.dom.imageViewerNext) {
+      this.dom.imageViewerNext.addEventListener("click", () => this.showNextImage());
+    }
+
+    // Close image viewer when clicking on overlay
+    if (this.dom.imageViewerModal) {
+      this.dom.imageViewerModal.addEventListener("click", (e) => {
+        if (e.target === this.dom.imageViewerModal) {
+          this.closeImageViewer();
+        }
+      });
+    }
+
   }
 
   /**
