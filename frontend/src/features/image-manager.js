@@ -89,7 +89,106 @@ export class ImageManager extends BaseManager {
 
   }
 
+  /**
+   * Set current channel ID for image uploads
+   * @param {number} channelId - Channel ID
+   */
+  setCurrentChannel(channelId) {
+    this.currentChannelId = channelId;
+  }
 
+  /**
+   * Update channel images list from messages
+   * @param {Array} messages - Array of message objects
+   */
+  updateChannelImages(messages) {
+    // Extract all images from messages in order
+    this.channelImages = messages
+      .filter(msg => msg.image)
+      .map(msg => msg.image);
+  }
 
+  /**
+   * Open image viewer modal
+   * @param {string} imageUrl - URL of the image to display
+   */
+  openImageViewer(imageUrl) {
+    // Find the index of this image in the channel images
+    this.currentImageIndex = this.channelImages.indexOf(imageUrl);
 
+    if (this.currentImageIndex === -1) {
+      // If image not found in list, add it and set as current
+      this.channelImages.push(imageUrl);
+      this.currentImageIndex = this.channelImages.length - 1;
+    }
+
+    this.displayCurrentImage();
+    this.showElement(this.dom.imageViewerModal, "flex");
+  }
+
+  /**
+   * Close image viewer modal
+   */
+  closeImageViewer() {
+    this.hideElement(this.dom.imageViewerModal);
+  }
+
+  /**
+   * Show previous image in the channel
+   */
+  showPreviousImage() {
+    if (this.currentImageIndex > 0) {
+      this.currentImageIndex--;
+      this.displayCurrentImage();
+    }
+  }
+
+  /**
+   * Show next image in the channel
+   */
+  showNextImage() {
+    if (this.currentImageIndex < this.channelImages.length - 1) {
+      this.currentImageIndex++;
+      this.displayCurrentImage();
+    }
+  }
+
+  /**
+   * Display the current image and update navigation
+   */
+  displayCurrentImage() {
+    if (!this.channelImages || this.channelImages.length === 0) {
+      return;
+    }
+
+    // Update image src
+    this.dom.imageViewerImage.src = this.channelImages[this.currentImageIndex];
+
+    // Update counter
+    this.dom.imageViewerCounter.textContent =
+      `${this.currentImageIndex + 1} / ${this.channelImages.length}`;
+
+    // Update navigation buttons
+    if (this.currentImageIndex === 0) {
+      this.dom.imageViewerPrev.disabled = true;
+    } else {
+      this.dom.imageViewerPrev.disabled = false;
+    }
+
+    if (this.currentImageIndex === this.channelImages.length - 1) {
+      this.dom.imageViewerNext.disabled = true;
+    } else {
+      this.dom.imageViewerNext.disabled = false;
+    }
+  }
+
+  /**
+   * Make an image element clickable to open viewer
+   * @param {HTMLElement} imageElement - Image element to make clickable
+   * @param {string} imageUrl - URL of the image
+   */
+  makeImageClickable(imageElement, imageUrl) {
+    imageElement.style.cursor = "pointer";
+    imageElement.onclick = () => this.openImageViewer(imageUrl);
+  }
 }
