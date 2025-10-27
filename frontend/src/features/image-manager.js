@@ -14,6 +14,9 @@ export class ImageManager extends BaseManager {
     this.currentImageIndex = 0;
     this.currentChannelId = null;
 
+    // Callback for when image is uploaded
+    this.onImageUploaded = null;
+
     // Cache DOM elements
     this.dom = {
       messageImageInput: document.getElementById("message-image-input"),
@@ -109,6 +112,11 @@ export class ImageManager extends BaseManager {
       .then(() => {
         // Clear file input
         event.target.value = "";
+
+        // Call callback to refresh messages if provided
+        if (this.onImageUploaded) {
+          return this.onImageUploaded();
+        }
         return Promise.resolve();
       })
       .catch((error) => {
@@ -116,6 +124,14 @@ export class ImageManager extends BaseManager {
         event.target.value = "";
         return Promise.reject(error);
       });
+  }
+
+  /**
+   * Set callback for when image is uploaded
+   * @param {Function} callback - Function to call after image upload
+   */
+  setOnImageUploadedCallback(callback) {
+    this.onImageUploaded = callback;
   }
 
   /**
