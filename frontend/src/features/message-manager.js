@@ -109,6 +109,11 @@ export class MessageManager extends BaseManager {
     this.messageStart = 0;
     this.messages = [];
 
+    // Update image manager with current channel
+    if (this.imageManager) {
+      this.imageManager.setCurrentChannel(channelId);
+    }
+
     const token = this.auth.getToken();
 
     return this.api
@@ -120,6 +125,12 @@ export class MessageManager extends BaseManager {
       })
       .then((fullMessages) => {
         this.messages = fullMessages;
+
+        // Update image manager with channel images
+        if (this.imageManager) {
+          this.imageManager.updateChannelImages(this.messages);
+        }
+
         this.renderMessages();
         // display the new message to the bottom
         this.scrollToBottom();
@@ -313,6 +324,10 @@ export class MessageManager extends BaseManager {
     if (message.image) {
       this.showElement(imageElem, "block");
       imageElem.src = message.image;
+      // Make image clickable to open viewer
+      if (this.imageManager) {
+        this.imageManager.makeImageClickable(imageElem, message.image);
+      }
     }
 
     // Reactions - always show to allow adding reactions and display default emojis
@@ -451,44 +466,6 @@ export class MessageManager extends BaseManager {
       })
       .catch((error) => {
         this.showError(error.message || "Failed to send message");
-      });
-  }
-
-  /**
-   * Handle image upload
-   * @param {Event} event - Change event from file input
-   */
-  handleImageUpload(event) {
-    const file = event.target.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    if (!this.curChannelId) {
-      this.showError("Please select a channel first");
-      event.target.value = "";
-      return;
-    }
-
-    const token = this.auth.getToken();
-
-    // Convert file to data URL
-    fileToDataUrl(file)
-      .then((dataUrl) => {
-        // Send image message (no text, just image)
-        return this.api.sendMessage(this.curChannelId, "", dataUrl, token);
-      })
-      .then(() => {
-        // Clear file input
-        event.target.value = "";
-
-        // Reload messages
-        return this.loadMessages(this.curChannelId);
-      })
-      .catch((error) => {
-        this.showError(error.message || "Failed to send image");
-        event.target.value = "";
       });
   }
 
