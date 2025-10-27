@@ -30,10 +30,21 @@ export class MessageManager extends BaseManager {
       messageInput: document.getElementById("message-input"),
       sendButton: document.getElementById("send-message-button"),
       messageForm: document.getElementById("message-form"),
+      messageImageInput: document.getElementById("message-image-input"),
       emojiPickerModal: document.getElementById("emoji-picker-modal"),
       emojiPickerGrid: document.getElementById("emoji-picker-grid"),
       emojiPickerClose: document.getElementById("emoji-picker-close"),
+      imageViewerModal: document.getElementById("image-viewer-modal"),
+      imageViewerImage: document.getElementById("image-viewer-image"),
+      imageViewerClose: document.getElementById("image-viewer-close"),
+      imageViewerPrev: document.getElementById("image-viewer-prev"),
+      imageViewerNext: document.getElementById("image-viewer-next"),
+      imageViewerCounter: document.getElementById("image-viewer-counter"),
     };
+
+    // Image viewing state
+    this.channelImages = [];
+    this.currentImageIndex = 0;
 
     // Cache templates
     this.templates = {
