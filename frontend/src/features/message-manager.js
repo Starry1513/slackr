@@ -6,11 +6,12 @@ import { helperManager } from "./helper-manager.js";
  * Responsible for: displaying messages, sending messages, editing/deleting messages, reactions, pinning
  */
 export class MessageManager extends BaseManager {
-  constructor(api, auth, ErrorController) {
+  constructor(api, auth, ErrorController, imageManager) {
     super(api, auth, ErrorController);
 
-    // Image manager for user images
+    // Helper managers
     this.helperManager = new helperManager();
+    this.imageManager = imageManager;
 
     // Message state
     this.curChannelId = null;
@@ -23,28 +24,17 @@ export class MessageManager extends BaseManager {
 
     // Common emojis for quick reactions
     this.commonEmojis = ["👍", "❤️", "😄", "😮", "😢", "😡", "🎉", "🔥", "👏", "✅", "❌", "👀"];
-    
+
     // Cache DOM elements
     this.dom = {
       messagesContainer: document.getElementById("channel-messages"),
       messageInput: document.getElementById("message-input"),
       sendButton: document.getElementById("send-message-button"),
       messageForm: document.getElementById("message-form"),
-      messageImageInput: document.getElementById("message-image-input"),
       emojiPickerModal: document.getElementById("emoji-picker-modal"),
       emojiPickerGrid: document.getElementById("emoji-picker-grid"),
       emojiPickerClose: document.getElementById("emoji-picker-close"),
-      imageViewerModal: document.getElementById("image-viewer-modal"),
-      imageViewerImage: document.getElementById("image-viewer-image"),
-      imageViewerClose: document.getElementById("image-viewer-close"),
-      imageViewerPrev: document.getElementById("image-viewer-prev"),
-      imageViewerNext: document.getElementById("image-viewer-next"),
-      imageViewerCounter: document.getElementById("image-viewer-counter"),
     };
-
-    // Image viewing state
-    this.channelImages = [];
-    this.currentImageIndex = 0;
 
     // Cache templates
     this.templates = {
@@ -77,13 +67,6 @@ export class MessageManager extends BaseManager {
       });
     }
 
-    // Image upload input
-    if (this.dom.messageImageInput) {
-      this.dom.messageImageInput.addEventListener("change", (e) => {
-        this.handleImageUpload(e);
-      });
-    }
-
     // Scroll to load more messages
     if (this.dom.messagesContainer) {
       this.dom.messagesContainer.addEventListener("scroll", () => {
@@ -113,28 +96,6 @@ export class MessageManager extends BaseManager {
 
       // populate grid once
       this.renderEmojiGrid();
-    }
-
-    // Image viewer event listeners
-    if (this.dom.imageViewerClose) {
-      this.dom.imageViewerClose.addEventListener("click", () => this.closeImageViewer());
-    }
-
-    if (this.dom.imageViewerPrev) {
-      this.dom.imageViewerPrev.addEventListener("click", () => this.showPreviousImage());
-    }
-
-    if (this.dom.imageViewerNext) {
-      this.dom.imageViewerNext.addEventListener("click", () => this.showNextImage());
-    }
-
-    // Close image viewer when clicking on overlay
-    if (this.dom.imageViewerModal) {
-      this.dom.imageViewerModal.addEventListener("click", (e) => {
-        if (e.target === this.dom.imageViewerModal) {
-          this.closeImageViewer();
-        }
-      });
     }
 
   }
@@ -490,6 +451,44 @@ export class MessageManager extends BaseManager {
       })
       .catch((error) => {
         this.showError(error.message || "Failed to send message");
+      });
+  }
+
+  /**
+   * Handle image upload
+   * @param {Event} event - Change event from file input
+   */
+  handleImageUpload(event) {
+    const file = event.target.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!this.curChannelId) {
+      this.showError("Please select a channel first");
+      event.target.value = "";
+      return;
+    }
+
+    const token = this.auth.getToken();
+
+    // Convert file to data URL
+    fileToDataUrl(file)
+      .then((dataUrl) => {
+        // Send image message (no text, just image)
+        return this.api.sendMessage(this.curChannelId, "", dataUrl, token);
+      })
+      .then(() => {
+        // Clear file input
+        event.target.value = "";
+
+        // Reload messages
+        return this.loadMessages(this.curChannelId);
+      })
+      .catch((error) => {
+        this.showError(error.message || "Failed to send image");
+        event.target.value = "";
       });
   }
 
