@@ -294,6 +294,15 @@ export class MessageManager extends BaseManager {
 
       if (message.edited) {
         const editedFragment = this.templates.editedSpan.content.cloneNode(true);
+        const editedSpan = editedFragment.querySelector(".edited-indicator");
+
+        // Add edited timestamp if available
+        if (editedSpan) {
+          const editedTime = this.formatTimestamp(message.editedAt);
+          console.log(editedTime);
+          editedSpan.textContent = `(edited ${editedTime})`;
+        }
+
         textElem.appendChild(editedFragment);
       }
     }

@@ -3,10 +3,9 @@
  * Provides common functionality shared across managers
  */
 export class BaseManager {
-  constructor(api, auth, pageController, ErrorController) {
+  constructor(api, auth, ErrorController) {
     this.api = api;
     this.auth = auth;
-    this.pageController = pageController;
     this.ErrorController = ErrorController;
 
     this.userCache = new Map();

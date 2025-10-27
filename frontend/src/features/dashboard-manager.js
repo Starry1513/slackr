@@ -2,9 +2,10 @@ import { BaseManager } from "./base-manager.js";
 
 export class Dashboard extends BaseManager {
   constructor(api, auth, pageController, ErrorController, channelManager) {
-    super(api, auth, pageController, ErrorController);
+    super(api, auth, ErrorController);
     // Cache commonly used DOM elements in a single object for easier access
     this.channelManager = channelManager;
+    this.pageController = pageController;
 
     this.dom = {
       loginForm: document.getElementById("login-form"),
