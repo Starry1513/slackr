@@ -130,7 +130,7 @@ export class MessageManager extends BaseManager {
         }
 
         this.renderMessages();
-        this.scroll.scrollToBottom();
+        // this.scroll.scrollToBottom();
         return this.messages;
       })
       .catch((error) => {
@@ -342,6 +342,49 @@ export class MessageManager extends BaseManager {
    */
   stopPushNotifications() {
     this.notifications.stop();
+  }
+
+  /**
+   * Handle view pinned messages
+   */
+  handleViewPinnedMessages() {
+    // Filter pinned messages from current messages
+    const pinnedMessages = this.messages.filter(msg => msg.pinned);
+
+    // Clear pinned messages container
+    this.clearElement(this.dom.pinnedMessagesContent);
+
+    if (pinnedMessages.length === 0) {
+      // Show empty state
+      const emptyDiv = document.createElement("div");
+      emptyDiv.className = "empty-messages";
+      emptyDiv.textContent = "No pinned messages in this channel.";
+      this.dom.pinnedMessagesContent.appendChild(emptyDiv);
+    } else {
+      // Render pinned messages (no handlers needed for modal view)
+      const handlers = {
+        onEdit: null,
+        onDelete: null,
+        onPin: null,
+        onReact: null,
+        onShowReacPicker: null
+      };
+
+      pinnedMessages.forEach((message) => {
+        const messageElement = this.renderer.createMessageElement(message, handlers, this.imageManager);
+        this.dom.pinnedMessagesContent.appendChild(messageElement);
+      });
+    }
+
+    // Show modal
+    this.showElement(this.dom.pinnedMessagesContainer, "flex");
+  }
+
+  /**
+   * Hide pinned messages modal
+   */
+  hidePinnedMessagesModal() {
+    this.hideElement(this.dom.pinnedMessagesContainer);
   }
 
   /**
