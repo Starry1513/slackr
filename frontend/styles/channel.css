@@ -13,6 +13,7 @@
 
 /* Dashboard Layout - Full Screen Discord-like Design */
 .dashboard {
+  --sidebar-width: 240px;
   display: flex;
   flex-direction: row;
   position: fixed;
@@ -103,8 +104,9 @@
 }
 
 .channel-container.active {
-  background-color: #404249;
+  background-color: #5865f2;
   color: #ffffff;
+  font-weight: 600;
 }
 
 /* Private Channel Styling */
@@ -121,9 +123,10 @@
 }
 
 .channel-container.private.active {
-  background-color: rgba(88, 101, 242, 0.3);
+  background-color: #5865f2;
   color: #ffffff;
-  border-left: 3px solid #7289da;
+  font-weight: 600;
+  border-left: 3px solid #ffffff;
 }
 
 .channel-lock-icon {
@@ -158,18 +161,58 @@
   height: 100%;
   text-align: center;
   padding: 2rem;
+  background: linear-gradient(135deg, #2f3136 0%, #36393f 50%, #2f3136 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-screen::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(88, 101, 242, 0.1) 0%, transparent 70%);
+  animation: pulse 15s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.1); opacity: 0.5; }
 }
 
 .welcome-screen h2 {
-  font-size: 2rem;
+  font-size: 3rem;
   color: #ffffff;
   margin-bottom: 1rem;
-  font-weight: 700;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 10px rgba(88, 101, 242, 0.3);
+  letter-spacing: -0.02em;
+}
+
+.welcome-screen h2::before {
+  content: '💬';
+  display: block;
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .welcome-screen p {
   color: #b9bbbe;
-  font-size: 1rem;
+  font-size: 1.125rem;
+  position: relative;
+  z-index: 1;
+  max-width: 400px;
+  line-height: 1.6;
 }
 
 /* Channel View - Full Screen Layout with proper scrolling */
@@ -272,13 +315,14 @@
 .message-input-container {
   position: fixed;
   bottom: 0;
-  left: 240px; /* Account for sidebar width */
+  left: var(--sidebar-width, 240px);
   right: 0;
   padding: 1rem;
   background-color: #36393f;
   border-top: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
   z-index: 50;
+  transition: left 0.3s ease;
 }
 
 /* Adjust input when channel details is open */
@@ -321,6 +365,8 @@
   font-size: 0.875rem;
   font-weight: 600;
   transition: background-color 0.17s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .message-input-container button:hover {
