@@ -64,7 +64,19 @@ export class MessageReactions extends BaseManager {
    */
   // handle the Reac toggling logic for emoji Reac
   toggleReac(channelId, message, emoji) {
+    const token = this.auth.getToken();
+    const curUserId = parseInt(this.auth.getUserId());
 
+    // Check if user already reacted with this emoji
+    const ifReacted = message.reacts.some(
+      (react) => react.user === curUserId && react.react === emoji
+    );
+
+    const apiCall = ifReacted
+      ? this.api.unreactToMessage(channelId, message.id, emoji, token)
+      : this.api.reactToMessage(channelId, message.id, emoji, token);
+
+    return apiCall;
   }
 
   /**
@@ -72,20 +84,40 @@ export class MessageReactions extends BaseManager {
    * @param {Object} message - Message object
    */
   showReacPicker(message) {
-
+    this.currEmojiMessage = message;
+    if (this.dom.emojiPickerModal) {
+      this.dom.emojiPickerModal.style.display = "flex";
+    }
+    // Ensure grid is populated
+    this.renderEmojiGrid();
   }
 
   /**
    * Hide emoji picker
    */
   hideEmojiPicker() {
-
+    this.currEmojiMessage = null;
+    if (this.dom.emojiPickerModal) {
+      this.dom.emojiPickerModal.style.display = "none";
+    }
   }
 
   /**
    * Render the emoji picker grid from someEmojis
    */
   renderEmojiGrid() {
+    if (!this.dom.emojiPickerList) return;
 
+    // Clear existing
+    this.clearElement(this.dom.emojiPickerList);
+
+    this.someEmojis.forEach((emoji) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "emoji-btn";
+      btn.dataset.emoji = emoji;
+      btn.textContent = emoji;
+      this.dom.emojiPickerList.appendChild(btn);
+    });
   }
 }
