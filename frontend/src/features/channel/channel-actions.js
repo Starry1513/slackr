@@ -85,6 +85,19 @@ export class ChannelActions extends BaseManager {
       this.hideEditChannelModal();
     });
 
+    // Listen for join button click from message prompt
+    window.addEventListener("join-channel-click", () => {
+      this.handleJoinChannel();
+    });
+
+    // Join/Leave channel buttons
+    this.dom.joinChannelButton.addEventListener("click", () => {
+      this.handleJoinChannel();
+    });
+
+    this.dom.leaveChannelButton.addEventListener("click", () => {
+      this.handleLeaveChannel();
+    });
   }
 
 
