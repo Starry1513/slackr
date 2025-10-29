@@ -5,14 +5,18 @@ import { BaseManager } from "./base-manager.js";
  * Responsible for: channel list, create/edit/delete channels, channel details
  */
 export class ChannelManager extends BaseManager {
-  constructor(api, auth, ErrorController, messageManager, userManager) {
+  constructor(api, auth, ErrorController, messageManager, userManager, offlineManager = null) {
     super(api, auth, ErrorController);
     this.messageManager = messageManager;
     this.userManager = userManager;
+    this.offlineManager = offlineManager;
 
     // curr channel state
     this.currChannelId = null;
     this.currChannelData = null;
+
+    // Callback for when channel is selected (for URL routing)
+    this.onChannelSelectedCallback = null;
 
     // Cache templates
     this.templates = {
@@ -145,6 +149,20 @@ export class ChannelManager extends BaseManager {
   loadChannels() {
     const token = this.auth.getToken();
 
+    // Check if offline
+    if (this.offlineManager && !this.offlineManager.getOnlineStatus()) {
+      // Load from cache
+      const cachedChannels = this.offlineManager.getCachedChannels();
+      if (cachedChannels) {
+        this.renderChannelList(cachedChannels);
+        return Promise.resolve(cachedChannels);
+      } else {
+        this.showError("No cached channels available. Please connect to the internet.");
+        return Promise.reject(new Error("Offline and no cache available"));
+      }
+    }
+
+    // Online - fetch from API
     return this.api
       .getChannels(token)
       .then((response) => {
@@ -244,41 +262,79 @@ export class ChannelManager extends BaseManager {
   selectChannel(channelId) {
     const token = this.auth.getToken();
 
+    // Check if offline
+    if (this.offlineManager && !this.offlineManager.getOnlineStatus()) {
+      // Load from cache
+      const cachedData = this.offlineManager.getCachedChannelDetails(channelId);
+      if (cachedData) {
+        this.handleChannelData(channelId, cachedData);
+        return Promise.resolve(cachedData);
+      } else {
+        this.showError("Channel details not available offline. Please connect to the internet.");
+        return Promise.reject(new Error("Offline and no cache available"));
+      }
+    }
+
+    // Online - fetch from API
     this.api
       .getChannelDetails(channelId, token)
       .then((channelData) => {
-        this.currChannelId = channelId;
-        this.currChannelData = channelData;
-
-        // Set channel ID for user manager
-        if (this.userManager) {
-          this.userManager.setcurrChannelId(channelId);
+        // Cache channel details
+        if (this.offlineManager) {
+          this.offlineManager.cacheChannelDetails(channelId, channelData);
         }
 
-        // Update UI
-        this.showChannelView();
-        this.renderChannelHeader(channelData);
-        this.renderChannelDetails(channelData);
-        this.updateChannelActions(channelData);
-
-        // Load messages for this channel
-        if (this.messageManager) {
-          this.messageManager.loadMessages(channelId);
-        }
-
-        // Update active state in channel list
-        document.querySelectorAll(".channel-container").forEach((el) => {
-          el.classList.remove("active");
-        });
-        document.querySelectorAll(".channel-container").forEach((el) => {
-          if (el.textContent === channelData.name || el.textContent === "🔒 " + channelData.name) {
-            el.classList.add("active");
-          }
-        });
+        this.handleChannelData(channelId, channelData);
       })
       .catch((error) => {
+        // Try cache as fallback
+        if (this.offlineManager) {
+          const cachedData = this.offlineManager.getCachedChannelDetails(channelId);
+          if (cachedData) {
+            console.log('[ChannelManager] API failed, using cached channel details');
+            this.handleChannelData(channelId, cachedData);
+            return;
+          }
+        }
+
         this.showError(error.message || "Failed to load channel");
       });
+  }
+
+  /**
+   * Handle channel data (shared by online and offline paths)
+   * @param {number} channelId - Channel ID
+   * @param {Object} channelData - Channel data
+   */
+  handleChannelData(channelId, channelData) {
+    this.currChannelId = channelId;
+    this.currChannelData = channelData;
+
+    // Set channel ID for user manager
+    if (this.userManager) {
+      this.userManager.setcurrChannelId(channelId);
+    }
+
+    // Update UI
+    this.showChannelView();
+    this.renderChannelHeader(channelData);
+    this.renderChannelDetails(channelData);
+    this.updateChannelActions(channelData);
+
+    // Load messages for this channel
+    if (this.messageManager) {
+      this.messageManager.loadMessages(channelId);
+    }
+
+    // Update active state in channel list
+    document.querySelectorAll(".channel-container").forEach((el) => {
+      el.classList.remove("active");
+    });
+    document.querySelectorAll(".channel-container").forEach((el) => {
+      if (el.textContent === channelData.name || el.textContent === "🔒 " + channelData.name) {
+        el.classList.add("active");
+      }
+    });
   }
 
   /**
