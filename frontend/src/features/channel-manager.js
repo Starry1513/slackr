@@ -167,9 +167,25 @@ export class ChannelManager extends BaseManager {
       .getChannels(token)
       .then((response) => {
         this.renderChannelList(response.channels);
+
+        // Cache channels for offline use
+        if (this.offlineManager) {
+          this.offlineManager.cacheChannels(response.channels);
+        }
+
         return response.channels;
       })
       .catch((error) => {
+        // If fetch fails, try cache as fallback
+        if (this.offlineManager) {
+          const cachedChannels = this.offlineManager.getCachedChannels();
+          if (cachedChannels) {
+            console.log('[ChannelManager] API failed, using cached channels');
+            this.renderChannelList(cachedChannels);
+            return cachedChannels;
+          }
+        }
+
         this.showError(error.message || "Failed to load channels");
         throw error;
       });
@@ -335,6 +351,19 @@ export class ChannelManager extends BaseManager {
         el.classList.add("active");
       }
     });
+
+    // Notify callback (for URL routing)
+    if (this.onChannelSelectedCallback) {
+      this.onChannelSelectedCallback(channelId);
+    }
+  }
+
+  /**
+   * Set callback for when channel is selected
+   * @param {Function} callback - Function(channelId)
+   */
+  setOnChannelSelectedCallback(callback) {
+    this.onChannelSelectedCallback = callback;
   }
 
   /**
