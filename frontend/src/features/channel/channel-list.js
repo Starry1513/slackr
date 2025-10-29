@@ -100,4 +100,63 @@ export class ChannelList extends BaseManager {
     });
   }
 
+  /**
+   * Render a single channel item
+   * @param {Object} channel - Channel object
+   */
+  renderChannelItem(channel) {
+    // Choose appropriate template
+    const template = channel.private ? this.templates.privateChannelItem : this.templates.channelItem;
+    const channelFragment = template.content.cloneNode(true);
+    const channelElement = channelFragment.querySelector(".channel-container");
+
+    // Set channel name
+    const nameSpan = channelElement.querySelector(".channel-name");
+    nameSpan.textContent = channel.name;
+
+    // Add click event
+    channelElement.addEventListener("click", () => {
+      if (this.onChannelSelectCallback) {
+        this.onChannelSelectCallback(channel.id);
+      }
+    });
+
+    // Add keyboard event for accessibility
+    channelElement.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        if (this.onChannelSelectCallback) {
+          this.onChannelSelectCallback(channel.id);
+        }
+      }
+    });
+
+    this.dom.channelList.appendChild(channelFragment);
+  }
+
+  /**
+   * Update active channel styling
+   * @param {number} channelId - Current channel ID
+   * @param {string} channelName - Current channel name
+   */
+  updateActiveChannel(channelId, channelName) {
+    // Remove active class from all channels
+    document.querySelectorAll(".channel-container").forEach((el) => {
+      el.classList.remove("active");
+    });
+
+    // Add active class to current channel
+    document.querySelectorAll(".channel-container").forEach((el) => {
+      if (el.textContent === channelName || el.textContent === "🔒 " + channelName) {
+        el.classList.add("active");
+      }
+    });
+  }
+
+  /**
+   * Clear channel list
+   */
+  clearChannels() {
+    this.clearElement(this.dom.channelList);
+  }
 }
