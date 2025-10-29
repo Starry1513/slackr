@@ -15,6 +15,12 @@ export class UserManager extends BaseManager {
     // curr channel ID (will be set by channel manager)
     this.currChannelId = null;
 
+    // Store original user data for comparison
+    this.originalUserData = null;
+
+    // Callback for when profile is viewed (for URL routing)
+    this.onProfileViewedCallback = null;
+
     // Cache DOM elements
     this.dom = {
       // Profile modal
@@ -174,6 +180,9 @@ export class UserManager extends BaseManager {
     this.api
       .getUserDetails(userId, token)
       .then((userData) => {
+        // Store original data for comparison
+        this.originalUserData = userData;
+
         // Fill form with curr data
         if (this.dom.profileEmail) this.dom.profileEmail.value = userData.email || "";
         if (this.dom.profileName) this.dom.profileName.value = userData.name || "";
@@ -192,6 +201,11 @@ export class UserManager extends BaseManager {
         }
 
         this.dom.profileContainer.style.display = "flex";
+
+        // Notify callback (for URL routing - own profile)
+        if (this.onProfileViewedCallback) {
+          this.onProfileViewedCallback(null);
+        }
       })
       .catch((error) => {
         this.showError(error.message || "Failed to load profile");
@@ -257,6 +271,12 @@ export class UserManager extends BaseManager {
 
     const token = this.auth.getToken();
 
+    // Check if email has actually changed
+    // If email is the same as original, send undefined to avoid "already taken" error
+    const emailToSend = (this.originalUserData && email === this.originalUserData.email)
+      ? undefined
+      : email;
+
     // Convert image to base64 if selected
     let imagePromise;
     if (this.dom.profileImage.files && this.dom.profileImage.files[0]) {
@@ -267,7 +287,7 @@ export class UserManager extends BaseManager {
 
     imagePromise
       .then((imageBase64) => {
-        return this.api.updateUserProfile(email, name, bio, imageBase64, password, token);
+        return this.api.updateUserProfile(emailToSend, name, bio, imageBase64, password, token);
       })
       .then(() => {
         this.hideProfileModal();
@@ -459,6 +479,11 @@ export class UserManager extends BaseManager {
         );
 
         this.dom.viewUserProfileContainer.style.display = "flex";
+
+        // Notify callback (for URL routing)
+        if (this.onProfileViewedCallback) {
+          this.onProfileViewedCallback(userId);
+        }
       })
       .catch((error) => {
         this.showError(error.message || "Failed to load user profile");
@@ -472,5 +497,28 @@ export class UserManager extends BaseManager {
     if (this.dom.viewUserProfileContainer) {
       this.dom.viewUserProfileContainer.style.display = "none";
     }
+  }
+
+  /**
+   * Set callback for when profile is viewed
+   * @param {Function} callback - Function(userId or null for own profile)
+   */
+  setOnProfileViewedCallback(callback) {
+    this.onProfileViewedCallback = callback;
+  }
+
+  /**
+   * Show own profile (for router)
+   */
+  showOwnProfile() {
+    this.showProfileModal();
+  }
+
+  /**
+   * Show user profile (for router)
+   * @param {number} userId - User ID
+   */
+  showUserProfile(userId) {
+    this.showViewUserProfileModal(userId);
   }
 }
