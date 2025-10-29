@@ -365,33 +365,34 @@ export class UserManager extends BaseManager {
     this.clearElement(this.dom.inviteUserList);
 
     if (users.length === 0) {
-      const emptyMsg = document.createElement("p");
-      emptyMsg.textContent = "All users are already in this channel";
-      emptyMsg.style.textAlign = "center";
-      emptyMsg.style.padding = "2rem";
-      emptyMsg.style.color = "#6b7280";
-      this.dom.inviteUserList.appendChild(emptyMsg);
+      // Use template for empty state
+      const emptyTemplate = document.getElementById("empty-invite-list-template");
+      if (emptyTemplate) {
+        const emptyFragment = emptyTemplate.content.cloneNode(true);
+        this.dom.inviteUserList.appendChild(emptyFragment);
+      }
+      return;
+    }
+
+    // Use template for user items
+    const userItemTemplate = document.getElementById("invite-user-item-template");
+    if (!userItemTemplate) {
+      console.error("Invite user item template not found");
       return;
     }
 
     users.forEach(user => {
-      const userItem = document.createElement("div");
-      userItem.className = "invite-user-item";
+      const fragment = userItemTemplate.content.cloneNode(true);
 
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.className = "invite-member-checkbox";
+      const checkbox = fragment.querySelector(".invite-member-checkbox");
+      const label = fragment.querySelector(".invite-member-name");
+
       checkbox.value = user.id;
       checkbox.id = `invite-user-${user.id}`;
-
-      const label = document.createElement("label");
       label.htmlFor = `invite-user-${user.id}`;
-      label.className = "invite-member-name";
       label.textContent = user.name;
 
-      userItem.appendChild(checkbox);
-      userItem.appendChild(label);
-      this.dom.inviteUserList.appendChild(userItem);
+      this.dom.inviteUserList.appendChild(fragment);
     });
   }
 

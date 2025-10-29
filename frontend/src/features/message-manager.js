@@ -639,5 +639,18 @@ export class MessageManager extends BaseManager {
       }
     }
   }
-
+  /**
+   * Hide edit message modal
+   */
+  hideEditMessageModal() {
+    if (this.dom.editMessageContainer) {
+      this.dom.editMessageContainer.style.display = "none";
+      // Clear form
+      if (this.dom.editMessageText) {
+        this.dom.editMessageText.value = "";
+      }
+      // Clear editing message reference
+      this.editingMessage = null;
+    }
+  }
 }
