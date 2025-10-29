@@ -32,6 +32,10 @@ export class MessageManager extends BaseManager {
       messagesContainer: document.getElementById("channel-messages"),
       messageInput: document.getElementById("message-input"),
       messageForm: document.getElementById("message-form"),
+      viewPinnedButton: document.getElementById("view-pinned-messages-button"),
+      pinnedMessagesContainer: document.getElementById("pinned-messages-container"),
+      pinnedMessagesContent: document.getElementById("pinned-messages-content"),
+      pinnedMessagesClose: document.getElementById("pinned-messages-close"),
     };
   }
 
@@ -58,6 +62,29 @@ export class MessageManager extends BaseManager {
       this.dom.messageForm.addEventListener("submit", (e) => {
         e.preventDefault();
         this.handleSendMessage();
+      });
+    }
+
+    // View pinned messages button
+    if (this.dom.viewPinnedButton) {
+      this.dom.viewPinnedButton.addEventListener("click", () => {
+        this.handleViewPinnedMessages();
+      });
+    }
+
+    // Close pinned messages modal
+    if (this.dom.pinnedMessagesClose) {
+      this.dom.pinnedMessagesClose.addEventListener("click", () => {
+        this.hidePinnedMessagesModal();
+      });
+    }
+
+    // Close modal when clicking outside
+    if (this.dom.pinnedMessagesContainer) {
+      this.dom.pinnedMessagesContainer.addEventListener("click", (e) => {
+        if (e.target === this.dom.pinnedMessagesContainer) {
+          this.hidePinnedMessagesModal();
+        }
       });
     }
   }
@@ -185,7 +212,8 @@ export class MessageManager extends BaseManager {
       onEdit: (message) => this.handleEditMessage(message),
       onDelete: (message) => this.handleDeleteMessage(message),
       onReact: (message, emoji) => this.handleReacToggle(message, emoji),
-      onShowReacPicker: (message) => this.Reac.showReacPicker(message)
+      onShowReacPicker: (message) => this.Reac.showReacPicker(message),
+      onPin: (message) => this.handlePinMessage(message),
     };
 
     this.renderer.renderMessages(
@@ -254,6 +282,24 @@ export class MessageManager extends BaseManager {
       })
       .catch((error) => {
         this.showError(error.message || "Failed to delete message");
+      });
+  }
+
+  /**
+   * Handle pin/unpin message
+   * @param {Object} message - Message to pin/unpin
+   */
+  handlePinMessage(message) {
+
+    const action = message.pinned ? this.actions.unpinMessage(this.curChannelId, message.id) :
+    this.actions.pinMessage(this.curChannelId, message.id);
+    action
+      .then(() => {
+        // Reload messages
+        return this.loadMessages(this.curChannelId);
+      })
+      .catch((error) => {
+        this.showError(error.message || "Failed to pin/unpin message");
       });
   }
 
