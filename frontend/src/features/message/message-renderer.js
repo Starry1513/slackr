@@ -57,7 +57,104 @@ export class MessageRenderer extends BaseManager {
    * @returns {HTMLElement}
    */
   createMessageElement(message, handlers, imageManager) {
+    // Clone template
+    const messageFragment = this.templates.message.content.cloneNode(true);
+    const messageDiv = messageFragment.querySelector(".message");
 
+    // Set message ID
+    messageDiv.dataset.messageId = message.id;
+
+    // Check if curr user is the sender
+    const curUserId = parseInt(this.getUserId());
+    const isOwnMessage = message.sender === curUserId;
+    if (isOwnMessage) {
+      this.addClass(messageDiv, "own-message");
+    }
+
+    // Get elements
+    const imageContainer = messageDiv.querySelector(".message-sender-image-container");
+    const senderName = messageDiv.querySelector(".message-sender-name");
+    const timestamp = messageDiv.querySelector(".message-timestamp");
+    const textElem = messageDiv.querySelector(".message-text");
+    const imageElem = messageDiv.querySelector(".message-image");
+    const ReacDiv = messageDiv.querySelector(".message-reactions");
+    const pinnedBadge = messageDiv.querySelector(".message-pinned-badge");
+    const actionsDiv = messageDiv.querySelector(".message-actions");
+
+
+    // Sender image - use helperManager for unified handling
+    this.helperManager.renderUserImageFromTemplate(
+      imageContainer,
+      this.templates.senderImage,
+      message.senderImage,
+      message.senderName || "User"
+    );
+
+    // Sender name and timestamp
+    senderName.textContent = message.senderName || "Unknown User";
+    timestamp.textContent = this.formatTimestamp(message.sentAt);
+
+    // Message actions (pin, edit, delete)
+    if (isOwnMessage && handlers.onEdit && handlers.onDelete && handlers.onPin) {
+      this.showElement(actionsDiv, "flex");
+      const pinBtn = actionsDiv.querySelector(".pin-message-btn");
+      const editBtn = actionsDiv.querySelector(".edit-message-btn");
+      const deleteBtn = actionsDiv.querySelector(".delete-message-btn");
+
+      // Update pin button text based on pinned state
+      if (message.pinned) {
+        pinBtn.textContent = "📌 Unpin";
+      } else {
+        pinBtn.textContent = "📌 Pin";
+      }
+
+      pinBtn.onclick = () => handlers.onPin(message);
+      editBtn.onclick = () => handlers.onEdit(message);
+      deleteBtn.onclick = () => handlers.onDelete(message);
+    }
+
+    // Message text
+    if (message.message) {
+      this.showElement(textElem, "block");
+      textElem.textContent = message.message;
+      // if message is edited, append edited indicator
+      if (message.edited) {
+        const editedFragment = this.templates.editedSpan.content.cloneNode(true);
+        const editedSpan = editedFragment.querySelector(".edited-indicator");
+
+        // Add edited timestamp if available
+        if (editedSpan) {
+          // Hello, world! (edited 5 minutes ago)
+          const editedTime = this.formatTimestamp(message.editedAt);
+          editedSpan.textContent = `(edited ${editedTime})`;
+        }
+
+        textElem.appendChild(editedFragment);
+      }
+    }
+
+    // Message image
+    if (message.image) {
+      this.showElement(imageElem, "block");
+      imageElem.src = message.image;
+      // Make image clickable to open viewer
+      if (imageManager) {
+        imageManager.makeImageClickable(imageElem, message.image);
+      }
+    }
+
+    // Reac - always show to allow adding Reac and display default emojis
+    if (handlers.onReact && handlers.onShowReacPicker) {
+      this.showElement(ReacDiv, "flex");
+      this.populateReac(ReacDiv, message, handlers);
+    }
+
+    // Pinned indicator
+    if (message.pinned) {
+      this.showElement(pinnedBadge, "inline-block");
+    }
+
+    return messageFragment;
   }
 
   /**
