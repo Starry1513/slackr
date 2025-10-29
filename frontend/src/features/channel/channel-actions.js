@@ -273,5 +273,32 @@ export class ChannelActions extends BaseManager {
       });
   }
 
+  /**
+   * Handle leave channel
+   */
+  handleLeaveChannel() {
+    if (!this.currentChannelData) {
+      this.showError("No channel selected");
+      return;
+    }
 
+    const confirmLeave = confirm(`Are you sure you want to leave #${this.currentChannelData.name}?`);
+    if (!confirmLeave) {
+      return;
+    }
+
+    const token = this.auth.getToken();
+    const channelId = this.currentChannelData.id;
+
+    this.api
+      .leaveChannel(channelId, token)
+      .then(() => {
+        if (this.onChannelLeftCallback) {
+          this.onChannelLeftCallback(channelId);
+        }
+      })
+      .catch((error) => {
+        this.showError(error.message || "Failed to leave channel");
+      });
+  }
 }
