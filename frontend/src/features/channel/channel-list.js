@@ -49,5 +49,55 @@ export class ChannelList extends BaseManager {
       });
   }
 
+  /**
+   * Render channel list in sidebar
+   * @param {Array} channels - Array of channel objects
+   */
+  renderChannelList(channels) {
+    // Clear existing list
+    this.clearElement(this.dom.channelList);
+
+    if (!channels || channels.length === 0) {
+      const emptyTemplate = document.getElementById("empty-channel-list-template");
+      if (emptyTemplate) {
+        const emptyFragment = emptyTemplate.content.cloneNode(true);
+        this.dom.channelList.appendChild(emptyFragment);
+      }
+      return;
+    }
+
+    const currUserId = parseInt(this.getUserId());
+
+    // Filter channels: show all public channels and only private channels user is a member of
+    const visibleChannels = channels.filter((channel) => {
+      if (!channel.private) {
+        return true; // Show all public channels
+      }
+      // For private channels, only show if user is a member
+      return channel.members && channel.members.includes(currUserId);
+    });
+
+    // Sort channels: public first, then private
+    const sortedChannels = visibleChannels.sort((a, b) => {
+      if (a.private === b.private) {
+        return a.name.localeCompare(b.name);
+      }
+      return a.private ? 1 : -1;
+    });
+
+    if (sortedChannels.length === 0) {
+      const emptyTemplate = document.getElementById("empty-channel-list-template");
+      if (emptyTemplate) {
+        const emptyFragment = emptyTemplate.content.cloneNode(true);
+        this.dom.channelList.appendChild(emptyFragment);
+      }
+      return;
+    }
+
+    // Render each channel using templates
+    sortedChannels.forEach((channel) => {
+      this.renderChannelItem(channel);
+    });
+  }
 
 }
