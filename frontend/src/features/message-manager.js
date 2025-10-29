@@ -547,4 +547,97 @@ export class MessageManager extends BaseManager {
       this.clearElement(this.dom.messagesContainer);
     }
   }
+
+  /**
+   * Show join prompt for non-members
+   * @param {Object} channelData - Channel data
+   */
+  showJoinPrompt(channelData) {
+    if (!this.dom.messagesContainer) {
+      return;
+    }
+
+    // Clear existing content
+    this.clearElement(this.dom.messagesContainer);
+
+    // Get template
+    const template = document.getElementById("join-prompt-template");
+    if (!template) {
+      console.error("Join prompt template not found");
+      return;
+    }
+
+    // Clone template
+    const fragment = template.content.cloneNode(true);
+
+    // Populate template elements
+    const icon = fragment.querySelector(".join-prompt-icon");
+    const title = fragment.querySelector(".join-prompt-title");
+    const description = fragment.querySelector(".join-prompt-description");
+    const message = fragment.querySelector(".join-prompt-message");
+    const button = fragment.querySelector(".join-prompt-button");
+
+    // Set content
+    icon.textContent = channelData.private ? "🔒" : "#";
+    title.textContent = channelData.name;
+    description.textContent = channelData.description || "No description";
+
+    // Set message based on channel type
+    if (channelData.private) {
+      message.textContent = "This is a private channel. You need an invitation to join.";
+      // Hide button for private channels
+      if (button) {
+        button.style.display = "none";
+      }
+    } else {
+      message.textContent = "You are not a member of this channel.";
+      // Add click handler for public channels
+      if (button) {
+        button.addEventListener("click", () => {
+          // Trigger the channel manager's join function
+          window.dispatchEvent(new CustomEvent("join-channel-click"));
+        });
+      }
+    }
+
+    // Append to container
+    this.dom.messagesContainer.appendChild(fragment);
+  }
+
+  /**
+   * Hide message input
+   */
+  hideMessageInput() {
+    if (this.dom.messageInputContainer) {
+      this.dom.messageInputContainer.style.display = "none";
+    }
+  }
+
+  /**
+   * Show message input
+   */
+  showMessageInput() {
+    if (this.dom.messageInputContainer) {
+      this.dom.messageInputContainer.style.display = "flex";
+    }
+  }
+
+  /**
+   * Show edit message modal
+   */
+  showEditMessageModal() {
+    if (this.dom.editMessageContainer) {
+      this.dom.editMessageContainer.style.display = "flex";
+      // Focus on textarea
+      if (this.dom.editMessageText) {
+        this.dom.editMessageText.focus();
+        // Move cursor to end
+        this.dom.editMessageText.setSelectionRange(
+          this.dom.editMessageText.value.length,
+          this.dom.editMessageText.value.length
+        );
+      }
+    }
+  }
+
 }
