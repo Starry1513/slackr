@@ -141,6 +141,11 @@ export class ChannelManager extends BaseManager {
     this.dom.leaveChannelButton.addEventListener("click", () => {
       this.handleLeaveChannel();
     });
+
+    // Listen for join button click from message prompt
+    window.addEventListener("join-channel-click", () => {
+      this.handleJoinChannel();
+    });
   }
 
   /**
@@ -331,15 +336,26 @@ export class ChannelManager extends BaseManager {
       this.userManager.setcurrChannelId(channelId);
     }
 
+    // Check if user is a member
+    const curUserId = parseInt(this.auth.getUserId());
+    const isMember = channelData.members.includes(curUserId);
+
     // Update UI
     this.showChannelView();
     this.renderChannelHeader(channelData);
     this.renderChannelDetails(channelData);
     this.updateChannelActions(channelData);
 
-    // Load messages for this channel
+    // Load messages only if member
     if (this.messageManager) {
-      this.messageManager.loadMessages(channelId);
+      if (isMember) {
+        this.messageManager.loadMessages(channelId);
+        this.messageManager.showMessageInput();
+      } else {
+        // Non-member: show join prompt instead of messages
+        this.messageManager.showJoinPrompt(channelData);
+        this.messageManager.hideMessageInput();
+      }
     }
 
     // Update active state in channel list
@@ -579,8 +595,12 @@ export class ChannelManager extends BaseManager {
     this.api
       .joinChannel(this.currChannelId, token)
       .then(() => {
-        // Reload channel data to update UI
+        // Reload channel data to update UI (will now show messages since user is member)
         return this.selectChannel(this.currChannelId);
+      })
+      .then(() => {
+        // Reload channel list to update sidebar
+        return this.loadChannels();
       })
       .catch((error) => {
         this.showError(error.message || "Failed to join channel");
