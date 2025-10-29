@@ -2,6 +2,67 @@
  * Simple CSS for show/hide page control
  */
 
+/* Banner Header */
+.banner {
+  background: linear-gradient(135deg, #5865f2 0%, #7289da 100%);
+  padding: 0.5rem 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.banner h1 {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.banner h1::before {
+  content: '💬 ';
+  font-size: 1.8rem;
+  margin-right: 0.5rem;
+}
+
+/* Offline Indicator in Banner */
+#offline-indicator {
+  position: absolute;
+  top: 50%;
+  right: 2rem;
+  transform: translateY(-50%);
+  background-color: rgba(220, 38, 38, 0.9);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+#offline-indicator span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* Error Popup Overlay */
 .error-popup-overlay {
   position: fixed;
