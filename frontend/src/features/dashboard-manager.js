@@ -1,10 +1,11 @@
 import { BaseManager } from "./base-manager.js";
 
 export class Dashboard extends BaseManager {
-  constructor(api, auth, pageController, ErrorController, channelManager) {
+  constructor(api, auth, pageController, ErrorController, channelManager, messageManager) {
     super(api, auth, ErrorController);
     // Cache commonly used DOM elements in a single object for easier access
     this.channelManager = channelManager;
+    this.messageManager = messageManager;
     this.pageController = pageController;
 
     this.dom = {
@@ -119,6 +120,9 @@ export class Dashboard extends BaseManager {
         // Save token and userId
         this.auth.saveAuthToken(response.token, response.userId);
 
+        // Start push notifications
+        this.messageManager.startPushNotifications();
+
         // Show dashboard
         this.showDashboard();
       })
@@ -151,6 +155,10 @@ export class Dashboard extends BaseManager {
       .then((response) => {
         // Save token and userId
         this.auth.saveAuthToken(response.token, response.userId);
+
+        // Start push notifications
+        this.messageManager.startPushNotifications();
+
         // Show dashboard
         this.showDashboard();
       })
@@ -164,6 +172,9 @@ export class Dashboard extends BaseManager {
    */
   handleLogout() {
     const token = this.auth.getToken();
+
+    // Stop push notifications
+    this.messageManager.stopPushNotifications();
 
     this.api
       .logout(token)

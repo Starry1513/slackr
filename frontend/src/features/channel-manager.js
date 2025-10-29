@@ -14,6 +14,12 @@ export class ChannelManager extends BaseManager {
     this.currChannelId = null;
     this.currChannelData = null;
 
+    // Cache templates
+    this.templates = {
+      channelItem: document.getElementById("channel-item-template"),
+      privateChannelItem: document.getElementById("private-channel-item-template"),
+    };
+
     // Cache channel-related DOM elements
     this.dom = {
       // Channel list
@@ -169,31 +175,57 @@ export class ChannelManager extends BaseManager {
       return;
     }
 
+    const currUserId = parseInt(this.getUserId());
+
+    // Filter channels: show all public channels and only private channels user is a member of
+    const visibleChannels = channels.filter((channel) => {
+      if (!channel.private) {
+        return true; // Show all public channels
+      }
+      // For private channels, only show if user is a member
+      return channel.members && channel.members.includes(currUserId);
+    });
+
     // Sort channels: public first, then private
-    const sortedChannels = channels.sort((a, b) => {
+    const sortedChannels = visibleChannels.sort((a, b) => {
       if (a.private === b.private) {
         return a.name.localeCompare(b.name);
       }
       return a.private ? 1 : -1;
     });
 
-    // Render each channel
+    if (sortedChannels.length === 0) {
+      const emptyMessage = document.createElement("p");
+      emptyMessage.textContent = "No channels available";
+      emptyMessage.style.padding = "1rem";
+      emptyMessage.style.color = "var(--text-muted)";
+      emptyMessage.style.fontSize = "0.875rem";
+      this.dom.channelList.appendChild(emptyMessage);
+      return;
+    }
+
+    // Render each channel using templates
     sortedChannels.forEach((channel) => {
-      const channelElement = document.createElement("div");
-      channelElement.className = "channel-container";
-      if (channel.private) {
-        channelElement.classList.add("private");
-      }
+      // Choose appropriate template
+      const template = channel.private ? this.templates.privateChannelItem : this.templates.channelItem;
+      const channelFragment = template.content.cloneNode(true);
+      const channelElement = channelFragment.querySelector(".channel-container");
+
+      // Set channel name
+      const nameSpan = channelElement.querySelector(".channel-name");
+      nameSpan.textContent = channel.name;
+
+      // Add active class if this is the current channel
       if (this.currChannelId === channel.id) {
         channelElement.classList.add("active");
       }
 
-      channelElement.textContent = channel.name;
+      // Add click event
       channelElement.addEventListener("click", () => {
         this.selectChannel(channel.id);
       });
 
-      this.dom.channelList.appendChild(channelElement);
+      this.dom.channelList.appendChild(channelFragment);
     });
   }
 
@@ -499,5 +531,18 @@ export class ChannelManager extends BaseManager {
    */
   getcurrChannelData() {
     return this.currChannelData;
+  }
+
+  /**
+   * Clear all channels and reset state
+   */
+  clearChannels() {
+    this.currChannelId = null;
+    this.currChannelData = null;
+
+    // Clear channel list
+    if (this.dom.channelList) {
+      this.clearElement(this.dom.channelList);
+    }
   }
 }
