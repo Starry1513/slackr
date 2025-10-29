@@ -122,10 +122,51 @@ export class OfflineManager {
   cacheMessages(channelId, messages) {
     try {
       const key = `slackr_cached_messages_${channelId}`;
-      localStorage.setItem(key, JSON.stringify(messages));
-      console.log(`[Offline Manager] Cached ${messages.length} messages for channel ${channelId}`);
+
+      // Limit to most recent 50 messages to avoid quota issues
+      const recentMessages = messages.slice(-50);
+
+      // Remove image data to save space (keep metadata but not base64)
+      const lightweightMessages = recentMessages.map(msg => {
+        if (msg.image) {
+          return {
+            ...msg,
+            image: null, // Remove image data for offline cache
+            hadImage: true // Mark that there was an image
+          };
+        }
+        return msg;
+      });
+
+      localStorage.setItem(key, JSON.stringify(lightweightMessages));
+      console.log(`[Offline Manager] Cached ${lightweightMessages.length} messages for channel ${channelId}`);
     } catch (error) {
       console.error('[Offline Manager] Failed to cache messages:', error);
+      // If still fails, try to clear old caches
+      if (error.name === 'QuotaExceededError') {
+        console.log('[Offline Manager] Quota exceeded, clearing old message caches...');
+        this.clearMessageCaches();
+      }
+    }
+  }
+
+  /**
+   * Clear message caches only (keep channel data)
+   */
+  clearMessageCaches() {
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('slackr_cached_messages_')) {
+          keysToRemove.push(key);
+        }
+      }
+
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      console.log(`[Offline Manager] Cleared ${keysToRemove.length} message caches`);
+    } catch (error) {
+      console.error('[Offline Manager] Failed to clear message caches:', error);
     }
   }
 
