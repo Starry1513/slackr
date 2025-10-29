@@ -124,14 +124,17 @@ export class MessageNotifications extends BaseManager {
         // Get the last checked message ID for this channel
         const lastCheckedId = this.channelLastChecked.get(channelId);
 
+        // Get the max message ID from current messages
+        const maxMessageId = Math.max(...theLatestMessages.map(m => m.id));
+
         // Find messages newer than last checked
+        // Only show notifications if we have a lastCheckedId (i.e., not first time entering channel)
         const newMessages = theLatestMessages.filter(msg => {
-          return lastCheckedId === undefined || msg.id > lastCheckedId;
+          return lastCheckedId !== undefined && msg.id > lastCheckedId;
         });
 
         if (newMessages.length > 0) {
           // Update last checked ID for this channel
-          const maxMessageId = Math.max(...theLatestMessages.map(m => m.id));
           this.channelLastChecked.set(channelId, maxMessageId);
 
           // Filter out messages sent by curr user
@@ -149,6 +152,9 @@ export class MessageNotifications extends BaseManager {
           if (channelId === this.currChannelId && this.onNewMessageCallback) {
             this.onNewMessageCallback(newMessages);
           }
+        } else if (lastCheckedId === undefined) {
+          // First time checking this channel - set the baseline without showing notifications
+          this.channelLastChecked.set(channelId, maxMessageId);
         }
       })
       .catch((error) => {

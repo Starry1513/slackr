@@ -111,13 +111,20 @@ export class MessageReactions extends BaseManager {
     // Clear existing
     this.clearElement(this.dom.emojiPickerList);
 
+    const emojiTemplate = document.getElementById("emoji-btn-template");
+    if (!emojiTemplate) {
+      console.error("Emoji button template not found");
+      return;
+    }
+
     this.someEmojis.forEach((emoji) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "emoji-btn";
+      const fragment = emojiTemplate.content.cloneNode(true);
+      const btn = fragment.querySelector(".emoji-btn");
+
       btn.dataset.emoji = emoji;
       btn.textContent = emoji;
-      this.dom.emojiPickerList.appendChild(btn);
+
+      this.dom.emojiPickerList.appendChild(fragment);
     });
   }
 }
