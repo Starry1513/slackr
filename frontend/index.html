@@ -34,7 +34,18 @@
     <main role="main">
       <!-- In-App Notification Banner -->
       <div id="notification-banner-container" style="display: none;">
-        <!-- Notification banners will be added here dynamically -->
+        <!-- Template for notification banner (will be cloned) -->
+        <div id="notification-banner-template" class="notification-banner" style="display: none;">
+          <div class="notification-banner-icon">
+            <img class="notification-banner-avatar" src="" alt="" style="display: none;">
+            <span class="notification-banner-emoji">💬</span>
+          </div>
+          <div class="notification-banner-content">
+            <div class="notification-banner-title"></div>
+            <div class="notification-banner-message"></div>
+          </div>
+          <button class="notification-banner-close" aria-label="Close notification">×</button>
+        </div>
       </div>
 
       <!-- Error Popup -->
