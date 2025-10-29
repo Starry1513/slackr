@@ -192,4 +192,86 @@ export class ChannelActions extends BaseManager {
       });
   }
 
+  /**
+   * Show edit channel modal
+   */
+  showEditChannelModal() {
+    if (!this.currentChannelData) {
+      this.showError("No channel selected");
+      return;
+    }
+
+    // Populate form with current data
+    this.dom.editChannelName.value = this.currentChannelData.name;
+    this.dom.editChannelDescription.value = this.currentChannelData.description || "";
+
+    this.dom.editChannelContainer.style.display = "flex";
+    this.dom.editChannelName.focus();
+  }
+
+  /**
+   * Hide edit channel modal
+   */
+  hideEditChannelModal() {
+    this.dom.editChannelContainer.style.display = "none";
+  }
+
+  /**
+   * Handle edit channel form submission
+   */
+  handleEditChannel() {
+    if (!this.currentChannelData) {
+      this.showError("No channel selected");
+      return;
+    }
+
+    const name = this.dom.editChannelName.value.trim();
+    const description = this.dom.editChannelDescription.value.trim();
+
+    if (!name) {
+      this.showError("Channel name is required");
+      return;
+    }
+
+    const token = this.auth.getToken();
+    const channelId = this.currentChannelData.id;
+
+    this.api
+      .updateChannel(channelId, name, description, token)
+      .then(() => {
+        this.hideEditChannelModal();
+        if (this.onChannelUpdatedCallback) {
+          this.onChannelUpdatedCallback(channelId);
+        }
+      })
+      .catch((error) => {
+        this.showError(error.message || "Failed to update channel");
+      });
+  }
+
+  /**
+   * Handle join channel
+   */
+  handleJoinChannel() {
+    if (!this.currentChannelData) {
+      this.showError("No channel selected");
+      return;
+    }
+
+    const token = this.auth.getToken();
+    const channelId = this.currentChannelData.id;
+
+    this.api
+      .joinChannel(channelId, token)
+      .then(() => {
+        if (this.onChannelJoinedCallback) {
+          this.onChannelJoinedCallback(channelId);
+        }
+      })
+      .catch((error) => {
+        this.showError(error.message || "Failed to join channel");
+      });
+  }
+
+
 }
