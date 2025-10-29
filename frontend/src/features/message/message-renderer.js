@@ -120,13 +120,21 @@ export class MessageRenderer extends BaseManager {
       // if message is edited, append edited indicator
       if (message.edited) {
         const editedFragment = this.templates.editedSpan.content.cloneNode(true);
-        const editedSpan = editedFragment.querySelector(".edited-indicator");
+        const editedSpan = editedFragment.querySelector(".message-edited");
 
         // Add edited timestamp if available
         if (editedSpan) {
-          // Hello, world! (edited 5 minutes ago)
-          const editedTime = this.formatTimestamp(message.editedAt);
-          editedSpan.textContent = `(edited ${editedTime})`;
+          // Try multiple possible field names for edited timestamp
+          const editedTime = message.editedAt || message.edited_at || message.updatedAt || message.updated_at;
+
+          if (editedTime) {
+            // Format and display the timestamp
+            const formattedTime = this.formatTimestamp(editedTime);
+            editedSpan.textContent = ` (edited ${formattedTime})`;
+          } else {
+            // Fallback if timestamp is not available from backend
+            editedSpan.textContent = ` (edited)`;
+          }
         }
 
         textElem.appendChild(editedFragment);

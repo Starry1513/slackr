@@ -205,12 +205,11 @@ export class ChannelManager extends BaseManager {
     this.clearElement(this.dom.channelList);
 
     if (!channels || channels.length === 0) {
-      const emptyMessage = document.createElement("p");
-      emptyMessage.textContent = "No channels available";
-      emptyMessage.style.padding = "1rem";
-      emptyMessage.style.color = "var(--text-muted)";
-      emptyMessage.style.fontSize = "0.875rem";
-      this.dom.channelList.appendChild(emptyMessage);
+      const emptyTemplate = document.getElementById("empty-channel-list-template");
+      if (emptyTemplate) {
+        const emptyFragment = emptyTemplate.content.cloneNode(true);
+        this.dom.channelList.appendChild(emptyFragment);
+      }
       return;
     }
 
@@ -234,12 +233,11 @@ export class ChannelManager extends BaseManager {
     });
 
     if (sortedChannels.length === 0) {
-      const emptyMessage = document.createElement("p");
-      emptyMessage.textContent = "No channels available";
-      emptyMessage.style.padding = "1rem";
-      emptyMessage.style.color = "var(--text-muted)";
-      emptyMessage.style.fontSize = "0.875rem";
-      this.dom.channelList.appendChild(emptyMessage);
+      const emptyTemplate = document.getElementById("empty-channel-list-template");
+      if (emptyTemplate) {
+        const emptyFragment = emptyTemplate.content.cloneNode(true);
+        this.dom.channelList.appendChild(emptyFragment);
+      }
       return;
     }
 
