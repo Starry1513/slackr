@@ -152,11 +152,11 @@ export class BaseManager {
 
   /**
    * Get user details by user ID (with caching)
-   * @param {number} userId - User ID (optional, defaults to current user)
+   * @param {number} userId - User ID (optional, defaults to curr user)
    * @returns {Promise<Object>} User data
    */
   getUserDetails(userId = null) {
-    // Default to current user if no userId provided
+    // Default to curr user if no userId provided
     const targetUserId = userId !== null ? userId : parseInt(this.getUserId());
 
     // Check cache first

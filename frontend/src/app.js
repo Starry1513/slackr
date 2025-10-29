@@ -22,7 +22,7 @@ export class App {
     this.image = new ImageManager(this.api, this.auth, this.ErrorController);
     this.message = new MessageManager(this.api, this.auth, this.ErrorController, this.image);
     this.channel = new ChannelManager(this.api, this.auth, this.ErrorController, this.message, this.user);
-    this.dashboard = new Dashboard(this.api, this.auth, this.pageController, this.ErrorController, this.channel);
+    this.dashboard = new Dashboard(this.api, this.auth, this.pageController, this.ErrorController, this.channel, this.message);
 
     // Set up image upload callback to refresh messages
     this.image.setOnImageUploadedCallback(() => {
@@ -39,6 +39,12 @@ export class App {
     this.message.init();
     this.user.init();
     this.dashboard.init();
+
+    // Start push notifications if user is logged in
+    if (this.auth.checkLogin()) {
+      this.message.startPushNotifications();
+    }
+
     console.log(this.auth.getUserId());
   }
 

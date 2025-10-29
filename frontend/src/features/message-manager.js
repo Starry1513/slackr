@@ -112,6 +112,9 @@ export class MessageManager extends BaseManager {
       .then((response) => {
         this.messages = response.messages || [];
 
+        // Sort messages by time (oldest first, newest last)
+        this.messages.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
+
         // Set up notifications for this channel
         const lastMessageId = this.messages.length > 0
           ? Math.max(...this.messages.map(m => m.id))
@@ -130,7 +133,7 @@ export class MessageManager extends BaseManager {
         }
 
         this.renderMessages();
-        // this.scroll.scrollToBottom();
+        this.scroll.scrollToBottom();
         return this.messages;
       })
       .catch((error) => {
@@ -324,17 +327,15 @@ export class MessageManager extends BaseManager {
    * Start push notifications
    */
   startPushNotifications() {
-    this.notifications.start();
+    // Set up callback for when new messages arrive in current channel
+    this.notifications.setOnNewMessageCallback(() => {
+      if (this.curChannelId) {
+        this.loadMessages(this.curChannelId);
+      }
+    });
 
-    // Set up callback for new messages
-    const originalCheck = this.notifications.checkForNewMessages.bind(this.notifications);
-    this.notifications.checkForNewMessages = () => {
-      originalCheck((newMessages) => {
-        if (this.curChannelId) {
-          this.loadMessages(this.curChannelId);
-        }
-      });
-    };
+    // Start the notification polling
+    this.notifications.start();
   }
 
   /**

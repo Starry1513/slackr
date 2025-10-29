@@ -176,6 +176,12 @@ export class Dashboard extends BaseManager {
     // Stop push notifications
     this.messageManager.stopPushNotifications();
 
+    // Clear messages
+    this.messageManager.clearMessages();
+
+    // Clear channels
+    this.channelManager.clearChannels();
+
     this.api
       .logout(token)
       .then(() => {

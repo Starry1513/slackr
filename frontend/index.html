@@ -371,7 +371,7 @@
             <input
               type="password"
               id="profile-password"
-              placeholder="Leave blank to keep current password"
+              placeholder="Leave blank to keep curr password"
             />
 
             <label for="profile-image">Profile Image:</label>
@@ -506,6 +506,21 @@
     <!-- Edited Span Template -->
     <template id="edited-span-template">
       <span class="message-edited"> (edited)</span>
+    </template>
+
+    <!-- Channel Item Template -->
+    <template id="channel-item-template">
+      <div class="channel-container">
+        <span class="channel-name"></span>
+      </div>
+    </template>
+
+    <!-- Private Channel Item Template -->
+    <template id="private-channel-item-template">
+      <div class="channel-container private">
+        <span class="channel-lock-icon">🔒</span>
+        <span class="channel-name"></span>
+      </div>
     </template>
 
     <!-- Emoji Picker Modal -->
