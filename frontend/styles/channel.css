@@ -1540,3 +1540,86 @@
   .channel-header h2 {
     font-size: 1rem;
   }
+
+  /* Message input adjustments for mobile */
+  .message-input-container {
+    padding: 0.5rem;
+  }
+
+  .message-input-container form {
+    gap: 0.5rem;
+  }
+
+  .message-input-container button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  #message-input {
+    font-size: 1rem; /* Prevent zoom on iOS */
+    padding: 0.5rem;
+  }
+
+  .image-upload-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+  }
+
+  /* Channel list improvements for mobile */
+  .channel-container {
+    padding: 10px 12px;
+    margin: 2px 8px;
+    font-size: 1rem;
+  }
+
+  .channel-container.active {
+    background-color: #5865f2;
+    font-weight: 600;
+  }
+}
+
+/* Extra small devices (≤ 400px) */
+@media (max-width: 400px) {
+  .dashboard-sidebar {
+    width: 80vw;
+    max-width: 280px;
+  }
+
+  .channel-header h2 {
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px;
+  }
+
+  .message-input-container {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .message-input-container form {
+    gap: 0.4rem;
+  }
+
+  .message-input-container button {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  #message-input {
+    padding: 0.4rem;
+    font-size: 0.9375rem;
+  }
+
+  .image-upload-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+
+  .icon-button {
+    padding: 0.4rem;
+    font-size: 1rem;
+  }
+}
