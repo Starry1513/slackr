@@ -72,5 +72,37 @@ export class OfflineManager {
 
   }
 
+  /**
+   * Get cached channel details from localStorage
+   * @param {number} channelId - Channel ID
+   * @returns {Object|null} Cached channel details or null
+   */
+  getCachedChannelDetails(channelId) {
 
+  }
+
+  /**
+   * Cache messages for a channel
+   * @param {number} channelId - Channel ID
+   * @param {Array} messages - Array of message objects
+   */
+  cacheMessages(channelId, messages) {
+
+  }
+
+  /**
+   * Get cached messages for a channel
+   * @param {number} channelId - Channel ID
+   * @returns {Array|null} Cached messages or null
+   */
+  getCachedMessages(channelId) {
+
+  }
+
+  /**
+   * Clear all cached data
+   */
+  clearCache() {
+
+  }
 }
