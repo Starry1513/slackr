@@ -1372,3 +1372,54 @@
     opacity: 0.5;
   }
 }
+
+/* Join Prompt (for non-members) */
+.join-prompt-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  text-align: center;
+}
+
+.join-prompt-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.join-prompt-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+
+.join-prompt-description {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.join-prompt-message {
+  margin-bottom: 1.5rem;
+  color: #dcddde;
+}
+
+.join-prompt-button {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+}
+
+/* Empty Invite List */
+.empty-invite-list {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+/* Empty Channel List */
+.empty-channel-list {
+  padding: 1rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
