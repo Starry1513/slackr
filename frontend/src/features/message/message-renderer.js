@@ -164,7 +164,65 @@ export class MessageRenderer extends BaseManager {
    * @param {Object} handlers - Event handlers { onReact, onShowReacPicker }
    */
   populateReac(ReacDiv, message, handlers) {
+    // Clear existing Reac
+    this.clearElement(ReacDiv);
 
+    const commonEmojis = ["👍", "❤️", "😄", "😮", "😢", "😡", "🎉", "🔥", "👏", "✅", "❌", "👀"];
+
+    // Group Reac by emoji
+    const ReacCounts = {};
+    const curUserId = parseInt(this.getUserId());
+    const userReac = new Set();
+
+    if (message.reacts && message.reacts.length > 0) {
+      message.reacts.forEach((react) => {
+        const emoji = react.react;
+        if (!ReacCounts[emoji]) {
+          ReacCounts[emoji] = 0;
+        }
+        ReacCounts[emoji]++;
+        if (react.user === curUserId) {
+          userReac.add(emoji);
+        }
+      });
+    }
+
+    // Create Reac buttons for existing Reac (with counts)
+    Object.entries(ReacCounts).forEach(([emoji, count]) => {
+      const ReacFragment = this.templates.ReacBtn.content.cloneNode(true);
+      const ReacBtn = ReacFragment.querySelector(".reaction-btn");
+
+      if (userReac.has(emoji)) {
+        this.addClass(ReacBtn, "reacted");
+      }
+      ReacBtn.textContent = `${emoji} ${count}`;
+      ReacBtn.onclick = () => handlers.onReact(message, emoji);
+
+      ReacDiv.appendChild(ReacFragment);
+    });
+
+    // Add default emoji buttons (first 3 common emojis that haven't been used)
+    const defaultEmojiCount = 3;
+    let addedDefaults = 0;
+    for (const emoji of commonEmojis) {
+      if (addedDefaults >= defaultEmojiCount) break;
+      if (ReacCounts[emoji]) continue; // Skip if already has Reac
+
+      const ReacFragment = this.templates.ReacBtn.content.cloneNode(true);
+      const ReacBtn = ReacFragment.querySelector(".reaction-btn");
+      ReacBtn.textContent = emoji;
+      ReacBtn.onclick = () => handlers.onReact(message, emoji);
+
+      ReacDiv.appendChild(ReacFragment);
+      addedDefaults++;
+    }
+
+    // Add Reac button from template (at the end)
+    const addReacFragment = this.templates.addReacBtn.content.cloneNode(true);
+    const addReacBtn = addReacFragment.querySelector(".add-reaction-btn");
+    addReacBtn.onclick = () => handlers.onShowReacPicker(message);
+
+    ReacDiv.appendChild(addReacFragment);
   }
 
   /**
