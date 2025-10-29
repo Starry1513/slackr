@@ -131,5 +131,15 @@ export class MessageScroll extends BaseManager {
     }
   }
 
+  /**
+   * Hide loading indicator
+   */
+  hideLoadingIndicator() {
+    if (!this.messagesContainer) return;
 
+    const loadingDiv = this.messagesContainer.querySelector(".loading-indicator");
+    if (loadingDiv) {
+      loadingDiv.remove();
+    }
+  }
 }
