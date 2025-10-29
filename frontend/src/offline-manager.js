@@ -52,7 +52,13 @@ export class OfflineManager {
    * @param {Array} channels - Array of channel objects
    */
   cacheChannels(channels) {
-
+    try {
+      localStorage.setItem('slackr_cached_channels', JSON.stringify(channels));
+      localStorage.setItem('slackr_cache_timestamp', Date.now().toString());
+      console.log(`[Offline Manager] Cached ${channels.length} channels`);
+    } catch (error) {
+      console.error('[Offline Manager] Failed to cache channels:', error);
+    }
   }
 
   /**
@@ -60,7 +66,18 @@ export class OfflineManager {
    * @returns {Array|null} Cached channels or null if none
    */
   getCachedChannels() {
-
+    try {
+      const cached = localStorage.getItem('slackr_cached_channels');
+      if (cached) {
+        const channels = JSON.parse(cached);
+        const timestamp = localStorage.getItem('slackr_cache_timestamp');
+        console.log(`[Offline Manager] Retrieved ${channels.length} cached channels from ${new Date(parseInt(timestamp))}`);
+        return channels;
+      }
+    } catch (error) {
+      console.error('[Offline Manager] Failed to retrieve cached channels:', error);
+    }
+    return null;
   }
 
   /**
@@ -69,7 +86,13 @@ export class OfflineManager {
    * @param {Object} channelData - Channel details object
    */
   cacheChannelDetails(channelId, channelData) {
-
+    try {
+      const key = `slackr_cached_channel_${channelId}`;
+      localStorage.setItem(key, JSON.stringify(channelData));
+      console.log(`[Offline Manager] Cached channel ${channelId} details`);
+    } catch (error) {
+      console.error('[Offline Manager] Failed to cache channel details:', error);
+    }
   }
 
   /**
@@ -78,7 +101,17 @@ export class OfflineManager {
    * @returns {Object|null} Cached channel details or null
    */
   getCachedChannelDetails(channelId) {
-
+    try {
+      const key = `slackr_cached_channel_${channelId}`;
+      const cached = localStorage.getItem(key);
+      if (cached) {
+        console.log(`[Offline Manager] Retrieved cached channel ${channelId} details`);
+        return JSON.parse(cached);
+      }
+    } catch (error) {
+      console.error('[Offline Manager] Failed to retrieve cached channel details:', error);
+    }
+    return null;
   }
 
   /**
@@ -87,7 +120,13 @@ export class OfflineManager {
    * @param {Array} messages - Array of message objects
    */
   cacheMessages(channelId, messages) {
-
+    try {
+      const key = `slackr_cached_messages_${channelId}`;
+      localStorage.setItem(key, JSON.stringify(messages));
+      console.log(`[Offline Manager] Cached ${messages.length} messages for channel ${channelId}`);
+    } catch (error) {
+      console.error('[Offline Manager] Failed to cache messages:', error);
+    }
   }
 
   /**
@@ -96,13 +135,38 @@ export class OfflineManager {
    * @returns {Array|null} Cached messages or null
    */
   getCachedMessages(channelId) {
-
+    try {
+      const key = `slackr_cached_messages_${channelId}`;
+      const cached = localStorage.getItem(key);
+      if (cached) {
+        const messages = JSON.parse(cached);
+        console.log(`[Offline Manager] Retrieved ${messages.length} cached messages for channel ${channelId}`);
+        return messages;
+      }
+    } catch (error) {
+      console.error('[Offline Manager] Failed to retrieve cached messages:', error);
+    }
+    return null;
   }
 
   /**
    * Clear all cached data
    */
   clearCache() {
+    try {
+      // Remove all slackr_cached_* items
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('slackr_cached_')) {
+          keysToRemove.push(key);
+        }
+      }
 
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      console.log(`[Offline Manager] Cleared ${keysToRemove.length} cached items`);
+    } catch (error) {
+      console.error('[Offline Manager] Failed to clear cache:', error);
+    }
   }
 }
