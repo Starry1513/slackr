@@ -10,11 +10,12 @@ import { MessageScroll } from "./message/message-scroll.js";
  * Delegates to specialized modules for different concerns
  */
 export class MessageManager extends BaseManager {
-  constructor(api, auth, ErrorController, imageManager) {
+  constructor(api, auth, ErrorController, imageManager, offlineManager = null) {
     super(api, auth, ErrorController);
 
-    // Store image manager
+    // Store image manager and offline manager
     this.imageManager = imageManager;
+    this.offlineManager = offlineManager;
 
     // Initialize specialized modules
     this.renderer = new MessageRenderer(api, auth, ErrorController);
@@ -107,6 +108,19 @@ export class MessageManager extends BaseManager {
 
     const token = this.auth.getToken();
 
+    // Check if offline
+    if (this.offlineManager && !this.offlineManager.getOnlineStatus()) {
+      // Load from cache
+      const cachedMessages = this.offlineManager.getCachedMessages(channelId);
+      if (cachedMessages) {
+        return this.handleMessagesData(cachedMessages, channelId);
+      } else {
+        this.showError("Messages not available offline. Please connect to the internet.");
+        return Promise.reject(new Error("Offline and no cache available"));
+      }
+    }
+
+    // Online - fetch from API
     return this.api
       .getMessages(channelId, 0, token)
       .then((response) => {
@@ -127,6 +141,11 @@ export class MessageManager extends BaseManager {
       .then((fullMessages) => {
         this.messages = fullMessages;
 
+        // Cache messages for offline use
+        if (this.offlineManager) {
+          this.offlineManager.cacheMessages(channelId, fullMessages);
+        }
+
         // Update image manager with channel images
         if (this.imageManager) {
           this.imageManager.updateChannelImages(this.messages);
@@ -137,9 +156,36 @@ export class MessageManager extends BaseManager {
         return this.messages;
       })
       .catch((error) => {
+        // Try cache as fallback
+        if (this.offlineManager) {
+          const cachedMessages = this.offlineManager.getCachedMessages(channelId);
+          if (cachedMessages) {
+            console.log('[MessageManager] API failed, using cached messages');
+            return this.handleMessagesData(cachedMessages, channelId);
+          }
+        }
+
         this.showError(error.message || "Failed to load messages");
         throw error;
       });
+  }
+
+  /**
+   * Handle messages data (shared by online and offline paths)
+   * @param {Array} messages - Messages array
+   * @param {number} channelId - Channel ID
+   */
+  handleMessagesData(messages, channelId) {
+    this.messages = messages;
+
+    // Update image manager with channel images
+    if (this.imageManager) {
+      this.imageManager.updateChannelImages(this.messages);
+    }
+
+    this.renderMessages();
+    this.scroll.scrollToBottom();
+    return Promise.resolve(this.messages);
   }
 
   /**
@@ -231,6 +277,12 @@ export class MessageManager extends BaseManager {
    * Handle send message
    */
   handleSendMessage() {
+    // Check if offline
+    if (this.offlineManager && !this.offlineManager.getOnlineStatus()) {
+      this.showError("Cannot send messages while offline. Please connect to the internet.");
+      return;
+    }
+
     const messageText = this.dom.messageInput.value.trim();
 
     this.actions
@@ -252,6 +304,12 @@ export class MessageManager extends BaseManager {
    * @param {Object} message - Message to edit
    */
   handleEditMessage(message) {
+    // Check if offline
+    if (this.offlineManager && !this.offlineManager.getOnlineStatus()) {
+      this.showError("Cannot edit messages while offline. Please connect to the internet.");
+      return;
+    }
+
     const newText = prompt("Edit message:", message.message);
     if (newText === null || newText.trim() === "") {
       return;
@@ -273,6 +331,12 @@ export class MessageManager extends BaseManager {
    * @param {Object} message - Message to delete
    */
   handleDeleteMessage(message) {
+    // Check if offline
+    if (this.offlineManager && !this.offlineManager.getOnlineStatus()) {
+      this.showError("Cannot delete messages while offline. Please connect to the internet.");
+      return;
+    }
+
     if (!confirm("Are you sure you want to delete this message?")) {
       return;
     }
@@ -293,6 +357,11 @@ export class MessageManager extends BaseManager {
    * @param {Object} message - Message to pin/unpin
    */
   handlePinMessage(message) {
+    // Check if offline
+    if (this.offlineManager && !this.offlineManager.getOnlineStatus()) {
+      this.showError("Cannot pin/unpin messages while offline. Please connect to the internet.");
+      return;
+    }
 
     const action = message.pinned ? this.actions.unpinMessage(this.curChannelId, message.id) :
     this.actions.pinMessage(this.curChannelId, message.id);
@@ -312,6 +381,12 @@ export class MessageManager extends BaseManager {
    * @param {string} emoji - Emoji Reac
    */
   handleReacToggle(message, emoji) {
+    // Check if offline
+    if (this.offlineManager && !this.offlineManager.getOnlineStatus()) {
+      this.showError("Cannot add reactions while offline. Please connect to the internet.");
+      return;
+    }
+
     this.Reac
       .toggleReac(this.curChannelId, message, emoji)
       .then(() => {
