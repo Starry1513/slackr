@@ -1,8 +1,14 @@
 import { BaseManager } from "./base-manager.js";
+import { ChannelList } from "./channel/channel-list.js";
+import { ChannelDetails } from "./channel/channel-details.js";
+import { ChannelActions } from "./channel/channel-actions.js";
 
 /**
- * ChannelManager - Manages all channel-related functionality
- * Responsible for: channel list, create/edit/delete channels, channel details
+ * ChannelManager - Coordinator for all channel-related functionality
+ * Delegates work to specialized sub-managers:
+ * - ChannelList: List rendering and selection
+ * - ChannelDetails: Details sidebar panel
+ * - ChannelActions: Create/edit/join/leave operations
  */
 export class ChannelManager extends BaseManager {
   constructor(api, auth, ErrorController, messageManager, userManager, offlineManager = null) {
@@ -11,267 +17,74 @@ export class ChannelManager extends BaseManager {
     this.userManager = userManager;
     this.offlineManager = offlineManager;
 
-    // curr channel state
+    // Current channel state
     this.currChannelId = null;
     this.currChannelData = null;
 
     // Callback for when channel is selected (for URL routing)
     this.onChannelSelectedCallback = null;
 
-    // Cache templates
-    this.templates = {
-      channelItem: document.getElementById("channel-item-template"),
-      privateChannelItem: document.getElementById("private-channel-item-template"),
-    };
+    // Initialize sub-managers
+    this.channelList = new ChannelList(api, auth, ErrorController);
+    this.channelDetails = new ChannelDetails(api, auth, ErrorController);
+    this.channelActions = new ChannelActions(api, auth, ErrorController);
 
-    // Cache channel-related DOM elements
+    // Cache DOM elements for view control
     this.dom = {
-      // Channel list
-      channelList: document.getElementById("channel-list"),
-
-      // Create channel modal
-      createChannelButton: document.getElementById("create-channel-button"),
-      createChannelContainer: document.getElementById("create-channel-container"),
-      createChannelForm: document.getElementById("create-channel-form"),
-      createChannelName: document.getElementById("create-channel-name"),
-      createChannelDescription: document.getElementById("create-channel-description"),
-      createChannelIsPrivate: document.getElementById("create-channel-is-private"),
-      createChannelClose: document.getElementById("create-channel-close"),
-      createChannelCancel: document.getElementById("create-channel-cancel"),
-
-      // Edit channel modal
-      editChannelContainer: document.getElementById("edit-channel-container"),
-      editChannelForm: document.getElementById("edit-channel-form"),
-      editChannelName: document.getElementById("edit-channel-name"),
-      editChannelDescription: document.getElementById("edit-channel-description"),
-      editChannelClose: document.getElementById("edit-channel-close"),
-      editChannelCancel: document.getElementById("edit-channel-cancel"),
-      editChannelButton: document.getElementById("edit-channel-button"),
-
-      // Channel view
       welcomeScreen: document.getElementById("welcome-screen"),
       channelView: document.getElementById("channel-view"),
       channelName: document.getElementById("channel-name"),
-      channelDetailsToggle: document.getElementById("channel-details-toggle"),
-      channelDetailsContainer: document.getElementById("channel-details-container"),
-      channelDetailsBackdrop: document.getElementById("channel-details-backdrop"),
-      channelDetailsClose: document.getElementById("channel-details-close"),
-
-      // Channel details
-      channelDetailName: document.getElementById("channel-detail-name"),
-      channelDetailDescription: document.getElementById("channel-detail-description"),
-      channelDetailType: document.getElementById("channel-detail-type"),
-      channelDetailCreated: document.getElementById("channel-detail-created"),
-      channelDetailCreator: document.getElementById("channel-detail-creator"),
-
-      // Channel actions
-      joinChannelButton: document.getElementById("join-channel-button"),
-      leaveChannelButton: document.getElementById("leave-channel-button"),
       inviteUserButton: document.getElementById("invite-user-button"),
     };
+
+    this.setupCallbacks();
   }
 
   /**
-   * Initialize channel manager - set up event listeners
+   * Set up callbacks between sub-managers
+   */
+  setupCallbacks() {
+    // Channel list callbacks
+    this.channelList.setOnChannelSelectCallback((channelId) => {
+      this.selectChannel(channelId);
+    });
+
+    // Channel actions callbacks
+    this.channelActions.setOnChannelCreatedCallback((channelId) => {
+      this.loadChannels().then(() => {
+        this.selectChannel(channelId);
+      });
+    });
+
+    this.channelActions.setOnChannelUpdatedCallback((channelId) => {
+      this.selectChannel(channelId); // Reload channel to show updates
+      this.loadChannels(); // Refresh channel list
+    });
+
+    this.channelActions.setOnChannelJoinedCallback((channelId) => {
+      this.selectChannel(channelId); // Reload to show as member
+      this.loadChannels(); // Refresh channel list
+    });
+
+    this.channelActions.setOnChannelLeftCallback(() => {
+      this.showWelcomeScreen();
+      this.loadChannels(); // Refresh channel list
+    });
+  }
+
+  /**
+   * Initialize channel manager
    */
   init() {
-    this.setupEventListeners();
+    // No event listeners needed here - sub-managers handle their own
   }
 
   /**
-   * Set up all channel-related event listeners
-   */
-  setupEventListeners() {
-    // Create channel modal
-    this.dom.createChannelButton.addEventListener("click", () => {
-      this.showCreateChannelModal();
-    });
-
-    this.dom.createChannelForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      this.handleCreateChannel();
-    });
-
-    this.dom.createChannelClose.addEventListener("click", () => {
-      this.hideCreateChannelModal();
-    });
-
-    this.dom.createChannelCancel.addEventListener("click", () => {
-      this.hideCreateChannelModal();
-    });
-
-    // Edit channel modal
-    this.dom.editChannelButton.addEventListener("click", () => {
-      this.showEditChannelModal();
-    });
-
-    this.dom.editChannelForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      this.handleEditChannel();
-    });
-
-    this.dom.editChannelClose.addEventListener("click", () => {
-      this.hideEditChannelModal();
-    });
-
-    this.dom.editChannelCancel.addEventListener("click", () => {
-      this.hideEditChannelModal();
-    });
-
-    // Channel details toggle
-    this.dom.channelDetailsToggle.addEventListener("click", () => {
-      this.toggleChannelDetails();
-    });
-
-    // Channel details close button
-    this.dom.channelDetailsClose.addEventListener("click", () => {
-      this.hideChannelDetails();
-    });
-
-    // Channel details backdrop click (close when clicking outside)
-    this.dom.channelDetailsBackdrop.addEventListener("click", () => {
-      this.hideChannelDetails();
-    });
-
-    // Join/Leave channel buttons
-    this.dom.joinChannelButton.addEventListener("click", () => {
-      this.handleJoinChannel();
-    });
-
-    this.dom.leaveChannelButton.addEventListener("click", () => {
-      this.handleLeaveChannel();
-    });
-
-    // Listen for join button click from message prompt
-    window.addEventListener("join-channel-click", () => {
-      this.handleJoinChannel();
-    });
-  }
-
-  /**
-   * Load and display all channels
+   * Load all channels from API
+   * @returns {Promise}
    */
   loadChannels() {
-    const token = this.auth.getToken();
-
-    // Check if offline
-    if (this.offlineManager && !this.offlineManager.getOnlineStatus()) {
-      // Load from cache
-      const cachedChannels = this.offlineManager.getCachedChannels();
-      if (cachedChannels) {
-        this.renderChannelList(cachedChannels);
-        return Promise.resolve(cachedChannels);
-      } else {
-        this.showError("No cached channels available. Please connect to the internet.");
-        return Promise.reject(new Error("Offline and no cache available"));
-      }
-    }
-
-    // Online - fetch from API
-    return this.api
-      .getChannels(token)
-      .then((response) => {
-        this.renderChannelList(response.channels);
-
-        // Cache channels for offline use
-        if (this.offlineManager) {
-          this.offlineManager.cacheChannels(response.channels);
-        }
-
-        return response.channels;
-      })
-      .catch((error) => {
-        // If fetch fails, try cache as fallback
-        if (this.offlineManager) {
-          const cachedChannels = this.offlineManager.getCachedChannels();
-          if (cachedChannels) {
-            console.log('[ChannelManager] API failed, using cached channels');
-            this.renderChannelList(cachedChannels);
-            return cachedChannels;
-          }
-        }
-
-        this.showError(error.message || "Failed to load channels");
-        throw error;
-      });
-  }
-
-  /**
-   * Render channel list in sidebar
-   * @param {Array} channels - Array of channel objects
-   */
-  renderChannelList(channels) {
-    // Clear existing list
-    this.clearElement(this.dom.channelList);
-
-    if (!channels || channels.length === 0) {
-      const emptyTemplate = document.getElementById("empty-channel-list-template");
-      if (emptyTemplate) {
-        const emptyFragment = emptyTemplate.content.cloneNode(true);
-        this.dom.channelList.appendChild(emptyFragment);
-      }
-      return;
-    }
-
-    const currUserId = parseInt(this.getUserId());
-
-    // Filter channels: show all public channels and only private channels user is a member of
-    const visibleChannels = channels.filter((channel) => {
-      if (!channel.private) {
-        return true; // Show all public channels
-      }
-      // For private channels, only show if user is a member
-      return channel.members && channel.members.includes(currUserId);
-    });
-
-    // Sort channels: public first, then private
-    const sortedChannels = visibleChannels.sort((a, b) => {
-      if (a.private === b.private) {
-        return a.name.localeCompare(b.name);
-      }
-      return a.private ? 1 : -1;
-    });
-
-    if (sortedChannels.length === 0) {
-      const emptyTemplate = document.getElementById("empty-channel-list-template");
-      if (emptyTemplate) {
-        const emptyFragment = emptyTemplate.content.cloneNode(true);
-        this.dom.channelList.appendChild(emptyFragment);
-      }
-      return;
-    }
-
-    // Render each channel using templates
-    sortedChannels.forEach((channel) => {
-      // Choose appropriate template
-      const template = channel.private ? this.templates.privateChannelItem : this.templates.channelItem;
-      const channelFragment = template.content.cloneNode(true);
-      const channelElement = channelFragment.querySelector(".channel-container");
-
-      // Set channel name
-      const nameSpan = channelElement.querySelector(".channel-name");
-      nameSpan.textContent = channel.name;
-
-      // Add active class if this is the current channel
-      if (this.currChannelId === channel.id) {
-        channelElement.classList.add("active");
-      }
-
-      // Add click event
-      channelElement.addEventListener("click", () => {
-        this.selectChannel(channel.id);
-      });
-
-      // Add keyboard event for accessibility
-      channelElement.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          this.selectChannel(channel.id);
-        }
-      });
-
-      this.dom.channelList.appendChild(channelFragment);
-    });
+    return this.channelList.loadChannels();
   }
 
   /**
@@ -334,6 +147,9 @@ export class ChannelManager extends BaseManager {
     this.currChannelId = channelId;
     this.currChannelData = channelData;
 
+    // Update sub-managers with current channel data
+    this.channelActions.setCurrentChannelData(channelData);
+
     // Set channel ID for user manager
     if (this.userManager) {
       this.userManager.setcurrChannelId(channelId);
@@ -346,8 +162,11 @@ export class ChannelManager extends BaseManager {
     // Update UI
     this.showChannelView();
     this.renderChannelHeader(channelData);
-    this.renderChannelDetails(channelData);
-    this.updateChannelActions(channelData);
+    this.channelDetails.renderChannelDetails(channelData);
+    this.channelActions.updateChannelActions(channelData);
+
+    // Update invite button visibility
+    this.dom.inviteUserButton.style.display = isMember ? "inline-block" : "none";
 
     // Load messages only if member
     if (this.messageManager) {
@@ -362,14 +181,7 @@ export class ChannelManager extends BaseManager {
     }
 
     // Update active state in channel list
-    document.querySelectorAll(".channel-container").forEach((el) => {
-      el.classList.remove("active");
-    });
-    document.querySelectorAll(".channel-container").forEach((el) => {
-      if (el.textContent === channelData.name || el.textContent === "🔒 " + channelData.name) {
-        el.classList.add("active");
-      }
-    });
+    this.channelList.updateActiveChannel(channelId, channelData.name);
 
     // Notify callback (for URL routing)
     if (this.onChannelSelectedCallback) {
@@ -399,7 +211,7 @@ export class ChannelManager extends BaseManager {
   showWelcomeScreen() {
     this.dom.welcomeScreen.style.display = "flex";
     this.dom.channelView.style.display = "none";
-    this.hideChannelDetails();
+    this.channelDetails.hideChannelDetails();
     this.currChannelId = null;
     this.currChannelData = null;
   }
@@ -413,252 +225,26 @@ export class ChannelManager extends BaseManager {
   }
 
   /**
-   * Render channel details panel
-   * @param {Object} channelData - Channel data
-   */
-  renderChannelDetails(channelData) {
-    this.dom.channelDetailName.textContent = channelData.name;
-    this.dom.channelDetailDescription.textContent = channelData.description || "No description";
-    this.dom.channelDetailType.textContent = channelData.private ? "Private" : "Public";
-
-    // Format creation date
-    const createdDate = new Date(channelData.createdAt);
-    this.dom.channelDetailCreated.textContent = createdDate.toLocaleDateString();
-
-    // Get creator name (need to fetch user data)
-    const token = this.auth.getToken();
-    this.api
-      .getUserDetails(channelData.creator, token)
-      .then((userData) => {
-        this.dom.channelDetailCreator.textContent = userData.name;
-      })
-      .catch(() => {
-        this.dom.channelDetailCreator.textContent = "Unknown";
-      });
-  }
-
-  /**
-   * Update channel action buttons based on membership
-   * @param {Object} channelData - Channel data
-   */
-  updateChannelActions(channelData) {
-    const curUserId = parseInt(this.auth.getUserId());
-    const isMember = channelData.members.includes(curUserId);
-
-    // Show/hide join/leave buttons
-    if (isMember) {
-      this.dom.joinChannelButton.style.display = "none";
-      this.dom.leaveChannelButton.style.display = "block";
-      this.dom.inviteUserButton.style.display = "block";
-      this.dom.editChannelButton.style.display = "block";
-    } else {
-      this.dom.joinChannelButton.style.display = "block";
-      this.dom.leaveChannelButton.style.display = "none";
-      this.dom.inviteUserButton.style.display = "none";
-      this.dom.editChannelButton.style.display = "none";
-    }
-  }
-
-  /**
-   * Show channel details panel
-   */
-  showChannelDetails() {
-    this.dom.channelDetailsContainer.classList.add("show");
-    this.dom.channelDetailsBackdrop.classList.add("show");
-  }
-
-  /**
-   * Hide channel details panel
-   */
-  hideChannelDetails() {
-    this.dom.channelDetailsContainer.classList.remove("show");
-    this.dom.channelDetailsBackdrop.classList.remove("show");
-  }
-
-  /**
-   * Toggle channel details panel visibility
-   */
-  toggleChannelDetails() {
-    const isVisible = this.dom.channelDetailsContainer.classList.contains("show");
-    if (isVisible) {
-      this.hideChannelDetails();
-    } else {
-      this.showChannelDetails();
-    }
-  }
-
-  /**
-   * Show create channel modal
-   */
-  showCreateChannelModal() {
-    this.dom.createChannelContainer.style.display = "flex";
-    this.dom.createChannelName.value = "";
-    this.dom.createChannelDescription.value = "";
-    this.dom.createChannelIsPrivate.checked = false;
-  }
-
-  /**
-   * Hide create channel modal
-   */
-  hideCreateChannelModal() {
-    this.dom.createChannelContainer.style.display = "none";
-  }
-
-  /**
-   * Handle create channel form submission
-   */
-  handleCreateChannel() {
-    const name = this.dom.createChannelName.value.trim();
-    const description = this.dom.createChannelDescription.value.trim();
-    const isPrivate = this.dom.createChannelIsPrivate.checked;
-
-    if (!name) {
-      this.showError("Channel name is required");
-      return;
-    }
-
-    const token = this.auth.getToken();
-
-    this.api
-      .createChannel(name, description || "", isPrivate, token)
-      .then(() => {
-        this.hideCreateChannelModal();
-        // Reload channel list
-        return this.loadChannels();
-      })
-      .then(() => {
-        // Optionally select the newly created channel
-        // Note: API doesn't return the new channel ID, so we can't auto-select
-      })
-      .catch((error) => {
-        this.showError(error.message || "Failed to create channel");
-      });
-  }
-
-  /**
-   * Show edit channel modal
-   */
-  showEditChannelModal() {
-    if (!this.currChannelData) {
-      return;
-    }
-
-    this.dom.editChannelName.value = this.currChannelData.name;
-    this.dom.editChannelDescription.value = this.currChannelData.description || "";
-    this.dom.editChannelContainer.style.display = "flex";
-  }
-
-  /**
-   * Hide edit channel modal
-   */
-  hideEditChannelModal() {
-    this.dom.editChannelContainer.style.display = "none";
-  }
-
-  /**
-   * Handle edit channel form submission
-   */
-  handleEditChannel() {
-    const name = this.dom.editChannelName.value.trim();
-    const description = this.dom.editChannelDescription.value.trim();
-
-    if (!name) {
-      this.showError("Channel name is required");
-      return;
-    }
-
-    const token = this.auth.getToken();
-
-    this.api
-      .updateChannel(this.currChannelId, name, description || "", token)
-      .then(() => {
-        this.hideEditChannelModal();
-        // Reload channel data
-        return this.selectChannel(this.currChannelId);
-      })
-      .then(() => {
-        // Reload channel list to update sidebar
-        return this.loadChannels();
-      })
-      .catch((error) => {
-        this.showError(error.message || "Failed to update channel");
-      });
-  }
-
-  /**
-   * Handle join channel
-   */
-  handleJoinChannel() {
-    if (!this.currChannelId) {
-      return;
-    }
-
-    const token = this.auth.getToken();
-
-    this.api
-      .joinChannel(this.currChannelId, token)
-      .then(() => {
-        // Reload channel data to update UI (will now show messages since user is member)
-        return this.selectChannel(this.currChannelId);
-      })
-      .then(() => {
-        // Reload channel list to update sidebar
-        return this.loadChannels();
-      })
-      .catch((error) => {
-        this.showError(error.message || "Failed to join channel");
-      });
-  }
-
-  /**
-   * Handle leave channel
-   */
-  handleLeaveChannel() {
-    if (!this.currChannelId) {
-      return;
-    }
-
-    const token = this.auth.getToken();
-
-    this.api
-      .leaveChannel(this.currChannelId, token)
-      .then(() => {
-        // Show welcome screen
-        this.showWelcomeScreen();
-        // Reload channel list
-        return this.loadChannels();
-      })
-      .catch((error) => {
-        this.showError(error.message || "Failed to leave channel");
-      });
-  }
-
-  /**
-   * Get curr channel ID
-   * @returns {number|null} curr channel ID
+   * Get current channel ID
+   * @returns {number|null}
    */
   getcurrChannelId() {
     return this.currChannelId;
   }
 
   /**
-   * Get curr channel data
-   * @returns {Object|null} curr channel data
+   * Get current channel data
+   * @returns {Object|null}
    */
   getcurrChannelData() {
     return this.currChannelData;
   }
 
   /**
-   * Clear all channels and reset state
+   * Clear channel list
    */
   clearChannels() {
-    this.currChannelId = null;
-    this.currChannelData = null;
-
-    // Clear channel list
-    if (this.dom.channelList) {
-      this.clearElement(this.dom.channelList);
-    }
+    this.channelList.clearChannels();
+    this.showWelcomeScreen();
   }
 }
