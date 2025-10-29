@@ -19,10 +19,9 @@ export class MessageNotifications extends BaseManager {
    * Start push notifications (polling for new messages)
    */
   start() {
-    // Request notification permission
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
+    // Cache notification elements
+    this.notificationContainer = document.getElementById('notification-banner-container');
+    this.notificationTemplate = document.getElementById('notification-banner-template');
 
     // Start polling every 1 second
     if (this.notificationPeriod) {
@@ -90,6 +89,9 @@ export class MessageNotifications extends BaseManager {
           channel.members && channel.members.includes(curUserId)
         );
 
+        // Debug: Log polling activity (comment out in production)
+        // console.log(`[Polling] Checking ${joinedChannels.length} channels for new messages`);
+
         // Check each joined channel for new messages
         const checkPromises = joinedChannels.map(channel =>
           this.checkChannelForNewMessages(channel.id, token, curUserId)
@@ -136,9 +138,12 @@ export class MessageNotifications extends BaseManager {
           const othersMessages = newMessages.filter(msg => msg.sender !== curUserId);
 
           // Show notifications for messages from others
-          othersMessages.forEach(msg => {
-            this.showNotification(msg, channelId);
-          });
+          if (othersMessages.length > 0) {
+            console.log(`[Notification] ${othersMessages.length} new message(s) in channel ${channelId}`);
+            othersMessages.forEach(msg => {
+              this.showNotification(msg, channelId);
+            });
+          }
 
           // If new messages in current channel, trigger callback to reload
           if (channelId === this.currChannelId && this.onNewMessageCallback) {
@@ -153,41 +158,98 @@ export class MessageNotifications extends BaseManager {
   }
 
   /**
-   * Show browser notification for a message
+   * Show in-app notification banner for a message
    * @param {Object} message - Message object
    * @param {number} channelId - Channel ID where message was sent
    */
   showNotification(message, channelId) {
-    if ("Notification" in window && Notification.permission === "granted") {
-      // Fetch channel and user details
-      const token = this.auth.getToken();
+    // Fetch channel and user details
+    const token = this.auth.getToken();
 
-      Promise.all([
-        this.getUserDetails(message.sender),
-        this.api.getChannelDetails(channelId, token)
-      ])
-        .then(([user, channel]) => {
-          const senderName = user ? user.name : "Someone";
-          const channelName = channel ? channel.name : "a channel";
-          const messageText = message.message || "(Image)";
-          const notificationTitle = `New message in ${channelName}`;
-          const notificationBody = `${senderName}: ${messageText}`;
+    Promise.all([
+      this.getUserDetails(message.sender),
+      this.api.getChannelDetails(channelId, token)
+    ])
+      .then(([user, channel]) => {
+        const senderName = user ? user.name : "Someone";
+        const channelName = channel ? channel.name : "a channel";
+        const messageText = message.message || "(Image)";
 
-          const notification = new Notification(notificationTitle, {
-            body: notificationBody,
-            icon: user && user.image ? user.image : null,
-            tag: `message-${message.id}`, // Prevent duplicate notifications
-          });
+        // Clone the template
+        const banner = this.notificationTemplate.cloneNode(true);
+        banner.removeAttribute('id');
+        banner.style.display = 'flex';
+        banner.dataset.messageId = message.id;
+        banner.dataset.channelId = channelId;
 
-          // Handle notification click - could focus the window
-          notification.onclick = () => {
-            window.focus();
-            notification.close();
-          };
-        })
-        .catch((error) => {
-          console.error("Error showing notification:", error);
+        // Fill in content
+        const title = banner.querySelector('.notification-banner-title');
+        const messageDiv = banner.querySelector('.notification-banner-message');
+        const avatar = banner.querySelector('.notification-banner-avatar');
+        const emoji = banner.querySelector('.notification-banner-emoji');
+        const closeBtn = banner.querySelector('.notification-banner-close');
+
+        title.textContent = `New message in ${channelName}`;
+        messageDiv.textContent = `${senderName}: ${messageText}`;
+
+        // Set avatar or emoji
+        if (user && user.image) {
+          avatar.src = user.image;
+          avatar.alt = senderName;
+          avatar.style.display = 'block';
+          emoji.style.display = 'none';
+        } else {
+          avatar.style.display = 'none';
+          emoji.style.display = 'flex';
+        }
+
+        // Add to container
+        this.notificationContainer.style.display = 'block';
+        this.notificationContainer.appendChild(banner);
+
+        // Click handler - navigate to channel (optional)
+        banner.addEventListener('click', (e) => {
+          if (e.target !== closeBtn) {
+            console.log(`Navigate to channel ${channelId}`);
+            this.removeBanner(banner);
+          }
         });
-    }
+
+        // Close button handler
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.removeBanner(banner);
+        });
+
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+          if (banner.parentElement) {
+            this.removeBanner(banner);
+          }
+        }, 5000);
+      })
+      .catch((error) => {
+        console.error("Error showing notification:", error);
+      });
+  }
+
+  /**
+   * Remove a notification banner with animation
+   * @param {HTMLElement} banner - Banner element to remove
+   */
+  removeBanner(banner) {
+    banner.classList.add('closing');
+    setTimeout(() => {
+      if (banner.parentElement) {
+        banner.parentElement.removeChild(banner);
+
+        // Hide container if no more banners (only template left)
+        const visibleBanners = Array.from(this.notificationContainer.children)
+          .filter(child => child.id !== 'notification-banner-template');
+        if (visibleBanners.length === 0) {
+          this.notificationContainer.style.display = 'none';
+        }
+      }
+    }, 300); // Match animation duration
   }
 }
