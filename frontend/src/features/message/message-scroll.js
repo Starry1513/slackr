@@ -98,7 +98,9 @@ export class MessageScroll extends BaseManager {
    * Scroll to bottom of messages
    */
   scrollToBottom() {
-
+    if (this.messagesContainer) {
+      this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+    }
   }
 
   /**
@@ -106,14 +108,27 @@ export class MessageScroll extends BaseManager {
    * @param {number} previousScrollHeight - Previous scroll height
    */
   unchangeScrollPosition(previousScrollHeight) {
-
+    if (this.messagesContainer) {
+      const newScrollHeight = this.messagesContainer.scrollHeight;
+      // Adjust scrollTop to maintain position
+      this.messagesContainer.scrollTop = newScrollHeight - previousScrollHeight;
+    }
   }
 
   /**
    * Show loading indicator at top of messages
    */
   showLoadingIndicator() {
+    if (!this.messagesContainer) return;
 
+    // Check if loading indicator already exists
+    let loadingDiv = this.messagesContainer.querySelector(".loading-indicator");
+    if (!loadingDiv) {
+      loadingDiv = document.createElement("div");
+      loadingDiv.className = "loading-indicator";
+      loadingDiv.textContent = "Loading more messages...";
+      this.messagesContainer.insertBefore(loadingDiv, this.messagesContainer.firstChild);
+    }
   }
 
 
