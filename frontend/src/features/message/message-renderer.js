@@ -231,6 +231,24 @@ export class MessageRenderer extends BaseManager {
    * @returns {string}
    */
   formatTimestamp(timestamp) {
-
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now - date;
+    // Less than a minute
+    if (diff < 60000) {
+      return "Just now";
+    }
+    // Less than an hour
+    if (diff < 3600000) {
+      const minutes = Math.floor(diff / 60000);
+      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    }
+    // Less than a day
+    if (diff < 86400000) {
+      const hours = Math.floor(diff / 3600000);
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    }
+    // More than a day
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 }
