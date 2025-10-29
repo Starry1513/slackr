@@ -100,5 +100,96 @@ export class ChannelActions extends BaseManager {
     });
   }
 
+  /**
+   * Set callbacks
+   */
+  setOnChannelUpdatedCallback(callback) {
+    this.onChannelUpdatedCallback = callback;
+  }
+
+  setOnChannelJoinedCallback(callback) {
+    this.onChannelJoinedCallback = callback;
+  }
+  setOnChannelCreatedCallback(callback) {
+    this.onChannelCreatedCallback = callback;
+  }
+
+  setOnChannelLeftCallback(callback) {
+    this.onChannelLeftCallback = callback;
+  }
+
+  /**
+   * Set current channel data for editing
+   */
+  setCurrentChannelData(channelData) {
+    this.currentChannelData = channelData;
+  }
+
+  /**
+   * Update channel action buttons based on membership
+   */
+  updateChannelActions(channelData) {
+    const curUserId = parseInt(this.auth.getUserId());
+    const isMember = channelData.members.includes(curUserId);
+    const isCreator = channelData.creator === curUserId;
+
+    // Show/hide buttons based on membership
+    if (isMember) {
+      this.dom.joinChannelButton.style.display = "none";
+      this.dom.leaveChannelButton.style.display = "inline-block";
+      this.dom.editChannelButton.style.display = isCreator ? "inline-block" : "none";
+    } else {
+      this.dom.joinChannelButton.style.display = channelData.private ? "none" : "inline-block";
+      this.dom.editChannelButton.style.display = "none";
+      this.dom.leaveChannelButton.style.display = "none";
+    }
+  }
+
+  /**
+   * Show create channel modal
+   */
+  showCreateChannelModal() {
+    this.dom.createChannelContainer.style.display = "flex";
+    this.dom.createChannelName.focus();
+  }
+
+  /**
+   * Hide create channel modal
+   */
+  hideCreateChannelModal() {
+    this.dom.createChannelContainer.style.display = "none";
+    // Clear form
+    this.dom.createChannelName.value = "";
+    this.dom.createChannelDescription.value = "";
+    this.dom.createChannelIsPrivate.checked = false;
+  }
+
+  /**
+   * Handle create channel form submission
+   */
+  handleCreateChannel() {
+    const name = this.dom.createChannelName.value.trim();
+    const description = this.dom.createChannelDescription.value.trim();
+    const isPrivate = this.dom.createChannelIsPrivate.checked;
+
+    if (!name) {
+      this.showError("Channel name is required");
+      return;
+    }
+
+    const token = this.auth.getToken();
+
+    this.api
+      .createChannel(name, description, isPrivate, token)
+      .then((response) => {
+        this.hideCreateChannelModal();
+        if (this.onChannelCreatedCallback) {
+          this.onChannelCreatedCallback(response.channelId);
+        }
+      })
+      .catch((error) => {
+        this.showError(error.message || "Failed to create channel");
+      });
+  }
 
 }
