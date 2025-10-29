@@ -11,8 +11,8 @@ export class ImageManager extends BaseManager {
 
     // Image viewing state
     this.channelImages = [];
-    this.currentImageIndex = 0;
-    this.currentChannelId = null;
+    this.currImageIndex = 0;
+    this.currChannelId = null;
 
     // Callback for when image is uploaded
     this.onImageUploaded = null;
@@ -95,7 +95,7 @@ export class ImageManager extends BaseManager {
       return Promise.reject(new Error("No file selected"));
     }
 
-    if (!this.currentChannelId) {
+    if (!this.currChannelId) {
       this.showError("Please select a channel first");
       event.target.value = "";
       return Promise.reject(new Error("No channel selected"));
@@ -107,7 +107,7 @@ export class ImageManager extends BaseManager {
     return fileToDataUrl(file)
       .then((dataUrl) => {
         // Send image message (no text, just image)
-        return this.api.sendMessage(this.currentChannelId, "", dataUrl, token);
+        return this.api.sendMessage(this.currChannelId, "", dataUrl, token);
       })
       .then(() => {
         // Clear file input
@@ -135,11 +135,11 @@ export class ImageManager extends BaseManager {
   }
 
   /**
-   * Set current channel ID for image uploads
+   * Set curr channel ID for image uploads
    * @param {number} channelId - Channel ID
    */
-  setCurrentChannel(channelId) {
-    this.currentChannelId = channelId;
+  setcurrChannel(channelId) {
+    this.currChannelId = channelId;
   }
 
   /**
@@ -159,15 +159,15 @@ export class ImageManager extends BaseManager {
    */
   openImageViewer(imageUrl) {
     // Find the index of this image in the channel images
-    this.currentImageIndex = this.channelImages.indexOf(imageUrl);
+    this.currImageIndex = this.channelImages.indexOf(imageUrl);
 
-    if (this.currentImageIndex === -1) {
-      // If image not found in list, add it and set as current
+    if (this.currImageIndex === -1) {
+      // If image not found in list, add it and set as curr
       this.channelImages.push(imageUrl);
-      this.currentImageIndex = this.channelImages.length - 1;
+      this.currImageIndex = this.channelImages.length - 1;
     }
 
-    this.displayCurrentImage();
+    this.displaycurrImage();
     this.showElement(this.dom.imageViewerModal, "flex");
   }
 
@@ -182,9 +182,9 @@ export class ImageManager extends BaseManager {
    * Show previous image in the channel
    */
   showPreviousImage() {
-    if (this.currentImageIndex > 0) {
-      this.currentImageIndex--;
-      this.displayCurrentImage();
+    if (this.currImageIndex > 0) {
+      this.currImageIndex--;
+      this.displaycurrImage();
     }
   }
 
@@ -192,35 +192,35 @@ export class ImageManager extends BaseManager {
    * Show next image in the channel
    */
   showNextImage() {
-    if (this.currentImageIndex < this.channelImages.length - 1) {
-      this.currentImageIndex++;
-      this.displayCurrentImage();
+    if (this.currImageIndex < this.channelImages.length - 1) {
+      this.currImageIndex++;
+      this.displaycurrImage();
     }
   }
 
   /**
-   * Display the current image and update navigation
+   * Display the curr image and update navigation
    */
-  displayCurrentImage() {
+  displaycurrImage() {
     if (!this.channelImages || this.channelImages.length === 0) {
       return;
     }
 
     // Update image src
-    this.dom.imageViewerImage.src = this.channelImages[this.currentImageIndex];
+    this.dom.imageViewerImage.src = this.channelImages[this.currImageIndex];
 
     // Update counter
     this.dom.imageViewerCounter.textContent =
-      `${this.currentImageIndex + 1} / ${this.channelImages.length}`;
+      `${this.currImageIndex + 1} / ${this.channelImages.length}`;
 
     // Update navigation buttons
-    if (this.currentImageIndex === 0) {
+    if (this.currImageIndex === 0) {
       this.dom.imageViewerPrev.disabled = true;
     } else {
       this.dom.imageViewerPrev.disabled = false;
     }
 
-    if (this.currentImageIndex === this.channelImages.length - 1) {
+    if (this.currImageIndex === this.channelImages.length - 1) {
       this.dom.imageViewerNext.disabled = true;
     } else {
       this.dom.imageViewerNext.disabled = false;
