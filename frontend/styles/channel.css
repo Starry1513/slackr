@@ -1469,3 +1469,74 @@
   color: var(--text-muted);
   font-size: 0.875rem;
 }
+
+/* Sidebar Toggle Button */
+.sidebar-toggle-btn {
+  display: none; /* Hidden by default on desktop */
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+/* Sidebar Hidden State */
+.dashboard-sidebar.hidden {
+  transform: translateX(-100%);
+}
+
+/* Mobile Responsive (≤ 768px) */
+@media (max-width: 768px) {
+  /* Change sidebar width to 0 for message input positioning */
+  .dashboard {
+    --sidebar-width: 0;
+  }
+
+  /* Show sidebar toggle button on mobile */
+  .sidebar-toggle-btn {
+    display: inline-flex;
+  }
+
+  /* Sidebar: overlay on mobile, hidden by default */
+  .dashboard-sidebar {
+    position: fixed;
+    left: 0;
+    top: 60px;
+    bottom: 0;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  /* Sidebar visible state on mobile */
+  .dashboard-sidebar.visible {
+    transform: translateX(0);
+  }
+
+  /* Add backdrop when sidebar is open on mobile */
+  .sidebar-backdrop {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  .sidebar-backdrop.visible {
+    display: block;
+  }
+
+  /* Main content takes full width on mobile */
+  .dashboard-main {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  /* Channel header adjustments for mobile */
+  .channel-header {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .channel-header h2 {
+    font-size: 1rem;
+  }
