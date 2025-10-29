@@ -19,7 +19,7 @@ export class MessageManager extends BaseManager {
     // Initialize specialized modules
     this.renderer = new MessageRenderer(api, auth, ErrorController);
     this.actions = new MessageActions(api, auth, ErrorController);
-    this.reactions = new MessageReactions(api, auth, ErrorController);
+    this.Reac = new MessageReactions(api, auth, ErrorController);
     this.notifications = new MessageNotifications(api, auth, ErrorController);
     this.scroll = new MessageScroll(api, auth, ErrorController);
 
@@ -42,7 +42,8 @@ export class MessageManager extends BaseManager {
     this.setupEventListeners();
 
     // Initialize sub-modules
-    this.reactions.init((message, emoji) => this.handleReactionToggle(message, emoji));
+    // handle what to do when Reac is toggled
+    this.Reac.init((message, emoji) => this.handleReacToggle(message, emoji));
     this.scroll.init(this.dom.messagesContainer, (newMessages, previousScrollHeight) => {
       this.handleLoadMoreMessages(newMessages, previousScrollHeight);
     });
@@ -72,9 +73,9 @@ export class MessageManager extends BaseManager {
     // Reset scroll state for new channel
     this.scroll.reset(channelId);
 
-    // Update image manager with current channel
+    // Update image manager with curr channel
     if (this.imageManager) {
-      this.imageManager.setCurrentChannel(channelId);
+      this.imageManager.setcurrChannel(channelId);
     }
 
     const token = this.auth.getToken();
@@ -88,7 +89,7 @@ export class MessageManager extends BaseManager {
         const lastMessageId = this.messages.length > 0
           ? Math.max(...this.messages.map(m => m.id))
           : null;
-        this.notifications.setCurrentChannel(channelId, lastMessageId);
+        this.notifications.setcurrChannel(channelId, lastMessageId);
 
         // Fetch user details for all senders
         return this.enrichMessagesWithUserData(this.messages);
@@ -168,7 +169,7 @@ export class MessageManager extends BaseManager {
           this.renderMessages();
 
           // Maintain scroll position to prevent jumping
-          this.scroll.maintainScrollPosition(previousScrollHeight);
+          this.scroll.unchangeScrollPosition(previousScrollHeight);
         }
       })
       .catch((error) => {
@@ -183,8 +184,8 @@ export class MessageManager extends BaseManager {
     const handlers = {
       onEdit: (message) => this.handleEditMessage(message),
       onDelete: (message) => this.handleDeleteMessage(message),
-      onReact: (message, emoji) => this.handleReactionToggle(message, emoji),
-      onShowReactionPicker: (message) => this.reactions.showReactionPicker(message)
+      onReact: (message, emoji) => this.handleReacToggle(message, emoji),
+      onShowReacPicker: (message) => this.Reac.showReacPicker(message)
     };
 
     this.renderer.renderMessages(
@@ -257,19 +258,19 @@ export class MessageManager extends BaseManager {
   }
 
   /**
-   * Handle reaction toggle
+   * Handle Reac toggle
    * @param {Object} message - Message
-   * @param {string} emoji - Emoji reaction
+   * @param {string} emoji - Emoji Reac
    */
-  handleReactionToggle(message, emoji) {
-    this.reactions
-      .toggleReaction(this.curChannelId, message, emoji)
+  handleReacToggle(message, emoji) {
+    this.Reac
+      .toggleReac(this.curChannelId, message, emoji)
       .then(() => {
         // Reload messages
         return this.loadMessages(this.curChannelId);
       })
       .catch((error) => {
-        this.showError(error.message || "Failed to update reaction");
+        this.showError(error.message || "Failed to update Reac");
       });
   }
 

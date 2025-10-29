@@ -12,8 +12,8 @@ export class UserManager extends BaseManager {
     // Helper manager for user images
     this.helperManager = new helperManager();
 
-    // Current channel ID (will be set by channel manager)
-    this.currentChannelId = null;
+    // curr channel ID (will be set by channel manager)
+    this.currChannelId = null;
 
     // Cache DOM elements
     this.dom = {
@@ -167,25 +167,25 @@ export class UserManager extends BaseManager {
   showProfileModal() {
     if (!this.dom.profileContainer) return;
 
-    // Load current user data
+    // Load curr user data
     const userId = parseInt(this.auth.getUserId());
     const token = this.auth.getToken();
 
     this.api
       .getUserDetails(userId, token)
       .then((userData) => {
-        // Fill form with current data
+        // Fill form with curr data
         if (this.dom.profileEmail) this.dom.profileEmail.value = userData.email || "";
         if (this.dom.profileName) this.dom.profileName.value = userData.name || "";
         if (this.dom.profileBio) this.dom.profileBio.value = userData.bio || "";
         if (this.dom.profilePassword) this.dom.profilePassword.value = "";
 
-        // Show current profile image
+        // Show curr profile image
         this.clearElement(this.dom.profileImagePreview);
         if (userData.image) {
           const img = document.createElement("img");
           img.src = userData.image;
-          img.alt = "Current profile image";
+          img.alt = "curr profile image";
           img.style.maxWidth = "200px";
           img.style.maxHeight = "200px";
           this.dom.profileImagePreview.appendChild(img);
@@ -282,16 +282,16 @@ export class UserManager extends BaseManager {
    * Show invite user modal
    */
   showInviteUserModal() {
-    if (!this.dom.inviteUserContainer || !this.currentChannelId) {
+    if (!this.dom.inviteUserContainer || !this.currChannelId) {
       return;
     }
 
     const token = this.auth.getToken();
 
-    // Get all users and current channel details in parallel
+    // Get all users and curr channel details in parallel
     Promise.all([
       this.api.getAllUsers(token),
-      this.api.getChannelDetails(this.currentChannelId, token)
+      this.api.getChannelDetails(this.currChannelId, token)
     ])
       .then(([allUsersResponse, channelData]) => {
         const allUsers = allUsersResponse.users || [];
@@ -388,7 +388,7 @@ export class UserManager extends BaseManager {
    * Handle invite user
    */
   handleInviteUser() {
-    if (!this.currentChannelId) {
+    if (!this.currChannelId) {
       this.showError("Please select a channel first");
       return;
     }
@@ -406,7 +406,7 @@ export class UserManager extends BaseManager {
 
     // Invite all selected users
     const invitePromises = userIds.map(userId =>
-      this.api.inviteToChannel(this.currentChannelId, userId, token)
+      this.api.inviteToChannel(this.currChannelId, userId, token)
     );
 
     Promise.all(invitePromises)
@@ -420,11 +420,11 @@ export class UserManager extends BaseManager {
   }
 
   /**
-   * Set current channel ID
+   * Set curr channel ID
    * @param {number} channelId - Channel ID
    */
-  setCurrentChannelId(channelId) {
-    this.currentChannelId = channelId;
+  setcurrChannelId(channelId) {
+    this.currChannelId = channelId;
   }
 
   /**

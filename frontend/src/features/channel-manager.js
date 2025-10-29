@@ -10,9 +10,9 @@ export class ChannelManager extends BaseManager {
     this.messageManager = messageManager;
     this.userManager = userManager;
 
-    // Current channel state
-    this.currentChannelId = null;
-    this.currentChannelData = null;
+    // curr channel state
+    this.currChannelId = null;
+    this.currChannelData = null;
 
     // Cache channel-related DOM elements
     this.dom = {
@@ -184,7 +184,7 @@ export class ChannelManager extends BaseManager {
       if (channel.private) {
         channelElement.classList.add("private");
       }
-      if (this.currentChannelId === channel.id) {
+      if (this.currChannelId === channel.id) {
         channelElement.classList.add("active");
       }
 
@@ -207,12 +207,12 @@ export class ChannelManager extends BaseManager {
     this.api
       .getChannelDetails(channelId, token)
       .then((channelData) => {
-        this.currentChannelId = channelId;
-        this.currentChannelData = channelData;
+        this.currChannelId = channelId;
+        this.currChannelData = channelData;
 
         // Set channel ID for user manager
         if (this.userManager) {
-          this.userManager.setCurrentChannelId(channelId);
+          this.userManager.setcurrChannelId(channelId);
         }
 
         // Update UI
@@ -256,8 +256,8 @@ export class ChannelManager extends BaseManager {
     this.dom.welcomeScreen.style.display = "flex";
     this.dom.channelView.style.display = "none";
     this.hideChannelDetails();
-    this.currentChannelId = null;
-    this.currentChannelData = null;
+    this.currChannelId = null;
+    this.currChannelData = null;
   }
 
   /**
@@ -298,8 +298,8 @@ export class ChannelManager extends BaseManager {
    * @param {Object} channelData - Channel data
    */
   updateChannelActions(channelData) {
-    const currentUserId = parseInt(this.auth.getUserId());
-    const isMember = channelData.members.includes(currentUserId);
+    const curUserId = parseInt(this.auth.getUserId());
+    const isMember = channelData.members.includes(curUserId);
 
     // Show/hide join/leave buttons
     if (isMember) {
@@ -395,12 +395,12 @@ export class ChannelManager extends BaseManager {
    * Show edit channel modal
    */
   showEditChannelModal() {
-    if (!this.currentChannelData) {
+    if (!this.currChannelData) {
       return;
     }
 
-    this.dom.editChannelName.value = this.currentChannelData.name;
-    this.dom.editChannelDescription.value = this.currentChannelData.description || "";
+    this.dom.editChannelName.value = this.currChannelData.name;
+    this.dom.editChannelDescription.value = this.currChannelData.description || "";
     this.dom.editChannelContainer.style.display = "flex";
   }
 
@@ -426,11 +426,11 @@ export class ChannelManager extends BaseManager {
     const token = this.auth.getToken();
 
     this.api
-      .updateChannel(this.currentChannelId, name, description || "", token)
+      .updateChannel(this.currChannelId, name, description || "", token)
       .then(() => {
         this.hideEditChannelModal();
         // Reload channel data
-        return this.selectChannel(this.currentChannelId);
+        return this.selectChannel(this.currChannelId);
       })
       .then(() => {
         // Reload channel list to update sidebar
@@ -445,17 +445,17 @@ export class ChannelManager extends BaseManager {
    * Handle join channel
    */
   handleJoinChannel() {
-    if (!this.currentChannelId) {
+    if (!this.currChannelId) {
       return;
     }
 
     const token = this.auth.getToken();
 
     this.api
-      .joinChannel(this.currentChannelId, token)
+      .joinChannel(this.currChannelId, token)
       .then(() => {
         // Reload channel data to update UI
-        return this.selectChannel(this.currentChannelId);
+        return this.selectChannel(this.currChannelId);
       })
       .catch((error) => {
         this.showError(error.message || "Failed to join channel");
@@ -466,14 +466,14 @@ export class ChannelManager extends BaseManager {
    * Handle leave channel
    */
   handleLeaveChannel() {
-    if (!this.currentChannelId) {
+    if (!this.currChannelId) {
       return;
     }
 
     const token = this.auth.getToken();
 
     this.api
-      .leaveChannel(this.currentChannelId, token)
+      .leaveChannel(this.currChannelId, token)
       .then(() => {
         // Show welcome screen
         this.showWelcomeScreen();
@@ -486,18 +486,18 @@ export class ChannelManager extends BaseManager {
   }
 
   /**
-   * Get current channel ID
-   * @returns {number|null} Current channel ID
+   * Get curr channel ID
+   * @returns {number|null} curr channel ID
    */
-  getCurrentChannelId() {
-    return this.currentChannelId;
+  getcurrChannelId() {
+    return this.currChannelId;
   }
 
   /**
-   * Get current channel data
-   * @returns {Object|null} Current channel data
+   * Get curr channel data
+   * @returns {Object|null} curr channel data
    */
-  getCurrentChannelData() {
-    return this.currentChannelData;
+  getcurrChannelData() {
+    return this.currChannelData;
   }
 }
