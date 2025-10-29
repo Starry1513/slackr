@@ -279,6 +279,11 @@ export class ChannelManager extends BaseManager {
    * @param {number} channelId - Channel ID to select
    */
   selectChannel(channelId) {
+    // Skip if already viewing this channel
+    if (this.currChannelId === channelId) {
+      return;
+    }
+
     const token = this.auth.getToken();
 
     // Check if offline

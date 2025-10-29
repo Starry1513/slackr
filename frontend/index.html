@@ -157,8 +157,11 @@
         id="dashboard-container"
         class="dashboard"
         style="display: none">
+        <!-- Sidebar Backdrop (for mobile) -->
+        <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
         <!-- Sidebar -->
-        <aside class="dashboard-sidebar">
+        <aside id="dashboard-sidebar" class="dashboard-sidebar">
           <div class="sidebar-header">
             <h2>Slackr</h2>
             <div class="header-buttons">
@@ -188,6 +191,7 @@
           <div id="channel-view" class="channel-view" style="display: none;">
             <!-- Channel Header -->
             <div class="channel-header">
+              <button id="sidebar-toggle" class="icon-button sidebar-toggle-btn" title="Toggle Sidebar">☰</button>
               <h2 id="channel-name">Channel Name</h2>
               <div class="channel-header-buttons">
                 <button id="view-pinned-messages-button" class="icon-button" title="View Pinned Messages">📌</button>

@@ -25,6 +25,11 @@ export class Dashboard extends BaseManager {
       loginLink: document.getElementById("login-link"),
       logoutButton: document.getElementById("logout-button"),
       errorClose: document.getElementById("error-close"),
+
+      // Sidebar toggle elements
+      sidebarToggle: document.getElementById("sidebar-toggle"),
+      sidebar: document.getElementById("dashboard-sidebar"),
+      sidebarBackdrop: document.getElementById("sidebar-backdrop"),
     };
   }
     init() {
@@ -68,6 +73,15 @@ export class Dashboard extends BaseManager {
 
     this.dom.errorClose.addEventListener("click", () => {
       this.ErrorController.hideError();
+    });
+
+    // Sidebar toggle for mobile
+    this.dom.sidebarToggle.addEventListener("click", () => {
+      this.toggleSidebar();
+    });
+
+    this.dom.sidebarBackdrop.addEventListener("click", () => {
+      this.closeSidebar();
     });
   };
 
@@ -197,5 +211,21 @@ export class Dashboard extends BaseManager {
         this.showLogin();
         console.error("Logout error:", error);
       });
+  }
+
+  /**
+   * Toggle sidebar visibility (for mobile)
+   */
+  toggleSidebar() {
+    this.dom.sidebar.classList.toggle("visible");
+    this.dom.sidebarBackdrop.classList.toggle("visible");
+  }
+
+  /**
+   * Close sidebar (for mobile)
+   */
+  closeSidebar() {
+    this.dom.sidebar.classList.remove("visible");
+    this.dom.sidebarBackdrop.classList.remove("visible");
   }
 }

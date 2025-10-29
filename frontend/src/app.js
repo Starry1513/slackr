@@ -39,6 +39,8 @@ export class App {
     // Set up URL update callbacks
     this.channel.setOnChannelSelectedCallback((channelId) => {
       this.router.navigateToChannel(channelId);
+      // Close sidebar on mobile when channel is selected
+      this.dashboard.closeSidebar();
     });
 
     this.user.setOnProfileViewedCallback((userId) => {
