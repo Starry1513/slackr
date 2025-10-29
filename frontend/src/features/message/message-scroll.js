@@ -52,7 +52,46 @@ export class MessageScroll extends BaseManager {
    * Load more messages (infinite scroll)
    */
   loadMoreMessages() {
+    // If there's no channel selected or already loading or no more messages
+    if (!this.currChannelId || this.ifLoadingMore || !this.hasMoreMessages) {
+      return;
+    }
 
+    this.ifLoadingMore = true;
+    this.messageStart += 25; // Load next 25 messages
+
+    const token = this.auth.getToken();
+    const previousScrollHeight = this.messagesContainer.scrollHeight;
+
+    // Show loading indicator
+    this.showLoadingIndicator();
+
+    this.api
+      .getMessages(this.currChannelId, this.messageStart, token)
+      .then((response) => {
+        // only responsible for fetching messages
+        const nextMessages = response.messages || [];
+
+        // If we got fewer than 25 messages, we've reached the end
+        if (nextMessages.length < 25) {
+          this.hasMoreMessages = false;
+        }
+
+        this.ifLoadingMore = false;
+        this.hideLoadingIndicator();
+
+        // after fetching messages, call the callback
+        if (this.onLoadMore) {
+          this.onLoadMore(nextMessages, previousScrollHeight);
+        }
+
+        return nextMessages;
+      })
+      .catch((error) => {
+        this.showError(error.message || "Failed to load more messages");
+        this.ifLoadingMore = false;
+        this.hideLoadingIndicator();
+      });
   }
 
   /**
