@@ -225,6 +225,14 @@ export class ChannelManager extends BaseManager {
         this.selectChannel(channel.id);
       });
 
+      // Add keyboard event for accessibility
+      channelElement.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.selectChannel(channel.id);
+        }
+      });
+
       this.dom.channelList.appendChild(channelFragment);
     });
   }
