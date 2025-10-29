@@ -85,3 +85,19 @@ export class ChannelDetails extends BaseManager {
     }
   }
 
+  /**
+   * Show channel details sidebar
+   */
+  showChannelDetails() {
+    this.dom.channelDetailsContainer.classList.add("show");
+    this.dom.channelDetailsBackdrop.classList.add("show");
+  }
+
+  /**
+   * Hide channel details sidebar
+   */
+  hideChannelDetails() {
+    this.dom.channelDetailsContainer.classList.remove("show");
+    this.dom.channelDetailsBackdrop.classList.remove("show");
+  }
+}
