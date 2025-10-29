@@ -33,11 +33,21 @@ export class MessageManager extends BaseManager {
       messagesContainer: document.getElementById("channel-messages"),
       messageInput: document.getElementById("message-input"),
       messageForm: document.getElementById("message-form"),
+      messageInputContainer: document.querySelector(".message-input-container"),
       viewPinnedButton: document.getElementById("view-pinned-messages-button"),
       pinnedMessagesContainer: document.getElementById("pinned-messages-container"),
       pinnedMessagesContent: document.getElementById("pinned-messages-content"),
       pinnedMessagesClose: document.getElementById("pinned-messages-close"),
+      // Edit message modal
+      editMessageContainer: document.getElementById("edit-message-container"),
+      editMessageForm: document.getElementById("edit-message-form"),
+      editMessageText: document.getElementById("edit-message-text"),
+      editMessageClose: document.getElementById("edit-message-close"),
+      editMessageCancel: document.getElementById("edit-message-cancel"),
     };
+
+    // Current message being edited
+    this.editingMessage = null;
   }
 
   /**
@@ -85,6 +95,35 @@ export class MessageManager extends BaseManager {
       this.dom.pinnedMessagesContainer.addEventListener("click", (e) => {
         if (e.target === this.dom.pinnedMessagesContainer) {
           this.hidePinnedMessagesModal();
+        }
+      });
+    }
+
+    // Edit message modal
+    if (this.dom.editMessageForm) {
+      this.dom.editMessageForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleEditMessageSubmit();
+      });
+    }
+
+    if (this.dom.editMessageClose) {
+      this.dom.editMessageClose.addEventListener("click", () => {
+        this.hideEditMessageModal();
+      });
+    }
+
+    if (this.dom.editMessageCancel) {
+      this.dom.editMessageCancel.addEventListener("click", () => {
+        this.hideEditMessageModal();
+      });
+    }
+
+    // Close modal when clicking outside
+    if (this.dom.editMessageContainer) {
+      this.dom.editMessageContainer.addEventListener("click", (e) => {
+        if (e.target === this.dom.editMessageContainer) {
+          this.hideEditMessageModal();
         }
       });
     }
@@ -300,7 +339,7 @@ export class MessageManager extends BaseManager {
   }
 
   /**
-   * Handle edit message
+   * Handle edit message - Show edit modal
    * @param {Object} message - Message to edit
    */
   handleEditMessage(message) {
@@ -310,14 +349,46 @@ export class MessageManager extends BaseManager {
       return;
     }
 
-    const newText = prompt("Edit message:", message.message);
-    if (newText === null || newText.trim() === "") {
+    // Store the message being edited
+    this.editingMessage = message;
+
+    // Populate the textarea with current message text
+    this.dom.editMessageText.value = message.message;
+
+    // Show the modal
+    this.showEditMessageModal();
+  }
+
+  /**
+   * Handle edit message form submission
+   */
+  handleEditMessageSubmit() {
+    if (!this.editingMessage) {
       return;
     }
 
+    const newText = this.dom.editMessageText.value.trim();
+    const originalText = this.editingMessage.message;
+
+    // Validation: Check if empty
+    if (newText === "") {
+      this.showError("Message cannot be empty");
+      return;
+    }
+
+    // Validation: Check if unchanged
+    if (newText === originalText) {
+      this.showError("Message content is unchanged");
+      return;
+    }
+
+    // Send edit request
     this.actions
-      .editMessage(this.curChannelId, message.id, newText)
+      .editMessage(this.curChannelId, this.editingMessage.id, newText)
       .then(() => {
+        // Hide modal
+        this.hideEditMessageModal();
+
         // Reload messages
         return this.loadMessages(this.curChannelId);
       })
