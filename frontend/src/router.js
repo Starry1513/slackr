@@ -40,6 +40,55 @@ export class Router {
   }
 
   /**
+   * Parse current URL hash and route to appropriate handler
+   */
+  handleRoute() {
+    const hash = window.location.hash;
+
+    if (!hash || hash === '#') {
+      // No hash, do nothing (stay on current page)
+      return;
+    }
+
+    // Parse hash
+    if (hash.startsWith('#channel=')) {
+      const channelId = parseInt(hash.replace('#channel=', ''));
+      if (!isNaN(channelId) && this.handlers.channel) {
+        this.handlers.channel(channelId);
+      }
+    } else if (hash.startsWith('#profile=')) {
+      const userId = parseInt(hash.replace('#profile=', ''));
+      if (!isNaN(userId) && this.handlers.profile) {
+        this.handlers.profile(userId);
+      }
+    } else if (hash === '#profile') {
+      if (this.handlers.profile) {
+        this.handlers.profile(null); // null = own profile
+      }
+    }
+  }
+
+  /**
+   * Navigate to a channel (updates URL)
+   * @param {number} channelId - Channel ID
+   */
+  navigateToChannel(channelId) {
+    window.location.hash = `#channel=${channelId}`;
+  }
+
+  /**
+   * Navigate to a profile (updates URL)
+   * @param {number|null} userId - User ID (null for own profile)
+   */
+  navigateToProfile(userId) {
+    if (userId === null) {
+      window.location.hash = '#profile';
+    } else {
+      window.location.hash = `#profile=${userId}`;
+    }
+  }
+
+  /**
    * Clear hash (go to dashboard home)
    */
   clearHash() {
