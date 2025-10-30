@@ -41,7 +41,7 @@
         <div id="notification-banner-template" class="notification-banner" style="display: none;">
           <div class="notification-banner-icon">
             <img class="notification-banner-avatar" src="" alt="" style="display: none;">
-            <span class="notification-banner-emoji">💬</span>
+            <span class="notification-banner-emoji">☁</span>
           </div>
           <div class="notification-banner-content">
             <div class="notification-banner-title"></div>
@@ -55,11 +55,14 @@
       <div
         id="error-body"
         class="error-popup-overlay"
-        style="display: none">
+        style="display: none"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="error-title">
         <div class="error-popup-content">
-          <h3>Error</h3>
+          <h3 id="error-title">Error</h3>
           <p id="error-message">Error message will appear here</p>
-          <button id="error-close">Close</button>
+          <button id="error-close" type="button" aria-label="Close error dialog">Close</button>
         </div>
       </div>
 
@@ -178,6 +181,11 @@
             <div id="channel-list"></div>
           </div>
         </aside>
+
+        <!-- Floating Sidebar Toggle Button -->
+        <button id="sidebar-toggle-floating" class="sidebar-toggle-floating" title="Toggle Sidebar">
+          <span class="toggle-icon"><</span>
+        </button>
 
         <!-- Main Content -->
         <main class="dashboard-main">

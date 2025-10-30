@@ -21,6 +21,9 @@ export class ChannelManager extends BaseManager {
     this.currChannelId = null;
     this.currChannelData = null;
 
+    // All channels cache (from channel list)
+    this.allChannels = [];
+
     // Callback for when channel is selected (for URL routing)
     this.onChannelSelectedCallback = null;
 
@@ -57,12 +60,12 @@ export class ChannelManager extends BaseManager {
     });
 
     this.channelActions.setOnChannelUpdatedCallback((channelId) => {
-      this.selectChannel(channelId); // Reload channel to show updates
+      this.selectChannel(channelId, true); // Force reload to show updates
       this.loadChannels(); // Refresh channel list
     });
 
     this.channelActions.setOnChannelJoinedCallback((channelId) => {
-      this.selectChannel(channelId); // Reload to show as member
+      this.selectChannel(channelId, true); // Force reload to show as member
       this.loadChannels(); // Refresh channel list
     });
 
@@ -84,16 +87,21 @@ export class ChannelManager extends BaseManager {
    * @returns {Promise}
    */
   loadChannels() {
-    return this.channelList.loadChannels();
+    return this.channelList.loadChannels().then((channels) => {
+      // Cache all channels data
+      this.allChannels = channels || [];
+      return channels;
+    });
   }
 
   /**
    * Select and display a channel
    * @param {number} channelId - Channel ID to select
+   * @param {boolean} forceReload - Force reload even if already viewing this channel
    */
-  selectChannel(channelId) {
-    // Skip if already viewing this channel
-    if (this.currChannelId === channelId) {
+  selectChannel(channelId, forceReload = false) {
+    // Skip if already viewing this channel (unless forceReload is true)
+    if (this.currChannelId === channelId && !forceReload) {
       return;
     }
 
@@ -134,6 +142,20 @@ export class ChannelManager extends BaseManager {
           }
         }
 
+        // Check if error is due to not being a member
+        const errorMsg = error.message || "";
+        if (errorMsg.includes("not a member") || errorMsg.includes("Authorised user is not a member")) {
+          // Find channel data from cached channel list
+          const channelFromList = this.allChannels.find(ch => ch.id === channelId);
+          if (channelFromList) {
+            // Use basic channel data from list to show join prompt
+            console.log('[ChannelManager] User not a member, showing join prompt with cached data');
+            this.handleChannelData(channelId, channelFromList);
+            return;
+          }
+        }
+
+        // Other errors - show error message
         this.showError(error.message || "Failed to load channel");
       });
   }
