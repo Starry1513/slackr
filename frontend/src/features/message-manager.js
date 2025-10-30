@@ -76,6 +76,13 @@ export class MessageManager extends BaseManager {
       });
     }
 
+    // Auto-resize textarea on input
+    if (this.dom.messageInput) {
+      this.dom.messageInput.addEventListener("input", () => {
+        this.autoResizeTextarea(this.dom.messageInput);
+      });
+    }
+
     // View pinned messages button
     if (this.dom.viewPinnedButton) {
       this.dom.viewPinnedButton.addEventListener("click", () => {
@@ -313,6 +320,18 @@ export class MessageManager extends BaseManager {
   }
 
   /**
+   * Auto-resize textarea based on content
+   * @param {HTMLTextAreaElement} textarea - The textarea element to resize
+   */
+  autoResizeTextarea(textarea) {
+    // Reset height to auto to get the correct scrollHeight
+    textarea.style.height = "auto";
+
+    // Set height to scrollHeight (content height)
+    textarea.style.height = textarea.scrollHeight + "px";
+  }
+
+  /**
    * Handle send message
    */
   handleSendMessage() {
@@ -329,6 +348,9 @@ export class MessageManager extends BaseManager {
       .then(() => {
         // Clear input
         this.dom.messageInput.value = "";
+
+        // Reset textarea height
+        this.autoResizeTextarea(this.dom.messageInput);
 
         // Reload messages
         return this.loadMessages(this.curChannelId);

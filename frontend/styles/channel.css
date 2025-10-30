@@ -334,7 +334,7 @@
 .message-input-container form {
   display: flex;
   gap: 0.75rem;
-  align-items: center;
+  align-items: flex-end;
   width: 100%;
 }
 
@@ -772,6 +772,9 @@
   color: #1f2937;
   cursor: pointer;
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Channels Section */
@@ -894,6 +897,11 @@
   font-weight: 600;
   color: #dcddde;
   font-size: 0.9375rem;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .message-timestamp {
@@ -1207,6 +1215,9 @@
   color: #1f2937;
   word-wrap: break-word;
   line-height: 1.5;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Image Preview */
@@ -1638,6 +1649,7 @@
   #message-input {
     padding: 0.4rem;
     font-size: 0.9375rem;
+    max-height: 100px;
   }
 
   .image-upload-btn {
@@ -1678,5 +1690,10 @@
 
   .message-pinned-badge {
     margin-left: 2.5rem;
+  }
+
+  /* Reduce max-width for sender name on small screens */
+  .message-sender-name {
+    max-width: 120px;
   }
 }
