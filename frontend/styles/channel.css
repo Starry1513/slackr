@@ -1525,6 +1525,85 @@
   transition: transform 0.2s ease;
 }
 
+.sidebar-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Subtle slide-in animation on initial load */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
+  }
+  to {
+    opacity: 0.4;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* Floating Sidebar Toggle Button */
+.sidebar-toggle-floating {
+  position: fixed;
+  left: 238px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 60px;
+  background-color: rgba(32, 34, 37, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(220, 221, 222, 0.6);
+  font-size: 1.1rem;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1050;
+  pointer-events: auto;
+  opacity: 0.4;
+  backdrop-filter: blur(10px);
+  animation: slideInFromLeft 0.5s ease-out 0.5s both;
+}
+
+.sidebar-toggle-floating:hover {
+  background-color: rgba(47, 49, 54, 0.95);
+  color: rgba(220, 221, 222, 1);
+  width: 32px;
+  box-shadow: 3px 0 12px rgba(0, 0, 0, 0.3);
+  opacity: 1;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.sidebar-toggle-floating:active {
+  transform: translateY(-50%) scale(0.95);
+  background-color: rgba(64, 68, 75, 0.95);
+}
+
+.sidebar-toggle-floating:focus {
+  outline: 2px solid rgba(88, 101, 242, 0.5);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+.sidebar-toggle-floating .toggle-icon {
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+/* When sidebar is hidden, move button and flip icon */
+.dashboard-sidebar.hidden ~ .sidebar-toggle-floating {
+  left: -2px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+}
+
+.dashboard-sidebar.hidden ~ .sidebar-toggle-floating .toggle-icon {
+  transform: rotate(180deg);
+}
 
 /* Sidebar Hidden State - Desktop */
 .dashboard-sidebar.hidden {
