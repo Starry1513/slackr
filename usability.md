@@ -83,3 +83,56 @@ Users can hide the sidebar when reading long messages or on small screens.
 Before:
 Long usernames could overflow or break the layout.
 
+What I did:
+Applied text-overflow: ellipsis to usernames with a max width (200px desktop, 120px mobile).
+Usernames now show "VeryLongUserNa..." when too long.
+
+Result:
+Layout stays clean and consistent regardless of username length.
+
+8. Multi-line Message Input
+
+Before:
+The message input was a single-line text field that couldn't expand.
+
+What I did:
+Changed to a textarea with auto-resize on input.
+Min height: 38px, max height: 120px (100px on mobile).
+Scrollbar appears if content exceeds max height.
+
+Result:
+Users can see their full message before sending, especially useful for longer messages or pasting text.
+
+9. Auto-Navigation After Join
+
+Before:
+After clicking "Join" on a channel, users had to manually refresh to see messages.
+
+What I did:
+Added forceReload parameter to selectChannel().
+After joining, the channel view automatically refreshes and loads messages.
+
+Result:
+Joining a channel now feels instant — messages appear immediately without extra clicks.
+
+10. Error Dialog Keyboard Support
+
+Before:
+Error dialogs could only be dismissed by clicking the close button with a mouse.
+
+What I did:
+Added Enter key handler to close error dialogs.
+Auto-focus the close button when error appears.
+Added ARIA attributes (role="dialog", aria-modal="true").
+Added visible focus indicator with blue outline.
+
+Result:
+Users can dismiss errors quickly by pressing Enter. Screen readers properly announce it as a modal dialog. More accessible for keyboard-only users.
+
+11. Responsive and Accessible Design
+
+Used Flexbox and Grid for layout so the UI scales across screen sizes
+Ensured all text and elements have sufficient colour contrast (meets WCAG AA).
+Added alt text for images and semantic HTML for structure.
+Interactive areas are at least 44x44px for comfortable touch use.
+Avoided flashing or fast animations.
