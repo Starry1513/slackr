@@ -28,6 +28,7 @@ export class Dashboard extends BaseManager {
 
       // Sidebar toggle elements
       sidebarToggle: document.getElementById("sidebar-toggle"),
+      sidebarToggleFloating: document.getElementById("sidebar-toggle-floating"),
       sidebar: document.getElementById("dashboard-sidebar"),
       sidebarBackdrop: document.getElementById("sidebar-backdrop"),
     };
@@ -75,10 +76,18 @@ export class Dashboard extends BaseManager {
       this.ErrorController.hideError();
     });
 
-    // Sidebar toggle for mobile
+    // Sidebar toggle buttons
     this.dom.sidebarToggle.addEventListener("click", () => {
       this.toggleSidebar();
     });
+
+    if (this.dom.sidebarToggleFloating) {
+      this.dom.sidebarToggleFloating.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.toggleSidebar();
+      });
+    }
 
     this.dom.sidebarBackdrop.addEventListener("click", () => {
       this.closeSidebar();
@@ -214,15 +223,25 @@ export class Dashboard extends BaseManager {
   }
 
   /**
-   * Toggle sidebar visibility (for mobile)
+   * Toggle sidebar visibility
+   * Desktop: collapse/expand sidebar
+   * Mobile: show/hide overlay sidebar
    */
   toggleSidebar() {
-    this.dom.sidebar.classList.toggle("visible");
-    this.dom.sidebarBackdrop.classList.toggle("visible");
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+      // Mobile: toggle overlay
+      this.dom.sidebar.classList.toggle("visible");
+      this.dom.sidebarBackdrop.classList.toggle("visible");
+    } else {
+      // Desktop: toggle collapse
+      this.dom.sidebar.classList.toggle("hidden");
+    }
   }
 
   /**
-   * Close sidebar (for mobile)
+   * Close sidebar (primarily for mobile backdrop click)
    */
   closeSidebar() {
     this.dom.sidebar.classList.remove("visible");
