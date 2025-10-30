@@ -258,8 +258,20 @@ export class ChannelActions extends BaseManager {
       return;
     }
 
+    if (!this.currentChannelData.id) {
+      console.error('[ChannelActions] Invalid channel data - missing id:', this.currentChannelData);
+      this.showError("Invalid channel ID");
+      return;
+    }
+
     const token = this.auth.getToken();
-    const channelId = this.currentChannelData.id;
+    const channelId = parseInt(this.currentChannelData.id);
+
+    if (isNaN(channelId)) {
+      console.error('[ChannelActions] Invalid channel ID type:', this.currentChannelData.id);
+      this.showError("Invalid channel ID");
+      return;
+    }
 
     this.api
       .joinChannel(channelId, token)

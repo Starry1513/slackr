@@ -340,7 +340,7 @@
 }
 
 #message-input {
-  flex: 8;
+  flex: 10;
   padding: 0.6875rem;
   background-color: #40444b;
   border: none;
@@ -1320,7 +1320,7 @@
   cursor: pointer;
   transition: all 0.15s ease;
   font-size: 1.25rem;
-  flex: 1;
+  /* flex: 1; */
 }
 
 .image-upload-btn:hover {
@@ -1565,8 +1565,9 @@
   pointer-events: auto;
   opacity: 0.4;
   backdrop-filter: blur(10px);
-  animation: slideInFromLeft 0.5s ease-out 0.5s both;
 }
+
+/* By default, button is visible (will be hidden by parent container when dashboard is hidden) */
 
 .sidebar-toggle-floating:hover {
   background-color: rgba(47, 49, 54, 0.95);

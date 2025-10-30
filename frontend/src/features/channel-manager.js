@@ -136,7 +136,6 @@ export class ChannelManager extends BaseManager {
         if (this.offlineManager) {
           const cachedData = this.offlineManager.getCachedChannelDetails(channelId);
           if (cachedData) {
-            console.log('[ChannelManager] API failed, using cached channel details');
             this.handleChannelData(channelId, cachedData);
             return;
           }
@@ -146,11 +145,16 @@ export class ChannelManager extends BaseManager {
         const errorMsg = error.message || "";
         if (errorMsg.includes("not a member") || errorMsg.includes("Authorised user is not a member")) {
           // Find channel data from cached channel list
-          const channelFromList = this.allChannels.find(ch => ch.id === channelId);
+          const channelIdNum = parseInt(channelId);
+          const channelFromList = this.allChannels.find(ch => parseInt(ch.id) === channelIdNum);
           if (channelFromList) {
+            // Ensure the cached data includes the id field
+            const channelDataWithId = {
+              ...channelFromList,
+              id: channelIdNum
+            };
             // Use basic channel data from list to show join prompt
-            console.log('[ChannelManager] User not a member, showing join prompt with cached data');
-            this.handleChannelData(channelId, channelFromList);
+            this.handleChannelData(channelIdNum, channelDataWithId);
             return;
           }
         }

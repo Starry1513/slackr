@@ -76,7 +76,7 @@ export class MessageScroll extends BaseManager {
         if (nextMessages.length < 25) {
           this.hasMoreMessages = false;
         }
-
+        // Reset loading state
         this.ifLoadingMore = false;
         this.hideLoadingIndicator();
 
