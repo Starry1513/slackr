@@ -1,5 +1,5 @@
 import { App } from "./app.js";
-import { StarfieldController } from "./starfield-controller.js";
+import { StarfieldController } from "./controller/starfield-controller.js";
 
 console.log("Slackr loaded!");
 

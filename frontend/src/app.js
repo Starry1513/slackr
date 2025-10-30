@@ -9,7 +9,7 @@ import { ImageManager } from "./features/image-manager.js";
 import { ErrorController } from "./controller/error-controller.js";
 import { helperManager} from "./features/helper-manager.js";
 import { Router } from "./router.js";
-import { OfflineManager } from "./offline-manager.js";
+import { OfflineManager } from "./features/offline-manager.js";
 
 export class App {
   constructor() {
