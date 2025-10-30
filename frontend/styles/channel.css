@@ -39,6 +39,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, width 0.3s ease, min-width 0.3s ease;
 }
 
 .sidebar-header {
@@ -874,13 +875,21 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.message-sender-image-container {
+  flex-shrink: 0;
 }
 
 .message-sender-image {
   width: 40px;
   height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .message-sender-image.placeholder {
@@ -1510,14 +1519,24 @@
 
 /* Sidebar Toggle Button */
 .sidebar-toggle-btn {
-  display: none; /* Hidden by default on desktop */
+  display: inline-flex; /* Show on all screen sizes */
   font-size: 1.5rem;
   margin-right: 0.5rem;
+  transition: transform 0.2s ease;
 }
 
-/* Sidebar Hidden State */
+
+/* Sidebar Hidden State - Desktop */
 .dashboard-sidebar.hidden {
-  transform: translateX(-100%);
+  margin-left: -240px;
+  min-width: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+/* Update message input position when sidebar is hidden */
+.dashboard-sidebar.hidden ~ .dashboard-main .message-input-container {
+  left: 0;
 }
 
 /* Mobile Responsive (≤ 768px) */
@@ -1527,9 +1546,9 @@
     --sidebar-width: 0;
   }
 
-  /* Show sidebar toggle button on mobile */
-  .sidebar-toggle-btn {
-    display: inline-flex;
+  /* Hide floating toggle on mobile, use header button instead */
+  .sidebar-toggle-floating {
+    display: none;
   }
 
   /* Sidebar: overlay on mobile, hidden by default */
@@ -1541,11 +1560,26 @@
     z-index: 1000;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    margin-left: 0; /* Override desktop hidden state */
+    width: 240px; /* Override desktop hidden state */
+    min-width: 240px; /* Override desktop hidden state */
   }
 
-  /* Sidebar visible state on mobile */
+  /* Sidebar visible state on mobile (overrides desktop hidden class) */
   .dashboard-sidebar.visible {
     transform: translateX(0);
+  }
+
+  /* Desktop hidden class should not apply on mobile */
+  .dashboard-sidebar.hidden {
+    margin-left: 0;
+    width: 240px;
+    min-width: 240px;
+    transform: translateX(-100%); /* Use mobile behavior */
+  }
+
+  .dashboard-sidebar.hidden.visible {
+    transform: translateX(0); /* Allow showing on mobile even if hidden class exists */
   }
 
   /* Add backdrop when sidebar is open on mobile */
@@ -1614,6 +1648,26 @@
   .channel-container.active {
     background-color: #5865f2;
     font-weight: 600;
+  }
+
+  /* Message sender image adjustments for tablet */
+  .message-sender-image {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .message-content {
+    margin-left: 3rem;
+  }
+
+  .message-reactions {
+    margin-left: 3rem;
+  }
+
+  .message-pinned-badge {
+    margin-left: 3rem;
   }
 }
 
