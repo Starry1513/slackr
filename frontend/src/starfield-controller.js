@@ -91,5 +91,89 @@ export class StarfieldController {
     return 1;
   }
 
+  move() {
+    const len = this.stars.length;
+    for (let i = 0; i < len; i++) {
+      const s = this.stars[i];
+      // Save previous frame
+      s.px = s.x; s.py = s.y; s.pz = s.z;
+      // Move towards observer
+      s.z -= this.cfg.speed;
+      // Mouse micro-offset (decreases with z)
+      s.x += (this.mx * this.cfg.mouseInfluence) / Math.max(60, s.z);
+      s.y += (this.my * this.cfg.mouseInfluence) / Math.max(60, s.z);
 
+      // Reset (return to far distance after passing through lens)
+      if (s.z <= this.cfg.fadeEndZ) {
+        s.z = this.canvas.width;
+        s.x = Math.random() * this.canvas.width;
+        s.y = Math.random() * this.canvas.height;
+        s.px = s.x; s.py = s.y; s.pz = s.z;
+      }
+    }
+  }
+
+  draw() {
+    // Background clear
+    this.ctx.fillStyle = 'rgb(0,10,20)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    const fast = this.cfg.speed > 10; // Draw trails only at high speed
+    const len = this.stars.length;
+    for (let i = 0; i < len; i++) {
+      const s = this.stars[i];
+      const curr = this.pos(s.x, s.y, s.z);
+      const a = this.alpha(s.z) * s.o;
+
+      if (fast) {
+        const prev = this.pos(s.px, s.py, s.pz);
+        this.ctx.beginPath();
+        this.ctx.moveTo(prev.x, prev.y);
+        this.ctx.lineTo(curr.x, curr.y);
+        this.ctx.strokeStyle = `rgba(255,255,255,${0.28 * a})`;
+        this.ctx.lineWidth = curr.r;
+        this.ctx.stroke();
+      }
+
+      this.ctx.beginPath();
+      this.ctx.arc(curr.x, curr.y, curr.r, 0, Math.PI * 2);
+      this.ctx.fillStyle = `rgba(255,255,255,${a})`;
+      this.ctx.fill();
+    }
+  }
+
+  loop() {
+    this.move();
+    this.draw();
+    this.animationId = requestAnimationFrame(() => this.loop());
+  }
+
+  handleMouseMove(e) {
+    this.mx = (e.clientX * (window.devicePixelRatio || 1)) - this.cx;
+    this.my = (e.clientY * (window.devicePixelRatio || 1)) - this.cy;
+  }
+
+  handleWheel(e) {
+    this.cfg.speed = Math.max(0.1, Math.min(50, this.cfg.speed - e.deltaY * 0.01));
+  }
+
+  destroy() {
+    // Cancel animation
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+
+    // Remove event listeners
+    window.removeEventListener('resize', this.boundResize);
+    document.removeEventListener('mousemove', this.boundMouseMove);
+    document.removeEventListener('wheel', this.boundWheel);
+
+    // Clear canvas
+    if (this.ctx && this.canvas) {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    // Clear config export
+    delete window.starfieldConfig;
+  }
 }
