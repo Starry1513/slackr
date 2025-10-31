@@ -139,13 +139,22 @@ export class MessageManager extends BaseManager {
   /**
    * Load messages for a channel
    * @param {number} channelId - Channel ID
+   * @param {boolean} keepScrollPosition - If true, maintains current scroll position instead of scrolling to bottom
    */
-  loadMessages(channelId) {
+  loadMessages(channelId, keepScrollPosition = false) {
     this.curChannelId = channelId;
     this.messages = [];
 
-    // Reset scroll state for new channel
-    this.scroll.reset(channelId);
+    // Save current scroll position if needed
+    let savedScrollTop = null;
+    if (keepScrollPosition && this.scroll.messagesContainer) {
+      savedScrollTop = this.scroll.messagesContainer.scrollTop;
+    }
+
+    // Reset scroll state for new channel (only if not keeping position)
+    if (!keepScrollPosition) {
+      this.scroll.reset(channelId);
+    }
 
     // Update image manager with curr channel
     if (this.imageManager) {
@@ -159,7 +168,7 @@ export class MessageManager extends BaseManager {
       // Load from cache
       const cachedMessages = this.offlineManager.getCachedMessages(channelId);
       if (cachedMessages) {
-        return this.handleMessagesData(cachedMessages, channelId);
+        return this.handleMessagesData(cachedMessages, channelId, keepScrollPosition, savedScrollTop);
       } else {
         this.showError("Messages not available offline. Please connect to the internet.");
         return Promise.reject(new Error("Offline and no cache available"));
@@ -198,7 +207,16 @@ export class MessageManager extends BaseManager {
         }
 
         this.renderMessages();
-        this.scroll.scrollToBottom();
+
+        // Handle scrolling based on keepScrollPosition flag
+        if (keepScrollPosition && savedScrollTop !== null) {
+          // Restore scroll position
+          this.scroll.messagesContainer.scrollTop = savedScrollTop;
+        } else {
+          // Scroll to bottom (default behavior)
+          this.scroll.scrollToBottom();
+        }
+
         return this.messages;
       })
       .catch((error) => {
@@ -207,7 +225,7 @@ export class MessageManager extends BaseManager {
           const cachedMessages = this.offlineManager.getCachedMessages(channelId);
           if (cachedMessages) {
             console.log('[MessageManager] API failed, using cached messages');
-            return this.handleMessagesData(cachedMessages, channelId);
+            return this.handleMessagesData(cachedMessages, channelId, keepScrollPosition, savedScrollTop);
           }
         }
 
@@ -220,8 +238,10 @@ export class MessageManager extends BaseManager {
    * Handle messages data (shared by online and offline paths)
    * @param {Array} messages - Messages array
    * @param {number} channelId - Channel ID
+   * @param {boolean} keepScrollPosition - If true, maintains current scroll position
+   * @param {number} savedScrollTop - Saved scroll position to restore
    */
-  handleMessagesData(messages, channelId) {
+  handleMessagesData(messages, channelId, keepScrollPosition = false, savedScrollTop = null) {
     this.messages = messages;
 
     // Update image manager with channel images
@@ -230,7 +250,16 @@ export class MessageManager extends BaseManager {
     }
 
     this.renderMessages();
-    this.scroll.scrollToBottom();
+
+    // Handle scrolling based on keepScrollPosition flag
+    if (keepScrollPosition && savedScrollTop !== null) {
+      // Restore scroll position
+      this.scroll.messagesContainer.scrollTop = savedScrollTop;
+    } else {
+      // Scroll to bottom (default behavior)
+      this.scroll.scrollToBottom();
+    }
+
     return Promise.resolve(this.messages);
   }
 
@@ -460,8 +489,8 @@ export class MessageManager extends BaseManager {
     this.actions.pinMessage(this.curChannelId, message.id);
     action
       .then(() => {
-        // Reload messages
-        return this.loadMessages(this.curChannelId);
+        // Reload messages but keep scroll position
+        return this.loadMessages(this.curChannelId, true);
       })
       .catch((error) => {
         this.showError(error.message || "Failed to pin/unpin message");
@@ -483,8 +512,8 @@ export class MessageManager extends BaseManager {
     this.Reac
       .toggleReac(this.curChannelId, message, emoji)
       .then(() => {
-        // Reload messages
-        return this.loadMessages(this.curChannelId);
+        // Reload messages but keep scroll position
+        return this.loadMessages(this.curChannelId, true);
       })
       .catch((error) => {
         this.showError(error.message || "Failed to update Reac");
