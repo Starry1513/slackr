@@ -55,7 +55,10 @@ export class ChannelManager extends BaseManager {
     // Channel actions callbacks
     this.channelActions.setOnChannelCreatedCallback((channelId) => {
       this.loadChannels().then(() => {
-        this.selectChannel(channelId);
+        // Add a small delay to ensure backend has fully processed the creation
+        setTimeout(() => {
+          this.selectChannel(channelId, true); // Force reload
+        }, 100);
       });
     });
 
@@ -148,6 +151,25 @@ export class ChannelManager extends BaseManager {
           const channelIdNum = parseInt(channelId);
           const channelFromList = this.allChannels.find(ch => parseInt(ch.id) === channelIdNum);
           if (channelFromList) {
+            // Check if user is the creator - auto join if so
+            const curUserId = parseInt(this.auth.getUserId());
+            if (channelFromList.creator === curUserId) {
+              console.log('[ChannelManager] Creator not yet member, auto-joining channel', channelIdNum);
+              // Auto-join creator to their newly created channel
+              this.api.joinChannel(channelIdNum, token)
+                .then(() => {
+                  console.log('[ChannelManager] Auto-join successful, retrying channel load');
+                  // Retry loading the channel after joining
+                  this.selectChannel(channelIdNum, true);
+                })
+                .catch((joinError) => {
+                  console.error('[ChannelManager] Auto-join failed:', joinError);
+                  this.showError("Failed to join newly created channel");
+                });
+              return;
+            }
+
+            // Not the creator - show join prompt
             // Ensure the cached data includes the id field
             const channelDataWithId = {
               ...channelFromList,

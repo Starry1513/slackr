@@ -5,13 +5,14 @@
   flex-direction: row;
   position: fixed;
   width: 100vw;
-  top: 60px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  height: calc(100vh - 60px);
+  height: 100vh;
   overflow: hidden;
   background-color: #36393f;
+  padding-top: 60px; /* Space for banner header */
 }
 
 /* Sidebar - Discord Style */
@@ -137,7 +138,7 @@
   flex-direction: column;
   background-color: #36393f;
   min-width: 0; /* Allow flex shrinking */
-  height: 100%;
+  height: calc(100vh - 60px);
 }
 
 /* Welcome Screen */

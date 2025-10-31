@@ -50,9 +50,8 @@ export class MessageNotifications extends BaseManager {
    */
   setcurrChannel(channelId, lastMessageId) {
     this.currChannelId = channelId;
-    if (lastMessageId !== null) {
-      this.channelLastChecked.set(channelId, lastMessageId);
-    }
+    // Always set the last checked ID, even if null (use 0 for empty channels)
+    this.channelLastChecked.set(channelId, lastMessageId !== null ? lastMessageId : 0);
   }
 
   /**

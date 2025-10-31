@@ -1,6 +1,5 @@
 node_modules
 database.json
-*.md
 *.zip
 *.sh
 ass3-backend
