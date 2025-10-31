@@ -1,17 +1,4 @@
-/*
- * Slackr Channel Styles
- * Last Updated: 2025-10-21 - Three column layout with scrollable messages
- *
- * External CSS Library Used:
- * - Tailwind CSS v3.x (loaded via CDN in index.html)
- *   URL: https://cdn.tailwindcss.com
- *   Author: Tailwind Labs
- *   License: MIT
- *
- * Design inspired by Discord's layout for better UX
- */
 
-/* Dashboard Layout - Full Screen Discord-like Design */
 .dashboard {
   --sidebar-width: 240px;
   display: flex;
