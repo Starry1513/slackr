@@ -26,7 +26,7 @@ export class MessageRenderer extends BaseManager {
    * Render all messages in a container
    * @param {HTMLElement} container - Container element
    * @param {Array} messages - Array of messages
-   * @param {Object} handlers - Event handlers { onEdit, onDelete, onReact, onShowReacPicker }
+   * @param {Object} handlers - Event handlers { onEdit, onDelete, onReact, onShowReacPicker, onViewProfile }
    * @param {Object} imageManager - Image manager for handling images
    */
   renderMessages(container, messages, handlers, imageManager) {
@@ -93,6 +93,12 @@ export class MessageRenderer extends BaseManager {
     // Sender name and timestamp
     senderName.textContent = message.senderName || "Unknown User";
     timestamp.textContent = this.formatTimestamp(message.sentAt);
+
+    // Make sender name clickable to view profile
+    if (handlers.onViewProfile && message.sender) {
+      senderName.style.cursor = "pointer";
+      senderName.onclick = () => handlers.onViewProfile(message.sender);
+    }
 
     // Message actions (pin, edit, delete)
     if (isOwnMessage && handlers.onEdit && handlers.onDelete && handlers.onPin) {

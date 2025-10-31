@@ -899,6 +899,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.message-sender-name:hover {
+  color: #5865f2;
+  text-decoration: underline;
 }
 
 .message-timestamp {

@@ -28,6 +28,9 @@ export class App {
     this.channel = new ChannelManager(this.api, this.auth, this.ErrorController, this.message, this.user, this.offlineManager);
     this.dashboard = new Dashboard(this.api, this.auth, this.pageController, this.ErrorController, this.channel, this.message);
 
+    // Set up cross-manager dependencies
+    this.message.setUserManager(this.user);
+
     // Set up image upload callback to refresh messages
     this.image.setOnImageUploadedCallback(() => {
       if (this.message.curChannelId) {

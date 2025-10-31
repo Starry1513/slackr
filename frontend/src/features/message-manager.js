@@ -16,6 +16,7 @@ export class MessageManager extends BaseManager {
     // Store image manager and offline manager
     this.imageManager = imageManager;
     this.offlineManager = offlineManager;
+    this.userManager = null; // Will be set later
 
     // Initialize specialized modules
     this.renderer = new MessageRenderer(api, auth, ErrorController);
@@ -48,6 +49,14 @@ export class MessageManager extends BaseManager {
 
     // Current message being edited
     this.editingMessage = null;
+  }
+
+  /**
+   * Set user manager for viewing profiles
+   * @param {UserManager} userManager - User manager instance
+   */
+  setUserManager(userManager) {
+    this.userManager = userManager;
   }
 
   /**
@@ -338,6 +347,7 @@ export class MessageManager extends BaseManager {
       onReact: (message, emoji) => this.handleReacToggle(message, emoji),
       onShowReacPicker: (message) => this.Reac.showReacPicker(message),
       onPin: (message) => this.handlePinMessage(message),
+      onViewProfile: (userId) => this.handleViewProfile(userId),
     };
 
     this.renderer.renderMessages(
@@ -346,6 +356,18 @@ export class MessageManager extends BaseManager {
       handlers,
       this.imageManager
     );
+  }
+
+  /**
+   * Handle viewing user profile
+   * @param {number} userId - User ID to view
+   */
+  handleViewProfile(userId) {
+    if (this.userManager) {
+      this.userManager.showViewUserProfileModal(userId);
+    } else {
+      console.error('[MessageManager] UserManager not set - cannot view profile');
+    }
   }
 
   /**
