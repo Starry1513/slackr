@@ -229,6 +229,7 @@ export class Dashboard extends BaseManager {
    */
   toggleSidebar() {
     const isMobile = window.innerWidth <= 768;
+    const dashboard = document.querySelector('.dashboard');
 
     if (isMobile) {
       // Mobile: toggle overlay
@@ -237,6 +238,15 @@ export class Dashboard extends BaseManager {
     } else {
       // Desktop: toggle collapse
       this.dom.sidebar.classList.toggle("hidden");
+
+      // Update dashboard class to help with CSS
+      if (dashboard) {
+        if (this.dom.sidebar.classList.contains("hidden")) {
+          dashboard.classList.add("sidebar-collapsed");
+        } else {
+          dashboard.classList.remove("sidebar-collapsed");
+        }
+      }
     }
   }
 
