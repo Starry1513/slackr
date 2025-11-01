@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Ensure we're running under bash even if invoked with `sh`
+if [ -z "$BASH_VERSION" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+# --- Configuration ---
+FRONTEND_PORT="${FRONTEND_PORT:-3001}"
+BACKEND_PORT="5005"
+BACKEND_DIR="backend"
+FRONTEND_DIR="frontend"
+DB_FILE="$BACKEND_DIR/database.json"
+CLEAN_DB=true  # Default: clean database on startup
+
+# --- Parse command-line arguments ---
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --no-clean)
+      CLEAN_DB=false
+      shift
+      ;;
+    --help|-h)
+      echo "Usage: $0 [OPTIONS]"
+      echo ""
+      echo "Options:"
+      echo "  --no-clean    Skip database cleanup on startup (keeps existing data)"
+      echo "  --help, -h    Show this help message"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Run '$0 --help' for usage information."
+      exit 1
+      ;;
+  esac
+done
+
+# --- Prerequisite Checks ---
+# Fail fast with clear errors instead of failing mid-script.
+echo "🔎 Checking for required tools..."
+command -v node >/dev/null 2>&1 || { echo "❌ Error: Node.js is not found. Please install it."; exit 1; }
+command -v npx >/dev/null 2>&1 || { echo "❌ Error: npx is not found. It comes with npm (Node.js)."; exit 1; }
+if ! command -v pnpm >/dev/null 2>&1 && ! command -v npm >/dev/null 2>&1; then
+  echo "❌ Error: No package manager found. Please install npm or pnpm."
+  exit 1
+fi
+echo "✅ All tools found."
+
+# --- Cleanup Function ---
+# This trap ensures that if you press Ctrl+C, the background servers are stopped.
+cleanup() {
+    echo "" # Newline after ^C
+    echo "🛑 Stopping servers..."
+    # Kill the process group for the backend PID, and the frontend PID
+    [[ -n "$BACKEND_PID" ]] && kill "$BACKEND_PID" 2>/dev/null
+    [[ -n "$FRONTEND_PID" ]] && kill "$FRONTEND_PID" 2>/dev/null
+    echo "👋 Goodbye!"
+    exit
+}
+
+trap cleanup EXIT INT TERM
+
+echo "🚀 Starting backend and frontend..."
+
+# --- Clean up database ---
+if [ "$CLEAN_DB" = true ]; then
+    echo "🧹 Cleaning up old database ($DB_FILE)..."
+    if [ -f "$DB_FILE" ]; then
+        rm "$DB_FILE"
+        echo "✅ Database deleted."
+    else
+        echo "ℹ️ No existing database found."
+    fi
+else
+    echo "ℹ️ Skipping database cleanup (--no-clean flag is set)."
+fi
+
+# --- Start backend ---
+echo "⚙️ Starting backend server on port $BACKEND_PORT..."
+(
+    cd "$BACKEND_DIR" || exit 1
+    if command -v pnpm &>/dev/null; then
+        pnpm start &
+    elif command -v npm &>/dev/null; then
+        npm start &
+    fi
+    echo $! > ../.backend_pid
+)
+BACKEND_PID=$(cat .backend_pid)
