@@ -88,3 +88,42 @@ echo "⚙️ Starting backend server on port $BACKEND_PORT..."
     echo $! > ../.backend_pid
 )
 BACKEND_PID=$(cat .backend_pid)
+rm .backend_pid
+
+# --- Wait for backend ---
+echo "⏳ Waiting for backend to start..."
+for i in {1..10}; do
+    # This (</dev/tcp/...) is a bash built-in and more compatible than `nc` (netcat)
+    if (</dev/tcp/localhost/$BACKEND_PORT) &>/dev/null; then
+        echo "✅ Backend is running!"
+        break
+    fi
+    echo -n "." # Show progress
+    sleep 1
+done
+echo "" # Newline after progress dots
+
+# Final check
+if ! (</dev/tcp/localhost/$BACKEND_PORT) &>/dev/null; then
+    echo "❌ Backend failed to start after 10 seconds."
+    cleanup
+    exit 1
+fi
+
+# --- Start frontend ---
+# We assume npx is available since npm/node is required for the backend.
+# This is more consistent than relying on Python.
+echo "🌐 Starting frontend server on port $FRONTEND_PORT..."
+npx serve "$FRONTEND_DIR" -p "$FRONTEND_PORT" &
+FRONTEND_PID=$!
+
+# --- All done ---
+echo ""
+echo "🎉 Servers started successfully!"
+echo "Backend ➜ http://localhost:$BACKEND_PORT"
+echo "Frontend ➜ http://localhost:$FRONTEND_PORT"
+echo "Press Ctrl+C to stop."
+echo ""
+
+# Keep script alive so the trap can wait for Ctrl+C
+while true; do sleep 1; done
