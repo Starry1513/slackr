@@ -1,0 +1,25 @@
+# Dependencies
+**/node_modules
+**/npm-debug.log
+**/yarn-error.log
+**/package-lock.json
+**/yarn.lock
+**/pnpm-lock.yaml
+
+# Git
+.git
+.gitignore
+
+# Database files
+**/database.json
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+**/coverage
