@@ -3,3 +3,4 @@ database.json
 *.zip
 *.sh
 ass3-backend
+.vercel

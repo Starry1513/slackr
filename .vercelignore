@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Testing
+backend/test/
+*.test.js
+
+# Build files
+backend/coverage/
+
+# Database (local development only)
+backend/database.json
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+start-docker.sh
+
+# Documentation and misc
+README.md
+progress.csv
+usability.md
+bonus.md
+LICENSE
+
+# Local scripts
+start
+setup-vercel.sh
+deploy-vercel.sh

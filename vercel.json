@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "name": "slackr",
+  "builds": [
+    {
+      "src": "backend/src/server.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["backend/src/**", "backend/package.json"]
+      }
+    },
+    {
+      "src": "frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api-docs(.*)",
+      "dest": "backend/src/server.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/src/server.js"
+    },
+    {
+      "src": "/auth/(.*)",
+      "dest": "backend/src/server.js"
+    },
+    {
+      "src": "/user/(.*)",
+      "dest": "backend/src/server.js"
+    },
+    {
+      "src": "/channel/(.*)",
+      "dest": "backend/src/server.js"
+    },
+    {
+      "src": "/message/(.*)",
+      "dest": "backend/src/server.js"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|json))",
+      "dest": "frontend/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/index.html"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
