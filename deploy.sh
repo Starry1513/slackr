@@ -1,1 +1,1 @@
-cd backend && pnpm install && cd .. && pnpm install && chmod start && ./start
+cd backend && npm install --legacy-peer-deps && cd .. && npm run build
