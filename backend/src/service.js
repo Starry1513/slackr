@@ -1,12 +1,18 @@
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import jwt from 'jsonwebtoken';
 import AsyncLock from 'async-lock';
-import { InputError, AccessError, } from './error';
+import { InputError, AccessError, } from './error.js';
+
+// ES modules workaround for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const lock = new AsyncLock();
 
 const JWT_SECRET = 'emilywashere';
-const DATABASE_FILE = './database.json';
+const DATABASE_FILE = join(__dirname, '../../database.json');
 
 /***************************************************************
                        State Management
