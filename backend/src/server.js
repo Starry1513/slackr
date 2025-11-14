@@ -1,12 +1,22 @@
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import cors from 'cors';
 import morgan from 'morgan';
 
-import { InputError, AccessError, } from './error';
-import { BACKEND_PORT } from './config';
-import swaggerDocument from '../swagger.json';
+import { InputError, AccessError, } from './error.js';
+import { BACKEND_PORT } from './config.js';
+
+// ES modules workaround for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Read swagger.json file
+const swaggerDocument = JSON.parse(
+  fs.readFileSync(join(__dirname, '../swagger.json'), 'utf8')
+);
 import {
   save,
   getUserIdFromAuthorization,
@@ -33,7 +43,7 @@ import {
   unpinMessage,
   reactMessage,
   unreactMessage,
-} from './service';
+} from './service.js';
 
 const app = express();
 
