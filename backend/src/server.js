@@ -8,15 +8,6 @@ import morgan from 'morgan';
 
 import { InputError, AccessError, } from './error.js';
 import { BACKEND_PORT } from './config.js';
-
-// ES modules workaround for __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Read swagger.json file
-const swaggerDocument = JSON.parse(
-  fs.readFileSync(join(__dirname, '../swagger.json'), 'utf8')
-);
 import {
   save,
   getUserIdFromAuthorization,
@@ -44,6 +35,15 @@ import {
   reactMessage,
   unreactMessage,
 } from './service.js';
+
+// ES modules workaround for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Read swagger.json file
+const swaggerDocument = JSON.parse(
+  fs.readFileSync(join(__dirname, '../swagger.json'), 'utf8')
+);
 
 const app = express();
 
